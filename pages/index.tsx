@@ -88,50 +88,49 @@ export default function Dashboard() {
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Leads</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Leady</div>
             <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.leads}</div>
           </div>
           <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Calls</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Połączenia</div>
             <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.calls}</div>
           </div>
           <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Conversion</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Konwersja</div>
             <div className="text-3xl font-bold text-av-blue mt-1">
               {loading ? '—' : stats.calls > 0 ? Math.round((stats.calls / stats.leads) * 100) + '%' : '0%'}
             </div>
           </div>
           <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Avg Duration</div>
+            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Śr. czas</div>
             <div className="text-3xl font-bold text-av-navy mt-1">—</div>
           </div>
         </div>
 
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Quick Actions</h2>
+        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Szybkie akcje</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Link href="/leads" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
             <div className="w-12 h-12 bg-av-blue/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-blue/20">📞</div>
-            <h3 className="font-semibold text-av-navy">View Leads</h3>
-            <p className="text-gray-500 text-sm mt-1">Browse and call {stats.leads} leads</p>
+            <h3 className="font-semibold text-av-navy">Leady</h3>
+            <p className="text-gray-500 text-sm mt-1">Przeglądaj i dzwoń do {stats.leads} leadów</p>
           </Link>
           <Link href="/calls" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
             <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-green-100">📊</div>
-            <h3 className="font-semibold text-av-navy">Call Logs</h3>
-            <p className="text-gray-500 text-sm mt-1">View call history & transcripts</p>
+            <h3 className="font-semibold text-av-navy">Historia połączeń</h3>
+            <p className="text-gray-500 text-sm mt-1">Przeglądaj historię i transkrypty</p>
           </Link>
-          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 opacity-50">
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-2xl mb-3">📁</div>
-            <h3 className="font-semibold text-gray-400">Training Data</h3>
-            <p className="text-gray-400 text-sm mt-1">Upload sales conversations</p>
-            <span className="text-xs text-av-orange font-medium">Coming soon</span>
-          </div>
+          <Link href="/training" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-orange hover:shadow-md">
+            <div className="w-12 h-12 bg-av-orange/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-orange/20">📁</div>
+            <h3 className="font-semibold text-av-navy">Dane treningowe</h3>
+            <p className="text-gray-500 text-sm mt-1">Załaduj nagrania rozmów</p>
+          </Link>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-semibold text-av-navy mb-4">Recent Activity</h2>
+          <h2 className="font-semibold text-av-navy mb-4">Ostatnia aktywność</h2>
           <div className="text-gray-400 text-center py-12">
             <div className="text-4xl mb-3">📞</div>
-            <p>No calls yet — start from Leads page</p>
+            <p>Brak połączeń — zacznij od sekcji Leady</p>
           </div>
         </div>
       </main>
