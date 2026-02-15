@@ -18,7 +18,6 @@ interface Lead {
 interface TranscriptMessage {
   speaker: 'agent' | 'customer';
   text: string;
-  timestamp: number;
 }
 
 export default function LeadDetail() {
@@ -28,22 +27,23 @@ export default function LeadDetail() {
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [voice, setVoice] = useState('Kasia');
-  const [scenario, setScenario] = useState('Paści - Early Bird Junior');
 
   // Call state
   const [callActive, setCallActive] = useState(false);
   const [callStep, setCallStep] = useState(0);
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
   const [outcome, setOutcome] = useState<string | null>(null);
-  const [isAgentSpeaking, setIsAgentSpeaking] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [statusText, setStatusText] = useState('');
+  const [phase, setPhase] = useState<'idle' | 'agent-speaking' | 'listening' | 'processing'>('idle');
   const [error, setError] = useState<string | null>(null);
+  const [silenceTimer, setSilenceTimer] = useState(0);
 
-  // Audio refs
+  // Refs for cleanup
+  const abortRef = useRef(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const silenceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,204 +54,250 @@ export default function LeadDetail() {
     }).catch(() => setLoading(false));
   }, [id]);
 
-  // Auto-scroll transcript
   useEffect(() => {
     transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [transcript]);
 
-  const addToTranscript = useCallback((speaker: 'agent' | 'customer', text: string) => {
-    setTranscript(prev => [...prev, { speaker, text, timestamp: Date.now() }]);
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      abortRef.current = true;
+      cleanup();
+    };
   }, []);
 
-  // Synthesize and play agent voice
-  const speakAgent = useCallback(async (text: string): Promise<void> => {
-    setIsAgentSpeaking(true);
-    setStatusText('🗣️ Kasia mówi...');
-    addToTranscript('agent', text);
+  const cleanup = () => {
+    if (mediaRecorderRef.current?.state === 'recording') {
+      mediaRecorderRef.current.stop();
+    }
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (silenceTimeoutRef.current) {
+      clearTimeout(silenceTimeoutRef.current);
+    }
+  };
+
+  const addMsg = (speaker: 'agent' | 'customer', text: string) => {
+    setTranscript(prev => [...prev, { speaker, text }]);
+  };
+
+  // ── Speak (ElevenLabs) ──
+  const speak = async (text: string): Promise<void> => {
+    if (abortRef.current) return;
+    setPhase('agent-speaking');
+    addMsg('agent', text);
 
     try {
       const res = await axios.post('/api/voice/synthesize', { text, voice });
+      if (abortRef.current) return;
 
       if (res.data.success && res.data.audio) {
-        const audioBlob = new Blob(
-          [Uint8Array.from(atob(res.data.audio), c => c.charCodeAt(0))],
-          { type: 'audio/mpeg' }
-        );
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
+        const bytes = Uint8Array.from(atob(res.data.audio), c => c.charCodeAt(0));
+        const blob = new Blob([bytes], { type: 'audio/mpeg' });
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        audioRef.current = audio;
 
-        await new Promise<void>((resolve) => {
-          audio.onended = () => {
-            URL.revokeObjectURL(audioUrl);
-            resolve();
-          };
-          audio.onerror = () => {
-            URL.revokeObjectURL(audioUrl);
-            resolve();
-          };
+        await new Promise<void>(resolve => {
+          audio.onended = () => { URL.revokeObjectURL(url); resolve(); };
+          audio.onerror = () => { URL.revokeObjectURL(url); resolve(); };
           audio.play().catch(() => resolve());
         });
+        audioRef.current = null;
       }
     } catch (err: any) {
-      console.error('Speech synthesis error:', err);
-      setError('Voice synthesis failed - continuing with text only');
+      console.error('TTS error:', err);
     }
+  };
 
-    setIsAgentSpeaking(false);
-  }, [voice, addToTranscript]);
+  // ── Listen with VAD (auto-stop on silence) ──
+  const listen = (): Promise<string> => {
+    return new Promise(async (resolve) => {
+      if (abortRef.current) { resolve(''); return; }
+      setPhase('listening');
+      setSilenceTimer(0);
 
-  // Record user audio and transcribe
-  const listenToCustomer = useCallback(async (): Promise<string> => {
-    setIsListening(true);
-    setStatusText('🎤 Twoja kolej - mów...');
-
-    return new Promise<string>(async (resolve) => {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-        mediaRecorderRef.current = mediaRecorder;
-        audioChunksRef.current = [];
+        streamRef.current = stream;
 
-        mediaRecorder.ondataavailable = (event) => {
-          if (event.data.size > 0) {
-            audioChunksRef.current.push(event.data);
-          }
+        // Setup audio analyser for VAD
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(stream);
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        source.connect(analyser);
+        analyserRef.current = analyser;
+
+        const recorder = new MediaRecorder(stream, {
+          mimeType: MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus' : 'audio/webm'
+        });
+        mediaRecorderRef.current = recorder;
+        const chunks: Blob[] = [];
+
+        recorder.ondataavailable = (e) => {
+          if (e.data.size > 0) chunks.push(e.data);
         };
 
-        mediaRecorder.onstop = async () => {
-          stream.getTracks().forEach(track => track.stop());
-          setIsListening(false);
-          setIsProcessing(true);
-          setStatusText('⏳ Przetwarzam...');
+        recorder.onstop = async () => {
+          stream.getTracks().forEach(t => t.stop());
+          streamRef.current = null;
+          audioCtx.close();
+          if (silenceTimeoutRef.current) clearTimeout(silenceTimeoutRef.current);
 
+          if (abortRef.current || chunks.length === 0) { resolve(''); return; }
+
+          setPhase('processing');
           try {
-            const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+            const blob = new Blob(chunks, { type: 'audio/webm' });
             const reader = new FileReader();
-
             reader.onloadend = async () => {
-              const base64 = (reader.result as string).split(',')[1];
-
+              const b64 = (reader.result as string).split(',')[1];
               try {
-                const res = await axios.post('/api/voice/transcribe', { audio: base64 });
+                const res = await axios.post('/api/voice/transcribe', { audio: b64 });
                 const text = res.data.transcript || '';
-                setIsProcessing(false);
-
-                if (text) {
-                  addToTranscript('customer', text);
-                  resolve(text);
-                } else {
-                  addToTranscript('customer', '(nie rozpoznano mowy)');
-                  resolve('');
-                }
-              } catch (err) {
-                console.error('Transcription error:', err);
-                setIsProcessing(false);
-                addToTranscript('customer', '(błąd transkrypcji)');
+                if (text) addMsg('customer', text);
+                resolve(text);
+              } catch {
                 resolve('');
               }
             };
-
-            reader.readAsDataURL(audioBlob);
-          } catch (err) {
-            console.error('Audio processing error:', err);
-            setIsProcessing(false);
+            reader.readAsDataURL(blob);
+          } catch {
             resolve('');
           }
         };
 
-        mediaRecorder.start();
+        recorder.start(250); // collect every 250ms
 
-        // Auto-stop after 15 seconds or manual stop
-        setTimeout(() => {
-          if (mediaRecorder.state === 'recording') {
-            mediaRecorder.stop();
+        // VAD: detect silence
+        let speechDetected = false;
+        let silentFrames = 0;
+        const SILENCE_THRESHOLD = 15; // lower = more sensitive
+        const SILENCE_FRAMES_TO_STOP = 8; // ~2 seconds of silence after speech
+        let secondsListening = 0;
+
+        const vadInterval = setInterval(() => {
+          if (recorder.state !== 'recording') { clearInterval(vadInterval); return; }
+
+          const data = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(data);
+          const avg = data.reduce((a, b) => a + b, 0) / data.length;
+
+          if (avg > SILENCE_THRESHOLD) {
+            speechDetected = true;
+            silentFrames = 0;
+          } else if (speechDetected) {
+            silentFrames++;
+            if (silentFrames >= SILENCE_FRAMES_TO_STOP) {
+              // Silence detected after speech → auto-stop
+              clearInterval(vadInterval);
+              if (recorder.state === 'recording') recorder.stop();
+              return;
+            }
           }
-        }, 15000);
+
+          secondsListening++;
+          setSilenceTimer(Math.floor(secondsListening / 4)); // ~250ms interval
+
+          // Hard limit: 20 seconds
+          if (secondsListening > 80) { // 80 * 250ms = 20s
+            clearInterval(vadInterval);
+            if (recorder.state === 'recording') recorder.stop();
+          }
+        }, 250);
 
       } catch (err: any) {
-        console.error('Microphone error:', err);
-        setIsListening(false);
-        setError('Nie mogę uzyskać dostępu do mikrofonu. Sprawdź uprawnienia przeglądarki.');
+        setError('Brak dostępu do mikrofonu. Zezwól w przeglądarce!');
         resolve('');
       }
     });
-  }, [addToTranscript]);
+  };
 
-  // Stop recording manually
-  const stopRecording = useCallback(() => {
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+  // ── Stop recording manually ──
+  const stopRecording = () => {
+    if (mediaRecorderRef.current?.state === 'recording') {
       mediaRecorderRef.current.stop();
     }
-  }, []);
+  };
 
-  // Main conversation loop
-  const runConversation = useCallback(async () => {
+  // ── End call ──
+  const endCall = () => {
+    abortRef.current = true;
+    cleanup();
+    setCallActive(false);
+    setPhase('idle');
+    if (!outcome) setOutcome('Ręcznie zakończono');
+    // Reset abort for next call
+    setTimeout(() => { abortRef.current = false; }, 100);
+  };
+
+  // ── Main conversation loop ──
+  const startCall = async () => {
     if (!lead) return;
-
+    abortRef.current = false;
     setCallActive(true);
     setTranscript([]);
     setOutcome(null);
     setError(null);
     setCallStep(0);
 
-    let currentStep = 0;
-    let history: TranscriptMessage[] = [];
+    let step = 0;
+    let lastCustomerText = '';
 
-    // Step 0: Agent greeting (no customer input needed first)
-    while (currentStep !== 99) {
+    while (step !== 99 && !abortRef.current) {
       try {
         // Get agent response
-        const convRes = await axios.post('/api/conversation', {
+        const res = await axios.post('/api/conversation', {
           customer_id: lead.customer_id,
-          step: currentStep,
-          customerResponse: history.length > 0 ? history[history.length - 1]?.text || '' : '',
-          history,
+          step,
+          customerResponse: lastCustomerText,
         });
 
-        const { agentText, nextStep, outcome: callOutcome, isComplete } = convRes.data;
+        if (abortRef.current) break;
+
+        const { agentText, nextStep, outcome: o, isComplete } = res.data;
 
         if (agentText) {
-          await speakAgent(agentText);
-          history.push({ speaker: 'agent', text: agentText, timestamp: Date.now() });
+          await speak(agentText);
         }
 
+        if (abortRef.current) break;
+
         if (isComplete || nextStep === 99) {
-          setOutcome(callOutcome || 'Completed');
+          setOutcome(o || 'Zakończono');
           setCallStep(99);
           break;
         }
 
-        currentStep = nextStep;
-        setCallStep(currentStep);
+        step = nextStep;
+        setCallStep(step);
 
-        // Listen to customer
-        const customerText = await listenToCustomer();
-        if (customerText) {
-          history.push({ speaker: 'customer', text: customerText, timestamp: Date.now() });
-        }
+        // Listen
+        lastCustomerText = await listen();
+
+        if (abortRef.current) break;
 
       } catch (err: any) {
-        console.error('Conversation error:', err);
-        setError('Błąd w trakcie rozmowy: ' + (err.message || 'Unknown error'));
+        if (!abortRef.current) {
+          setError('Błąd rozmowy: ' + (err.message || ''));
+        }
         break;
       }
     }
 
-    setCallActive(false);
-    setStatusText('');
-  }, [lead, speakAgent, listenToCustomer]);
+    if (!abortRef.current) {
+      setCallActive(false);
+      setPhase('idle');
+    }
+  };
 
-  // End call manually
-  const endCall = useCallback(() => {
-    stopRecording();
-    setCallActive(false);
-    setIsAgentSpeaking(false);
-    setIsListening(false);
-    setIsProcessing(false);
-    setStatusText('');
-    if (!outcome) setOutcome('Manually Ended');
-  }, [stopRecording, outcome]);
-
+  // ── RENDER ──
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -263,10 +309,7 @@ export default function LeadDetail() {
   if (!lead) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="text-xl text-gray-900 mb-4">Lead not found</div>
-          <Link href="/leads" className="text-blue-600">← Back to Leads</Link>
-        </div>
+        <Link href="/leads" className="text-blue-600">← Lead not found</Link>
       </div>
     );
   }
@@ -276,162 +319,153 @@ export default function LeadDetail() {
       {/* Header */}
       <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/leads" className="text-blue-600 hover:text-blue-800 text-sm">← Back to Leads</Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">
+          <Link href="/leads" className="text-blue-600 text-sm">← Leads</Link>
+          <h1 className="text-2xl font-bold text-gray-900 mt-1">
             {lead.first_name} {lead.last_name}
           </h1>
-          <div className="text-gray-600">{lead.phone} • {lead.email}</div>
+          <div className="text-gray-500 text-sm">{lead.phone} • {lead.email}</div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left: Lead Info */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold mb-4">📚 Past Programs</h2>
-              <ul className="space-y-2">
-                {lead.past_programs.map((p, i) => (
-                  <li key={i} className="text-gray-700">• {p}</li>
-                ))}
-              </ul>
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+          {/* Left: Info (2 cols) */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-white rounded-lg shadow p-5">
+              <h2 className="font-semibold mb-3">📚 Programy</h2>
+              {lead.past_programs.map((p, i) => (
+                <div key={i} className="text-gray-700 text-sm">• {p}</div>
+              ))}
             </div>
 
-            <div className="bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 rounded-lg p-6">
-              <h2 className="text-lg font-semibold text-blue-900">🎯 Recommended</h2>
-              <div className="text-xl font-bold text-blue-900 mt-1">
-                Early Bird Junior {lead.preferred_destination} 2026
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-5">
+              <h2 className="font-semibold text-blue-900">🎯 Rekomendacja</h2>
+              <div className="text-lg font-bold text-blue-900 mt-1">
+                Junior {lead.preferred_destination} 2026
               </div>
-              <div className="text-sm text-gray-700 mt-1">
-                Cena Early Bird: 4 449 zł (zamiast 4 699 zł)
-              </div>
+              <div className="text-sm text-blue-700">Early Bird: 4 449 zł</div>
             </div>
 
-            {/* Transcript */}
-            {transcript.length > 0 && (
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-lg font-semibold mb-4">📝 Transcript</h2>
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {transcript.map((msg, i) => (
-                    <div key={i} className={`flex ${msg.speaker === 'agent' ? 'justify-start' : 'justify-end'}`}>
-                      <div className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                        msg.speaker === 'agent'
-                          ? 'bg-blue-100 text-blue-900'
-                          : 'bg-green-100 text-green-900'
-                      }`}>
-                        <div className="text-xs font-medium mb-1">
-                          {msg.speaker === 'agent' ? '🤖 Kasia (AI)' : '👤 Klient'}
-                        </div>
-                        <div className="text-sm">{msg.text}</div>
-                      </div>
-                    </div>
-                  ))}
-                  <div ref={transcriptEndRef} />
-                </div>
-              </div>
-            )}
+            {/* Instructions */}
+            <div className="bg-gray-100 rounded-lg p-5 text-sm text-gray-600">
+              <div className="font-medium mb-2">💡 Jak to działa:</div>
+              <ol className="list-decimal list-inside space-y-1">
+                <li>Kliknij <b>"Start Call"</b></li>
+                <li>Kasia się odezwie głosem</li>
+                <li>Mikrofon włączy się automatycznie</li>
+                <li>Mów swoją odpowiedź</li>
+                <li><b>Auto-stop</b> gdy przestaniesz mówić (~2s ciszy)</li>
+                <li>Lub kliknij "Stop" ręcznie</li>
+                <li>Rozmowa: 5-7 wymian</li>
+              </ol>
+            </div>
           </div>
 
-          {/* Right: Call Controls */}
-          <div>
-            <div className="bg-white rounded-lg shadow p-6 sticky top-8">
-              <h2 className="text-lg font-semibold mb-6">🎙️ Voice Call</h2>
+          {/* Right: Call + Transcript (3 cols) */}
+          <div className="lg:col-span-3 space-y-4">
 
-              {/* Voice & Scenario */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Voice</label>
+            {/* Call controls */}
+            <div className="bg-white rounded-lg shadow p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-semibold text-lg">🎙️ Voice Call</h2>
+                {callActive && (
+                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                    phase === 'agent-speaking' ? 'bg-blue-100 text-blue-800' :
+                    phase === 'listening' ? 'bg-red-100 text-red-800' :
+                    phase === 'processing' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {phase === 'agent-speaking' ? '🗣️ Kasia mówi...' :
+                     phase === 'listening' ? `🎤 Nagrywam... (${silenceTimer}s)` :
+                     phase === 'processing' ? '⏳ Przetwarzam...' : ''}
+                  </span>
+                )}
+              </div>
+
+              {/* Voice selector */}
+              <div className="flex gap-3 mb-4">
                 <select
                   value={voice}
                   onChange={(e) => setVoice(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2"
+                  className="border rounded px-3 py-2 text-sm flex-1"
                   disabled={callActive}
                 >
                   <option value="Kasia">Kasia (Female)</option>
                   <option value="Marek">Marek (Male)</option>
                 </select>
+                <div className="border rounded px-3 py-2 text-sm text-gray-500 flex-1">
+                  Paści - Early Bird Junior
+                </div>
               </div>
 
-              <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Scenario</label>
-                <select
-                  value={scenario}
-                  onChange={(e) => setScenario(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2"
-                  disabled={callActive}
-                >
-                  <option value="Paści - Early Bird Junior">Paści - Early Bird Junior</option>
-                </select>
-              </div>
-
-              {/* Call Button */}
+              {/* Buttons */}
               {!callActive ? (
                 <button
-                  onClick={runConversation}
-                  className="w-full py-4 rounded-lg font-semibold text-white text-lg bg-green-600 hover:bg-green-700 transition transform hover:scale-105"
+                  onClick={startCall}
+                  className="w-full py-4 rounded-lg font-bold text-white text-lg bg-green-600 hover:bg-green-700 transition"
                 >
                   🎙️ Start Call
                 </button>
               ) : (
-                <div className="space-y-4">
-                  {/* Status indicator */}
-                  <div className={`text-center py-4 rounded-lg font-semibold text-lg ${
-                    isAgentSpeaking ? 'bg-blue-100 text-blue-800 animate-pulse' :
-                    isListening ? 'bg-red-100 text-red-800 animate-pulse' :
-                    isProcessing ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {statusText || 'Rozmowa w toku...'}
-                  </div>
-
-                  {/* Stop recording button (when listening) */}
-                  {isListening && (
+                <div className="flex gap-3">
+                  {phase === 'listening' && (
                     <button
                       onClick={stopRecording}
-                      className="w-full py-3 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition animate-pulse"
+                      className="flex-1 py-3 rounded-lg font-bold text-white bg-orange-500 hover:bg-orange-600 transition animate-pulse"
                     >
-                      ⏹️ Stop Recording (lub poczekaj 15s)
+                      ⏹️ Stop Recording
                     </button>
                   )}
-
-                  {/* End call button */}
                   <button
                     onClick={endCall}
-                    className="w-full py-3 rounded-lg font-semibold text-red-600 border-2 border-red-600 hover:bg-red-50 transition"
+                    className={`${phase === 'listening' ? 'flex-1' : 'w-full'} py-3 rounded-lg font-bold text-white bg-red-600 hover:bg-red-700 transition`}
                   >
-                    📞 End Call
+                    📞 Zakończ
                   </button>
                 </div>
               )}
 
               {/* Outcome */}
               {outcome && (
-                <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="text-sm font-medium text-green-900">✅ Call Complete</div>
-                  <div className="text-lg font-bold text-green-800 mt-1">{outcome}</div>
-                  <div className="text-sm text-gray-600 mt-2">
-                    Messages: {transcript.length} • Step: {callStep}
-                  </div>
+                <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <span className="font-bold text-green-800">✅ {outcome}</span>
+                  <span className="text-sm text-gray-500 ml-2">({transcript.length} wiadomości)</span>
                 </div>
               )}
 
               {/* Error */}
               {error && (
-                <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <div className="text-sm text-red-800">⚠️ {error}</div>
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+                  ⚠️ {error}
                 </div>
               )}
+            </div>
 
-              {/* Instructions */}
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg text-sm text-gray-600">
-                <div className="font-medium mb-2">💡 Jak to działa:</div>
-                <ol className="list-decimal list-inside space-y-1">
-                  <li>Kliknij "Start Call" - Kasia się przywitania</li>
-                  <li>Po jej wypowiedzi - mikrofon się włączy</li>
-                  <li>Mów swoją odpowiedź (max 15s)</li>
-                  <li>Kliknij "Stop Recording" gdy skończysz</li>
-                  <li>Kasia odpowie na podstawie Twojej odpowiedzi</li>
-                  <li>Rozmowa trwa 5-7 wymian</li>
-                </ol>
+            {/* Transcript */}
+            <div className="bg-white rounded-lg shadow p-5">
+              <h2 className="font-semibold mb-3">📝 Transcript</h2>
+              <div className="space-y-2 max-h-[500px] overflow-y-auto">
+                {transcript.length === 0 && (
+                  <div className="text-gray-400 text-center py-8">
+                    Kliknij "Start Call" aby rozpocząć rozmowę
+                  </div>
+                )}
+                {transcript.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.speaker === 'agent' ? 'justify-start' : 'justify-end'}`}>
+                    <div className={`max-w-[85%] rounded-2xl px-4 py-2 ${
+                      msg.speaker === 'agent'
+                        ? 'bg-blue-100 text-blue-900 rounded-bl-sm'
+                        : 'bg-green-100 text-green-900 rounded-br-sm'
+                    }`}>
+                      <div className="text-[11px] font-medium opacity-60 mb-0.5">
+                        {msg.speaker === 'agent' ? '🤖 Kasia' : '👤 Ty'}
+                      </div>
+                      <div className="text-sm">{msg.text}</div>
+                    </div>
+                  </div>
+                ))}
+                <div ref={transcriptEndRef} />
               </div>
             </div>
           </div>

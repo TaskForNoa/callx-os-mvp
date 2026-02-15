@@ -17,10 +17,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'text required' });
     }
 
-    // ElevenLabs voice IDs - using multilingual voices for Polish
+    // Voices optimized for natural Polish speech
+    // Sarah = warm professional female, Jessica = playful warm female
+    // Roger = casual male, Eric = smooth trustworthy male
     const VOICE_IDS: Record<string, string> = {
-      'Kasia': '21m00Tcm4TlvDq8ikWAM',  // Rachel - multilingual
-      'Marek': 'ErXwobaYiN019PkySvjV',   // Antoni - multilingual
+      'Kasia': 'EXAVITQu4vr4xnSDxMaL',  // Sarah - Mature, Reassuring
+      'Marek': 'cjVigY5qzO86Huf0OWal',   // Eric - Smooth, Trustworthy
     };
 
     const voiceId = VOICE_IDS[voice || 'Kasia'] || VOICE_IDS['Kasia'];
@@ -38,8 +40,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           text,
           model_id: 'eleven_multilingual_v2',
           voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.75,
+            stability: 0.35,          // Lower = more expressive, natural
+            similarity_boost: 0.85,   // Higher = more consistent voice
+            style: 0.3,              // Some style for naturalness
+            use_speaker_boost: true,  // Enhance clarity
           },
         }),
       }
@@ -48,7 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!response.ok) {
       const errorText = await response.text();
       console.error('ElevenLabs error:', errorText);
-      return res.status(500).json({ error: 'ElevenLabs API error', details: errorText });
+      return res.status(500).json({ error: 'ElevenLabs error', details: errorText });
     }
 
     const audioBuffer = await response.arrayBuffer();
