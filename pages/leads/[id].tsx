@@ -175,42 +175,51 @@ export default function LeadDetail() {
 
         recorder.start(250); // collect every 250ms
 
-        // VAD: detect silence
+        // VAD: detect silence using RMS (root mean square) of time-domain data
         let speechDetected = false;
         let silentFrames = 0;
-        const SILENCE_THRESHOLD = 15; // lower = more sensitive
-        const SILENCE_FRAMES_TO_STOP = 8; // ~2 seconds of silence after speech
-        let secondsListening = 0;
+        const SILENCE_FRAMES_TO_STOP = 6; // 6 * 200ms = 1.2s silence after speech
+        let tickCount = 0;
 
         const vadInterval = setInterval(() => {
           if (recorder.state !== 'recording') { clearInterval(vadInterval); return; }
 
-          const data = new Uint8Array(analyser.frequencyBinCount);
-          analyser.getByteFrequencyData(data);
-          const avg = data.reduce((a, b) => a + b, 0) / data.length;
+          // Use time-domain data (waveform) for better voice detection
+          const bufferLength = analyser.fftSize;
+          const data = new Float32Array(bufferLength);
+          analyser.getFloatTimeDomainData(data);
 
-          if (avg > SILENCE_THRESHOLD) {
+          // Calculate RMS (root mean square) - better than frequency average
+          let sumSquares = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            sumSquares += data[i] * data[i];
+          }
+          const rms = Math.sqrt(sumSquares / bufferLength);
+
+          // RMS > 0.01 = speech detected (very sensitive)
+          const isSpeech = rms > 0.01;
+
+          if (isSpeech) {
             speechDetected = true;
             silentFrames = 0;
           } else if (speechDetected) {
             silentFrames++;
             if (silentFrames >= SILENCE_FRAMES_TO_STOP) {
-              // Silence detected after speech → auto-stop
               clearInterval(vadInterval);
               if (recorder.state === 'recording') recorder.stop();
               return;
             }
           }
 
-          secondsListening++;
-          setSilenceTimer(Math.floor(secondsListening / 4)); // ~250ms interval
+          tickCount++;
+          setSilenceTimer(Math.floor(tickCount / 5)); // ~200ms interval → seconds
 
-          // Hard limit: 20 seconds
-          if (secondsListening > 80) { // 80 * 250ms = 20s
+          // Hard limit: 15 seconds
+          if (tickCount > 75) { // 75 * 200ms = 15s
             clearInterval(vadInterval);
             if (recorder.state === 'recording') recorder.stop();
           }
-        }, 250);
+        }, 200);
 
       } catch (err: any) {
         setError('Brak dostępu do mikrofonu. Zezwól w przeglądarce!');
