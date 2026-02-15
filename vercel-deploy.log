@@ -1,0 +1,78 @@
+Vercel CLI 50.17.0
+Loading scopes…
+Searching for existing projects…
+> Auto-detected Project Settings for Next.js
+
+Linked to noas-projects-928df397/callx-vercel (created .vercel)
+> Connecting GitHub repository: https://github.com/TaskForNoa/callx-os-mvp
+Error: Failed to connect TaskForNoa/callx-os-mvp to project. Make sure there aren't any typos and that you have access to the repository if it's private.
+Deploying noas-projects-928df397/callx-vercel
+Uploading [--------------------] (0.0B/95.6KB)
+Uploading [=====---------------] (24.3KB/95.6KB)
+Uploading [=============-------] (63.4KB/95.6KB)
+Uploading [================----] (79.4KB/95.6KB)
+Uploading [====================] (95.6KB/95.6KB)
+Inspect: https://vercel.com/noas-projects-928df397/callx-vercel/7EZQJMUR9YSTgdifdb4SKJeHYeGX [2s]
+Production: https://callx-vercel-cpadba2fn-noas-projects-928df397.vercel.app [2s]
+https://callx-vercel-cpadba2fn-noas-projects-928df397.vercel.appBuilding...
+Building...
+Building: Running build in Washington, D.C., USA (East) – iad1
+Building: Build machine configuration: 2 cores, 8 GB
+Building: Retrieving list of deployment files...
+Building: Previous build caches not available.
+Building: Downloading 20 deployment files...
+Building: Running "vercel build"
+Building: Vercel CLI 50.15.1
+Building: Installing dependencies...
+Building: added 126 packages in 8s
+Building: 29 packages are looking for funding
+Building: run `npm fund` for details
+Building: Detected Next.js version: 14.2.35
+Building: Running "npm run build"
+Building: > callx-vercel@0.1.0 build
+Building: > next build
+Building: Attention: Next.js now collects completely anonymous telemetry regarding usage.
+Building: This information is used to shape Next.js' roadmap and prioritize features.
+Building: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+Building: https://nextjs.org/telemetry
+Building: ▲ Next.js 14.2.35
+Building: Linting and checking validity of types ...
+Building: Creating an optimized production build ...
+Building: ✓ Compiled successfully
+Building: Collecting page data ...
+Building: Generating static pages (0/6) ...
+Building: Generating static pages (1/6)
+Building: Generating static pages (2/6)
+Building: Generating static pages (4/6)
+Building: ✓ Generating static pages (6/6)
+Building: Finalizing page optimization ...
+Building: Collecting build traces ...
+Building: Route (pages)                             Size     First Load JS
+Building: ┌ ○ /                                     1.12 kB         105 kB
+Building: ├   /_app                                 0 B              80 kB
+Building: ├ ○ /404                                  180 B          80.2 kB
+Building: ├ ƒ /api/calls                            0 B              80 kB
+Building: ├ ƒ /api/health                           0 B              80 kB
+Building: ├ ƒ /api/leads                            0 B              80 kB
+Building: ├ ƒ /api/leads/[id]                       0 B              80 kB
+Building: ├ ○ /calls                                1.25 kB         105 kB
+Building: ├ ○ /leads                                1.31 kB         105 kB
+Building: └ ○ /leads/[id]                           2.09 kB         106 kB
+Building: + First Load JS shared by all             83.4 kB
+Building: ├ chunks/framework-64ad27b21261a9ce.js  44.8 kB
+Building: ├ chunks/main-fc56ac81e639fb5e.js       34 kB
+Building: └ other shared chunks (total)           4.49 kB
+Building: ○  (Static)   prerendered as static content
+Building: ƒ  (Dynamic)  server-rendered on demand
+Building: Traced Next.js server files in: 34.181ms
+Building: Created all serverless functions in: 36.38ms
+Building: Collected static files (public/, static/, .next/static): 18.373ms
+Building: Build Completed in /vercel/output [25s]
+Building: Deploying outputs...
+Building: Deployment completed
+Building: Creating build cache...
+[2K[1A[2K[GProduction: https://callx-vercel-cpadba2fn-noas-projects-928df397.vercel.app [40s]
+Completing...
+Aliased: https://callx-vercel.vercel.app [40s]
+Deployed to production. Run `vercel --prod` to overwrite later (https://vercel.link/2F).
+To change the domain or build command, go to https://vercel.com/noas-projects-928df397/callx-vercel/settings
