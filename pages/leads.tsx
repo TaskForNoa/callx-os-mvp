@@ -8,128 +8,80 @@ interface Lead {
   last_name: string;
   phone: string;
   past_programs: string[];
-  last_contact_date: string;
   status: string;
 }
 
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
-    axios.get('/api/leads').then(res => {
-      setLeads(res.data.leads);
+    axios.get('/api/leads').then(r => {
+      setLeads(r.data.leads);
       setLoading(false);
-    }).catch(err => {
-      console.error('Error loading leads:', err);
-      setLoading(false);
-    });
+    }).catch(() => setLoading(false));
   }, []);
 
-  const filteredLeads = leads.filter(lead =>
-    `${lead.first_name} ${lead.last_name}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    lead.phone.includes(searchTerm)
+  const filtered = leads.filter(l =>
+    `${l.first_name} ${l.last_name}`.toLowerCase().includes(search.toLowerCase()) ||
+    l.phone.includes(search)
   );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-xl text-gray-600">Loading leads...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-av-blue-bg">
       {/* Header */}
-      <div className="bg-white border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">← Dashboard</Link>
-            <h1 className="text-2xl font-bold text-gray-900 mt-2">
-              Leads ({filteredLeads.length})
-            </h1>
+      <header className="bg-av-navy text-white">
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-blue-300 hover:text-white text-sm">← Dashboard</Link>
+            <h1 className="text-lg font-bold">Leads ({filtered.length})</h1>
           </div>
-          <div className="w-full md:w-auto">
-            <input
-              type="text"
-              placeholder="🔍 Search by name or phone..."
-              className="border rounded-lg px-4 py-2 w-full md:w-64"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="🔍 Search..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-sm text-white placeholder-blue-300 w-64 focus:outline-none focus:border-av-blue"
+          />
         </div>
-      </div>
+      </header>
 
-      {/* Leads List */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Phone
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Past Programs
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredLeads.map(lead => (
-                  <tr key={lead.customer_id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="font-medium text-gray-900">
-                        {lead.first_name} {lead.last_name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {lead.phone}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      <div className="max-w-xs truncate">
-                        {lead.past_programs.slice(0, 2).join(', ')}
-                        {lead.past_programs.length > 2 && '...'}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                        {lead.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <Link
-                        href={`/leads/${lead.customer_id}`}
-                        className="text-blue-600 hover:text-blue-900 font-medium"
-                      >
-                        View Details →
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <main className="max-w-6xl mx-auto px-6 py-6">
+        {loading ? (
+          <div className="text-center py-20 text-gray-500">Loading...</div>
+        ) : (
+          <div className="grid gap-3">
+            {filtered.map(lead => (
+              <Link
+                key={lead.customer_id}
+                href={`/leads/${lead.customer_id}`}
+                className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-av-blue/10 rounded-full flex items-center justify-center text-av-blue font-bold text-sm">
+                    {lead.first_name[0]}{lead.last_name[0]}
+                  </div>
+                  <div>
+                    <div className="font-semibold text-av-navy">{lead.first_name} {lead.last_name}</div>
+                    <div className="text-gray-500 text-sm">{lead.phone}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="text-right hidden md:block">
+                    <div className="text-xs text-gray-500">{lead.past_programs.length} program(s)</div>
+                    <div className="text-xs text-gray-400">{lead.past_programs[lead.past_programs.length - 1]}</div>
+                  </div>
+                  <span className="px-2 py-1 bg-av-blue/10 text-av-blue text-xs font-medium rounded-full">
+                    {lead.status}
+                  </span>
+                  <span className="text-gray-300 group-hover:text-av-blue">→</span>
+                </div>
+              </Link>
+            ))}
           </div>
-          
-          {filteredLeads.length === 0 && (
-            <div className="text-center py-12 text-gray-500">
-              No leads found matching "{searchTerm}"
-            </div>
-          )}
-        </div>
-      </div>
+        )}
+      </main>
     </div>
   );
 }
