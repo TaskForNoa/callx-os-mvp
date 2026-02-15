@@ -92,7 +92,16 @@ export default function LeadDetail() {
     addMsg('agent', text);
 
     try {
-      const res = await axios.post('/api/voice/synthesize', { text, voice });
+      const controller = new AbortController();
+      // Store controller so endCall can abort the fetch
+      const checkAbort = setInterval(() => {
+        if (abortRef.current) controller.abort();
+      }, 100);
+
+      const res = await axios.post('/api/voice/synthesize', { text, voice }, {
+        signal: controller.signal
+      });
+      clearInterval(checkAbort);
       if (abortRef.current) return;
 
       if (res.data.success && res.data.audio) {
@@ -105,12 +114,23 @@ export default function LeadDetail() {
         await new Promise<void>(resolve => {
           audio.onended = () => { URL.revokeObjectURL(url); resolve(); };
           audio.onerror = () => { URL.revokeObjectURL(url); resolve(); };
-          audio.play().catch(() => resolve());
+          // Check abort during playback
+          const playAbortCheck = setInterval(() => {
+            if (abortRef.current) {
+              clearInterval(playAbortCheck);
+              audio.pause();
+              URL.revokeObjectURL(url);
+              resolve();
+            }
+          }, 100);
+          audio.onended = () => { clearInterval(playAbortCheck); URL.revokeObjectURL(url); resolve(); };
+          audio.onerror = () => { clearInterval(playAbortCheck); URL.revokeObjectURL(url); resolve(); };
+          audio.play().catch(() => { clearInterval(playAbortCheck); resolve(); });
         });
         audioRef.current = null;
       }
     } catch (err: any) {
-      console.error('TTS error:', err);
+      if (!abortRef.current) console.error('TTS error:', err);
     }
   };
 
@@ -182,6 +202,11 @@ export default function LeadDetail() {
         let tickCount = 0;
 
         const vadInterval = setInterval(() => {
+          if (abortRef.current) {
+            clearInterval(vadInterval);
+            if (recorder.state === 'recording') recorder.stop();
+            return;
+          }
           if (recorder.state !== 'recording') { clearInterval(vadInterval); return; }
 
           // Use time-domain data (waveform) for better voice detection
@@ -237,13 +262,19 @@ export default function LeadDetail() {
 
   // ── End call ──
   const endCall = () => {
+    // Set abort flag FIRST
     abortRef.current = true;
+    
+    // Force stop everything
     cleanup();
+    
+    // Force UI reset
     setCallActive(false);
     setPhase('idle');
     if (!outcome) setOutcome('Ręcznie zakończono');
-    // Reset abort for next call
-    setTimeout(() => { abortRef.current = false; }, 100);
+    
+    // Reset abort for next call after a delay
+    setTimeout(() => { abortRef.current = false; }, 500);
   };
 
   // ── Main conversation loop ──
