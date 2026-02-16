@@ -139,17 +139,21 @@ export default function LeadDetail() {
           reader.readAsDataURL(blob);
         } catch { resolve(''); }
       };
-      rec.start(250);
+      // Smaller timeslice slightly reduces the perceived lag on some browsers
+      rec.start(150);
 
-      // Simple VAD (voice activity detection)
-      // Previous fixed threshold caused missed speech on some mics → full 15s wait.
-      // We calibrate a noise floor for ~1s, then use a dynamic threshold.
+      // Improved VAD (voice activity detection)
+      // Issue you saw: the "~1s" stop worked only on the first turn, later turns fell back to max wait.
+      // Root cause: if you start speaking during the initial calibration window, the noise floor gets inflated
+      // → threshold too high → speech not detected → we wait until hard cap.
+      // Fix: calibrate only on low-RMS frames (likely silence), and keep a conservative threshold.
       let spoke = false;
       let silentTicksAfterSpeech = 0;
       let ticks = 0;
-      let floorSum = 0;
-      let floorN = 0;
-      let dynamicThreshold = 0.008; // fallback
+
+      let floor = 0.003; // conservative default
+      let floorSamples = 0;
+      let dynamicThreshold = 0.008;
 
       const vad = setInterval(() => {
         if (abortRef.current) {
@@ -168,13 +172,14 @@ export default function LeadDetail() {
         for (let i = 0; i < d.length; i++) s += d[i] * d[i];
         const rms = Math.sqrt(s / d.length);
 
-        // Calibrate first ~1s (5 ticks)
-        if (ticks < 5) {
-          floorSum += rms;
-          floorN += 1;
-          const floor = floorSum / Math.max(1, floorN);
-          // Threshold: a bit above noise floor
-          dynamicThreshold = Math.max(0.004, floor * 3.5);
+        // Calibrate over ~1.2s but ONLY when it's quiet (so speech doesn't inflate the floor)
+        if (!spoke && ticks < 6) {
+          if (rms < 0.02) {
+            // EMA toward observed quiet rms
+            floor = floor * 0.85 + rms * 0.15;
+            floorSamples += 1;
+          }
+          dynamicThreshold = Math.max(0.004, floor * 3.0);
         }
 
         const isSpeech = rms > dynamicThreshold;
@@ -184,8 +189,8 @@ export default function LeadDetail() {
           silentTicksAfterSpeech = 0;
         } else if (spoke) {
           silentTicksAfterSpeech += 1;
-          // Stop after ~0.8–1.2s of silence after user spoke
-          if (silentTicksAfterSpeech >= 5) {
+          // Stop after ~0.6–0.8s of silence after user spoke
+          if (silentTicksAfterSpeech >= 4) {
             clearInterval(vad);
             if (rec.state === 'recording') rec.stop();
             return;
@@ -195,8 +200,8 @@ export default function LeadDetail() {
         ticks += 1;
         setListenSec(Math.floor(ticks / 5));
 
-        // Hard cap: 8s (instead of 15s) to reduce "waiting" feeling
-        if (ticks > 40) {
+        // Hard cap: 6s (faster turn-taking). If user said nothing, it ends quickly.
+        if (ticks > 30) {
           clearInterval(vad);
           if (rec.state === 'recording') rec.stop();
         }
