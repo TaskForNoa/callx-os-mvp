@@ -1,22 +1,18 @@
 import { useState, useEffect } from 'react';
 import type { ScenarioDefinition } from '../lib/scenarioFlow';
 
-const scenarioIcons: Record<string, string> = {
-  'pasti': '🔄',
-  'new': '📞',
-};
-
-const scenarioColors: Record<string, string> = {
-  'pasti': 'bg-blue-100',
-  'new': 'bg-green-100',
-};
-
 const categoryLabels: Record<string, string> = {
   timing: '⏰ Czas',
   price: '💰 Cena',
   interest: '🤷 Zainteresowanie',
   child: '👦 Dziecko',
+  availability: '📅 Dostępność',
   unknown: '❓ Inne',
+};
+
+const scenarioIcons: Record<string, string> = {
+  'pasti': '🔄',
+  'new': '📞',
 };
 
 export default function Scenarios() {
@@ -25,6 +21,7 @@ export default function Scenarios() {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const [showObjections, setShowObjections] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
   useEffect(() => {
     fetch('/api/scenarios')
@@ -45,27 +42,38 @@ export default function Scenarios() {
     <div className="p-6 max-w-4xl">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-av-navy">Scenariusze</h1>
-        <p className="text-gray-500 text-sm mt-1">Aktualne flow rozmów agenta — odzwierciedla logikę w silniku konwersacji</p>
+        <p className="text-gray-500 text-sm mt-1">Aktualne flow rozmów agenta — na podstawie realnych rozmów</p>
       </div>
 
       {scenarios.map(scenario => (
         <div key={scenario.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
           {/* Header */}
           <button
-            onClick={() => setExpandedId(expandedId === scenario.id ? null : scenario.id)}
+            onClick={() => { setExpandedId(expandedId === scenario.id ? null : scenario.id); setExpandedStep(null); }}
             className="w-full p-5 flex items-center justify-between hover:bg-gray-50 text-left"
           >
             <div className="flex items-center gap-4">
-              <div className={`w-12 h-12 ${scenarioColors[scenario.leadType] || 'bg-gray-100'} rounded-xl flex items-center justify-center text-2xl`}>{scenarioIcons[scenario.leadType] || '📋'}</div>
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">
+                {scenarioIcons[scenario.leadType] || '📋'}
+              </div>
               <div>
                 <div className="font-bold text-av-navy text-lg">{scenario.name}</div>
-                <div className="text-gray-500 text-sm">{scenario.description} • {scenario.steps.length} kroków</div>
+                <div className="text-gray-500 text-sm">{scenario.description}</div>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-xs text-gray-400">{scenario.steps.length} kroków</span>
+                  {scenario.basedOnCalls && (
+                    <span className="text-xs text-blue-500">📞 Na podstawie {scenario.basedOnCalls} rozmów</span>
+                  )}
+                  {scenario.lastUpdated && (
+                    <span className="text-xs text-gray-400">Aktualizacja: {scenario.lastUpdated}</span>
+                  )}
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full mr-1">leadType: {scenario.leadType}</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full">{scenario.leadType}</span>
               <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">AKTYWNY</span>
-              <span className="text-gray-400 text-xl">{expandedId === scenario.id ? '▲' : '▼'}</span>
+              <span className="text-gray-400 text-xl ml-1">{expandedId === scenario.id ? '▲' : '▼'}</span>
             </div>
           </button>
 
@@ -84,11 +92,9 @@ export default function Scenarios() {
                   Flow rozmowy — {scenario.steps.length} kroków
                 </h3>
 
-                {/* Visual flow line */}
                 <div className="space-y-0">
                   {scenario.steps.map((step, i) => (
                     <div key={step.step} className="relative">
-                      {/* Connecting line */}
                       {i < scenario.steps.length - 1 && (
                         <div className="absolute left-6 top-14 bottom-0 w-0.5 bg-gray-200 z-0" />
                       )}
@@ -98,7 +104,6 @@ export default function Scenarios() {
                           onClick={() => setExpandedStep(expandedStep === i ? null : i)}
                           className="w-full px-0 py-2 flex items-start gap-3 hover:bg-gray-50 rounded-lg text-left transition-colors"
                         >
-                          {/* Step number circle */}
                           <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shrink-0 ${
                             expandedStep === i ? 'bg-av-blue text-white' : 'bg-gray-100'
                           }`}>
@@ -114,12 +119,24 @@ export default function Scenarios() {
                         </button>
 
                         {expandedStep === i && (
-                          <div className="ml-15 pl-15 mb-3 ml-[60px]">
+                          <div className="mb-3 ml-[60px] space-y-2">
                             {/* Example script */}
-                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-2">
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                               <div className="text-xs text-blue-500 font-medium mb-1">💬 Przykładowy skrypt:</div>
                               <div className="text-sm text-av-navy leading-relaxed">{step.exampleScript}</div>
                             </div>
+
+                            {/* Real examples from Karolina */}
+                            {step.realExamples && step.realExamples.length > 0 && (
+                              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                <div className="text-xs text-green-600 font-medium mb-1">🎙️ Z realnych rozmów Karoliny:</div>
+                                <ul className="space-y-1">
+                                  {step.realExamples.map((ex, j) => (
+                                    <li key={j} className="text-xs text-green-800 italic">„{ex}"</li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
 
                             {/* Possible outcomes */}
                             <div className="space-y-1">
@@ -160,6 +177,9 @@ export default function Scenarios() {
                           <div className="flex-1">
                             <div className="text-sm font-medium text-red-600">❝ {obj.trigger} ❞</div>
                             <div className="text-sm text-green-700 mt-1">→ {obj.response}</div>
+                            {obj.realExample && (
+                              <div className="text-xs text-gray-400 italic mt-1">🎙️ „{obj.realExample}"</div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -168,11 +188,35 @@ export default function Scenarios() {
                 )}
               </div>
 
+              {/* Notes / Learnings */}
+              {scenario.notes && scenario.notes.length > 0 && (
+                <div className="p-5 border-t border-gray-100">
+                  <button
+                    onClick={() => setShowNotes(!showNotes)}
+                    className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wider hover:text-av-navy"
+                  >
+                    📝 Wnioski z rozmów ({scenario.notes.length})
+                    <span className="text-xs normal-case font-normal">{showNotes ? '▲' : '▼'}</span>
+                  </button>
+
+                  {showNotes && (
+                    <div className="mt-4 space-y-2">
+                      {scenario.notes.map((note, i) => (
+                        <div key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <span className="text-amber-500 shrink-0 mt-0.5">•</span>
+                          {note}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Anti-hallucination note */}
               <div className="px-5 pb-5">
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-                  <strong>⚠️ Zasada zero-hallucination:</strong> Agent podaje TYLKO dane z bazy produktów (products-full.json).
-                  Jeśli brakuje ceny, ratio lub linku → mówi „sprawdzę i wrócę mailowo".
+                  <strong>⚠️ Zero-hallucination:</strong> Agent podaje TYLKO dane z bazy produktów.
+                  Brak ceny/ratio/linku → „sprawdzę i wrócę mailowo".
                 </div>
               </div>
             </div>
@@ -186,7 +230,7 @@ export default function Scenarios() {
           <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-2xl">➕</div>
           <div>
             <div className="font-bold text-gray-400">Nowy scenariusz</div>
-            <div className="text-gray-400 text-sm">Wkrótce — dodawanie własnych scenariuszy</div>
+            <div className="text-gray-400 text-sm">Pojawi się automatycznie gdy dodasz nowy typ rozmowy</div>
           </div>
         </div>
       </div>
