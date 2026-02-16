@@ -226,12 +226,11 @@ export default function LeadDetail() {
     setCallActive(false);
     setPhase('idle');
     if (!outcome) setOutcome('Ręcznie zakończono');
-    setTimeout(() => { abortRef.current = false; }, 500);
   };
 
   const startCall = async () => {
     if (!lead) return;
-    abortRef.current = false;
+    abortRef.current = false;  // reset only when starting new call
     setCallActive(true);
     setTranscript([]);
     setOutcome(null);
