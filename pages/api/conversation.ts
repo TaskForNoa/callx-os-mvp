@@ -29,6 +29,7 @@ type OfferFacts = {
   ratio?: string; terminy?: string; znizki?: string;
   coZawiera?: string; program?: string; cechy?: string;
   url?: string; wariant?: string;
+  terminyDetale?: string; terminyLista?: any[];
 };
 
 function buildOfferFacts(p: any, label: string): OfferFacts {
@@ -40,6 +41,7 @@ function buildOfferFacts(p: any, label: string): OfferFacts {
     ratio: p?.ratio, terminy: p?.terminy, znizki: p?.znizki,
     coZawiera: p?.coZawiera, program: p?.program, cechy: p?.cechy,
     url: p?.url, wariant: p?.wariant,
+    terminyDetale: p?.terminyDetale, terminyLista: p?.terminyLista,
   };
 }
 
@@ -308,7 +310,9 @@ DOPASOWANY PRODUKT Z BAZY WIEDZY:
 - Cechy: ${offer.cechy || 'brak'}
 - Program/trasa: ${offer.program || 'brak'}
 - Co zawiera cena: ${offer.coZawiera || 'brak'}
-- Terminy: ${offer.terminy || 'brak'}
+- Terminy ogólne: ${offer.terminy || 'brak'}
+${offer.terminyDetale ? `- SZCZEGÓŁOWE TERMINY (termin | hotel | miasto wyjazdu):\n${offer.terminyDetale}` : ''}
+${offer.terminyLista ? `- DOSTĘPNE TURNUSY:\n${offer.terminyLista.map((t: any) => `  • ${t.termin} | ${t.hotel} | wyjazd z: ${t.miastoZbiorki} | ${t.dostepnosc}`).join('\n')}` : ''}
 ${stepDef.canRevealPrice ? `- Cena regularna: ${offer.regular ? offer.regular + ' zł' : 'brak'}
 - Cena Early Bird: ${offer.early ? offer.early + ' zł' : 'brak'}
 - Zniżki: ${offer.znizki || 'brak'}` : '- CENA: NIE PODAWAJ — jeszcze nie pora!'}

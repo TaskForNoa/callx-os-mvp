@@ -18,7 +18,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 40+",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "5–19 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-a-2-os-w-pokoju",
@@ -39,7 +40,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 40+",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-b-1-os-w-pokoju",
@@ -60,7 +62,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 40+",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "nowy-jork-toronto-a-2-os-w-pokoju",
@@ -123,7 +126,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 18-40",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "5–19 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "kalifornia-b-1-os-w-pokoju",
@@ -144,7 +148,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 18-40",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "5–19 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-a-2-os-w-pokoju-2",
@@ -165,7 +170,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 18-40",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-b-1-os-w-pokoju-2",
@@ -186,7 +192,8 @@
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Wyjazdy 18-40",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "adult-usa-trip-new-york-trip-4-os-w-pokoju",
@@ -522,7 +529,58 @@
     "ratio": "1 NS : 6 uczestników",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe w Polsce",
-    "wiekGrupa": "Dzieci 7-10"
+    "wiekGrupa": "Dzieci 7-10",
+    "terminyDetale": "28 czerwca–4 lipca 2026 | Wrota Kaszub | wyjazd: Warszawa\n28 czerwca–4 lipca 2026 | Limba Grand | wyjazd: Katowice/Kraków\n5–11 lipca 2026 | Osada Danków | wyjazd: Warszawa\n12–18 lipca 2026 | Lipowy Most | wyjazd: Warszawa\n12–18 lipca 2026 | Bardo | wyjazd: Wrocław\n19–25 lipca 2026 | Lipowy Most | wyjazd: Warszawa\n19–25 lipca 2026 | Wrota Kaszub | wyjazd: Poznań\n2–8 sierpnia 2026 | Wrota Kaszub | wyjazd: Poznań\n9–15 sierpnia 2026 | Chojnik | wyjazd: Wrocław\n16–22 sierpnia 2026 | Lipowy Most | wyjazd: Warszawa",
+    "terminyLista": [
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "12 – 18 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Lipowy Most",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      },
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "12 – 18 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Bardo",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      },
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "19 – 25 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Lipowy Most",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      },
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "09 – 15 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Chojnik",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      },
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "16 – 22 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Lipowy Most",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      },
+      {
+        "program": "Angloville Kids (Polska)",
+        "termin": "23 – 29 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Osada Danków",
+        "linkZapisu": "https://angloville.pl/kids-terminy/"
+      }
+    ]
   },
   {
     "id": "angloville-junior-wakacje-2026",
@@ -543,7 +601,130 @@
     "ratio": "1 NS : 2 (sesje 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe w Polsce",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "22–28 lutego 2026 | Hotel Wawrzyniak | wyjazd: Poznań/Katowice\n28 czerwca–4 lipca 2026 | Osada Danków | wyjazd: Warszawa\n28 czerwca–4 lipca 2026 | Kurpia Arte | wyjazd: Warszawa\n28 czerwca–4 lipca 2026 | Dwór Pomorski | wyjazd: Poznań\n28 czerwca–4 lipca 2026 | Chojnik | wyjazd: Wrocław\n28 czerwca–4 lipca 2026 | Limba Grand | wyjazd: Katowice/Kraków\n28 czerwca–4 lipca 2026 | Willa Tatry | wyjazd: Katowice/Kraków\n5–11 lipca 2026 | Hotel Wawrzyniak | wyjazd: Wrocław\n12–18 lipca 2026 | Hotel Wawrzyniak | wyjazd: Wrocław\n12–18 lipca 2026 | Ameliówka | wyjazd: Warszawa\n12–18 lipca 2026 | Paradiso | wyjazd: Warszawa\n16–22 sierpnia 2026 | Fero Lux | wyjazd: Katowice/Kraków\n16–22 sierpnia 2026 | Hotel Wawrzyniak | wyjazd: Wrocław",
+    "terminyLista": [
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "05 – 11 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "19 – 25 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "02 – 08 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Katowice / Kraków",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "02 – 08 sierpnia",
+        "dostepnosc": "Ostatnie miejsca",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Chojnik",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "27 czerwca – 05 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "18 – 26 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Intensive",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "25 lipca – 02 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "08 – 16 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Intensive",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "15 – 23 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Kraków / Katowice / Wrocław",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "27 czerwca – 04 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Eurotrip – Intensive",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "04 – 11 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Kraków / Wrocław / Katowice",
+        "hotel": "Eurotrip – Intensive",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "08 – 15 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Eurotrip – Standard",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Baltic Trip",
+        "termin": "12 – 18 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/"
+      },
+      {
+        "program": "Angloville Junior Plus Baltic Trip",
+        "termin": "26 lipiec – 01 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/"
+      },
+      {
+        "program": "Angloville Junior Plus Italy Trip",
+        "termin": "18 – 26 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Katowice",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-italy-trip/"
+      }
+    ]
   },
   {
     "id": "angloville-junior-ferie-2026",
@@ -564,7 +745,130 @@
     "ratio": "1 NS : 2 (sesje 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe w Polsce",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "22–28 lutego 2026 | Hotel Wawrzyniak | wyjazd: Poznań/Katowice\n28 czerwca–4 lipca 2026 | Osada Danków | wyjazd: Warszawa\n28 czerwca–4 lipca 2026 | Kurpia Arte | wyjazd: Warszawa\n28 czerwca–4 lipca 2026 | Dwór Pomorski | wyjazd: Poznań\n28 czerwca–4 lipca 2026 | Chojnik | wyjazd: Wrocław\n28 czerwca–4 lipca 2026 | Limba Grand | wyjazd: Katowice/Kraków\n28 czerwca–4 lipca 2026 | Willa Tatry | wyjazd: Katowice/Kraków\n5–11 lipca 2026 | Hotel Wawrzyniak | wyjazd: Wrocław\n12–18 lipca 2026 | Hotel Wawrzyniak | wyjazd: Wrocław\n12–18 lipca 2026 | Ameliówka | wyjazd: Warszawa\n12–18 lipca 2026 | Paradiso | wyjazd: Warszawa\n16–22 sierpnia 2026 | Fero Lux | wyjazd: Katowice/Kraków\n16–22 sierpnia 2026 | Hotel Wawrzyniak | wyjazd: Wrocław",
+    "terminyLista": [
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "05 – 11 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "19 – 25 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "02 – 08 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Katowice / Kraków",
+        "hotel": "Magiczny Zakątek Raszowa",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior (Polska)",
+        "termin": "02 – 08 sierpnia",
+        "dostepnosc": "Ostatnie miejsca",
+        "miastoZbiorki": "Wrocław",
+        "hotel": "Chojnik",
+        "linkZapisu": "https://angloville.pl/junior-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "27 czerwca – 05 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "18 – 26 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Intensive",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "25 lipca – 02 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "08 – 16 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Londyn – Intensive",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Londyn (UK Trip)",
+        "termin": "15 – 23 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Kraków / Katowice / Wrocław",
+        "hotel": "Londyn – Standard",
+        "linkZapisu": "https://angloville.pl/junior-plus-londyn-terminy/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "27 czerwca – 04 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Eurotrip – Intensive",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "04 – 11 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Kraków / Wrocław / Katowice",
+        "hotel": "Eurotrip – Intensive",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Eurotrip",
+        "termin": "08 – 15 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Poznań",
+        "hotel": "Eurotrip – Standard",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/"
+      },
+      {
+        "program": "Angloville Junior Plus Baltic Trip",
+        "termin": "12 – 18 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/"
+      },
+      {
+        "program": "Angloville Junior Plus Baltic Trip",
+        "termin": "26 lipiec – 01 sierpnia",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/"
+      },
+      {
+        "program": "Angloville Junior Plus Italy Trip",
+        "termin": "18 – 26 lipca",
+        "dostepnosc": "Otwarte zapisy",
+        "miastoZbiorki": "Warszawa / Katowice",
+        "hotel": "Różne lokalizacje",
+        "linkZapisu": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-italy-trip/"
+      }
+    ]
   },
   {
     "id": "angielska-wioska-narty-ferie-2026",
@@ -606,7 +910,8 @@
     "ratio": "2 na 1 z NS",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe w Polsce",
-    "wiekGrupa": "Dorośli 18+"
+    "wiekGrupa": "Dorośli 18+",
+    "terminyDetale": "28 czerwca–4 lipca 2026 | Bachledówka | wyjazd: Kraków/Katowice"
   },
   {
     "id": "angloville-family-kids-family",
@@ -627,7 +932,8 @@
     "ratio": "3 na 1 + gry/zabawy",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe w Polsce",
-    "wiekGrupa": "Dzieci 7-10"
+    "wiekGrupa": "Dzieci 7-10",
+    "terminyDetale": "28 czerwca–4 lipca 2026 | Bachledówka | wyjazd: Kraków/Katowice"
   },
   {
     "id": "junior-international-malta-wariant-tygodniowy-wakacje-2026",
@@ -648,7 +954,8 @@
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe za granicą",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "28 czerwca–12 lipca 2026 | Campus Hub | wyjazd: ✈️ Warszawa\n28 czerwca–5 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa\n5–12 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "junior-international-malta-wariant-dwutygodniowy-wakacje-2026",
@@ -669,7 +976,8 @@
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe za granicą",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "28 czerwca–12 lipca 2026 | Campus Hub | wyjazd: ✈️ Warszawa\n28 czerwca–5 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa\n5–12 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "junior-international-malta-ferie-2026",
@@ -690,7 +998,8 @@
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
     "podkategoria": "Obozy językowe za granicą",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "28 czerwca–12 lipca 2026 | Campus Hub | wyjazd: ✈️ Warszawa\n28 czerwca–5 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa\n5–12 lipca 2026 | Bella Vista | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "junior-international-anglia-wakacje-2026",
@@ -732,7 +1041,8 @@
     "ratio": "1 NS : 3 uczestników",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "27 czerwca–5 lipca 2026 | Londyn – Standard | wyjazd: Warszawa/Poznań"
   },
   {
     "id": "junior-plus-londyn-uk-trip-wariant-standard",
@@ -753,7 +1063,8 @@
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "27 czerwca–5 lipca 2026 | Londyn – Standard | wyjazd: Warszawa/Poznań"
   },
   {
     "id": "junior-plus-eurotrip-wariant-standard",
@@ -774,7 +1085,8 @@
     "ratio": "BRAK sesji językowych",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "27 czerwca–4 lipca 2026 | Eurotrip – Intensive | wyjazd: Warszawa/Poznań"
   },
   {
     "id": "junior-plus-eurotrip-wariant-intensive",
@@ -795,7 +1107,8 @@
     "ratio": "1 NS : 3",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "27 czerwca–4 lipca 2026 | Eurotrip – Intensive | wyjazd: Warszawa/Poznań"
   },
   {
     "id": "junior-plus-baltic-trip-wakacje-2026",
@@ -816,7 +1129,8 @@
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "4–11 lipca 2026 | Baltic Trip – Standard | wyjazd: Warszawa"
   },
   {
     "id": "junior-plus-italy-trip-wakacje-2026",
@@ -837,7 +1151,8 @@
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe w Europie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "13–20 lipca 2026 | Italy Trip – Intensive | wyjazd: Warszawa\n20–27 lipca 2026 | Italy Trip – Standard | wyjazd: Warszawa"
   },
   {
     "id": "nowy-jork-tygodniowy-4-os-w-pokoju",
@@ -858,7 +1173,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "19 lipca–2 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n2–9 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "nowy-jork-tygodniowy-2-os-w-pokoju",
@@ -879,7 +1195,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "19 lipca–2 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n2–9 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "nowy-jork-dwutygodniowy-4-os-w-pokoju",
@@ -900,7 +1217,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "19 lipca–2 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n2–9 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "nowy-jork-dwutygodniowy-2-os-w-pokoju",
@@ -921,7 +1239,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "19 lipca–2 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n2–9 sierpnia 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "kalifornia-a-4-os-w-pokoju",
@@ -942,7 +1261,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "5–19 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "kalifornia-b-2-os-w-pokoju",
@@ -963,7 +1283,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "5–19 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "miami-a-4-os-w-pokoju",
@@ -984,7 +1305,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "18–25 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "miami-b-2-os-w-pokoju",
@@ -1005,7 +1327,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "18–25 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-termin-2906-10072026",
@@ -1026,7 +1349,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "japonia-pozostae-terminy",
@@ -1047,7 +1371,8 @@
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
     "podkategoria": "Obozy turystyczno-językowe na świecie",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Młodzież 11-18",
+    "terminyDetale": "29 czerwca–10 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa\n13–24 lipca 2026 | Różne lokalizacje (szczegóły w infopacku) | wyjazd: ✈️ Warszawa"
   },
   {
     "id": "wymiana-do-usa-rok-w-usa-finansowanie-0",
