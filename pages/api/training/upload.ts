@@ -26,7 +26,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const supabase = getSupabaseAdmin();
 
     const buf = Buffer.from(audio, 'base64');
-    const ct = (mimeType && typeof mimeType === 'string' && mimeType.trim()) ? mimeType.trim() : 'application/octet-stream';
+    const guessFromName = (name?: string) => {
+      const n = (name || '').toLowerCase();
+      if (n.endsWith('.wav')) return 'audio/wav';
+      if (n.endsWith('.mp3')) return 'audio/mpeg';
+      if (n.endsWith('.m4a')) return 'audio/mp4';
+      if (n.endsWith('.ogg')) return 'audio/ogg';
+      if (n.endsWith('.webm')) return 'audio/webm';
+      return 'application/octet-stream';
+    };
+
+    let ct = (mimeType && typeof mimeType === 'string' && mimeType.trim()) ? mimeType.trim() : '';
+    if (!ct || ct === 'application/octet-stream') ct = guessFromName(fileName);
+    if (!ct) ct = 'application/octet-stream';
+
     const path = `tmp/${Date.now()}_${safeFileName(fileName || 'upload')}`;
 
     // 1) Upload audio temporarily (private bucket)
@@ -82,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           meta: { deepgram_error: deepgramError, had_upload_error: !!up.error },
         });
 
-      return res.status(500).json({ error: 'Deepgram API error', details: deepgramError });
+      return res.status(500).json({ error: 'Deepgram API error', details: deepgramError, contentType: ct });
     }
 
     // 4) Store transcript text only (if empty, still store an entry for traceability)

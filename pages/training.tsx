@@ -119,10 +119,10 @@ export default function Training() {
           }
           saveFiles([...updated]);
         }
-      } catch {
+      } catch (e: any) {
         if (idx !== -1) {
           updated[idx].status = 'error';
-          updated[idx].transcript = 'Błąd transkrypcji';
+          updated[idx].transcript = e?.message ? `Błąd transkrypcji: ${e.message}` : 'Błąd transkrypcji';
           saveFiles([...updated]);
         }
       }
