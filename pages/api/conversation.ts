@@ -30,6 +30,9 @@ type OfferFacts = {
   coZawiera?: string; program?: string; cechy?: string;
   url?: string; wariant?: string;
   terminyDetale?: string; terminyLista?: any[];
+  wiekGrupa?: string;
+  kategoriaFilter?: string;
+  segment?: string;
 };
 
 function buildOfferFacts(p: any, label: string): OfferFacts {
@@ -42,6 +45,9 @@ function buildOfferFacts(p: any, label: string): OfferFacts {
     coZawiera: p?.coZawiera, program: p?.program, cechy: p?.cechy,
     url: p?.url, wariant: p?.wariant,
     terminyDetale: p?.terminyDetale, terminyLista: p?.terminyLista,
+    wiekGrupa: p?.wiekGrupa,
+    kategoriaFilter: p?.kategoriaFilter,
+    segment: p?.segment,
   };
 }
 
@@ -197,7 +203,7 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
     deduped.push(buildOfferFacts(p, (p as any).name || 'Produkt'));
   }
 
-  return { products: deduped.slice(0, 8), filters: filters.join(' → ') };
+  return { products: deduped.slice(0, 20), filters: filters.join(' → ') };
 }
 
 // ── Step definitions (mirrors scenarioFlow.ts) ──
@@ -369,7 +375,7 @@ function determineNextStep(currentStep: number, customerSaid: string, hasOffer: 
   const t = customerSaid.toLowerCase();
 
   switch (currentStep) {
-    case 0: return { nextStep: 1 };
+    case 0: return { nextStep: 2 };
 
     case 1:
       if (t.includes('nie') && (t.includes('czas') || t.includes('mogę') || t.includes('teraz')))
@@ -430,6 +436,9 @@ function buildSystemPrompt(
 PASUJĄCE PRODUKTY Z BAZY WIEDZY (filtry: ${matchingProducts.filters || 'brak'}):
 ${matchingProducts.products.map((p, i) => {
   let entry = `\n${i + 1}. ${p.label}${p.wariant ? ` (${p.wariant})` : ''}`;
+  if (p.wiekGrupa) entry += `\n   Grupa wiekowa: ${p.wiekGrupa}`;
+  if (p.kategoriaFilter) entry += `\n   Kategoria: ${p.kategoriaFilter}`;
+  if (p.segment) entry += `\n   Segment: ${p.segment}`;
   if (p.ratio) entry += `\n   Stosunek NS: ${p.ratio}`;
   if (p.cechy) entry += `\n   Cechy: ${p.cechy}`;
   if (p.terminy) entry += `\n   Terminy: ${p.terminy}`;
@@ -503,7 +512,7 @@ ${customerContext || ''}
 BEZWZGLĘDNE ZASADY:
 1. Mów po polsku, naturalnie, jak prawdziwa konsultantka telefoniczna.
 2. NIGDY nie wymyślaj danych — podawaj TYLKO fakty z bazy wiedzy powyżej.
-3. Jeśli brakuje danych (cena/termin/link) → powiedz "sprawdzę i wrócę mailowo".
+3. Jeśli brakuje danych (cena/termin/link) LUB klient pyta o coś, czego nie widzisz w PASUJĄCYCH PRODUKTACH → powiedz "nie widzę tego teraz w bazie, sprawdzę i wrócę mailowo".
 4. ${stepDef.canRevealPrice ? 'Możesz podać cenę z bazy.' : 'NIE PODAWAJ CENY — najpierw cechy i wyróżniki programu.'}
 5. Każda wypowiedź MUSI kończyć się pytaniem (chyba że to pożegnanie).
 6. Bądź zwięzła — max 2-3 zdania. To rozmowa telefoniczna, nie wykład.
@@ -558,8 +567,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let outcome: string | undefined;
   if (isFirstTurn) {
     // Generate for current step, but tell frontend the next step to use
-    // Step 0 first turn → generate greeting, advance to step 1 for next call
-    nextStep = currentStep === 0 ? 1 : currentStep;
+    // Step 0 first turn → generate greeting, advance directly to step 2 (skip step 1)
+    nextStep = currentStep === 0 ? 2 : currentStep;
     outcome = undefined;
   } else {
     const result = determineNextStep(currentStep, customerResponse, !!offer);
