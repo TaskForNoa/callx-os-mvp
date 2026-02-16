@@ -134,6 +134,43 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: (p: Produc
               <span className="text-gray-600 ml-2">{product.ratio}</span>
             </div>
           )}
+          {(product as any).terminyLista && (product as any).terminyLista.length > 0 && (
+            <div>
+              <span className="font-semibold text-av-navy">📅 Terminy i hotele:</span>
+              <div className="mt-1 overflow-x-auto">
+                <table className="min-w-full text-xs border border-gray-200 rounded">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="px-2 py-1 text-left">Termin</th>
+                      <th className="px-2 py-1 text-left">Hotel</th>
+                      <th className="px-2 py-1 text-left">Wyjazd z</th>
+                      <th className="px-2 py-1 text-left">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {(product as any).terminyLista.map((t: any, i: number) => (
+                      <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                        <td className="px-2 py-1 font-medium">{t.termin}</td>
+                        <td className="px-2 py-1">{t.hotel}</td>
+                        <td className="px-2 py-1">{t.miastoZbiorki}</td>
+                        <td className="px-2 py-1">
+                          <span className={`px-1.5 py-0.5 rounded text-xs ${t.dostepnosc === 'Ostatnie miejsca' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+                            {t.dostepnosc}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          {!(product as any).terminyLista && (product as any).terminyDetale && (
+            <div>
+              <span className="font-semibold text-av-navy">📅 Terminy:</span>
+              <pre className="text-xs text-gray-600 mt-1 whitespace-pre-wrap">{(product as any).terminyDetale}</pre>
+            </div>
+          )}
           {product.ubezpieczenie && (
             <div>
               <span className="font-semibold text-av-navy">Ubezpieczenie:</span>
