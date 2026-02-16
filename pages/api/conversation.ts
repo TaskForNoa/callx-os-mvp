@@ -215,7 +215,7 @@ function extractCustomerContext(allText: string): string {
 }
 
 // ── LLM call ──
-const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'gpt-4o-mini';
+const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'gpt-4.1';
 
 async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
