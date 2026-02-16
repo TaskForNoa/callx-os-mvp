@@ -215,7 +215,7 @@ function extractCustomerContext(allText: string): string {
 }
 
 // ── LLM call ──
-const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'claude-3-5-haiku-20241022';
+const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'claude-3-haiku-20240307';
 
 // Anthropic requires strictly alternating user/assistant, starting with user
 function sanitizeMessages(msgs: Array<{role: string; content: string}>): Array<{role: string; content: string}> {
