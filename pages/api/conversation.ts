@@ -473,12 +473,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let agentText: string;
   try {
     agentText = await callLLM(systemPrompt, llmMessages);
-  } catch (e) {
-    // Fallback to simple response
-    console.error('LLM failed, using fallback:', e);
+  } catch (e: any) {
+    // Return error details for debugging
+    const errMsg = e?.message || String(e);
+    console.error('LLM failed, using fallback:', errMsg);
     agentText = currentStep === 0
       ? `Dzień dobry, czy rozmawiam z rodzicem ${genitive(lead.childName || lead.first_name)}? Z tej strony ${voiceName}, firma Angloville. Ma Pan/Pani chwilę na rozmowę?`
       : 'Przepraszam, mam chwilowy problem techniczny. Czy mogę zadzwonić ponownie?';
+    // Temporary: include error in response for debugging
+    return res.status(200).json({ agentText, nextStep, error_debug: errMsg, offer: offer ? { productId: offer.productId } : null });
   }
 
   // Simulated email on closing
