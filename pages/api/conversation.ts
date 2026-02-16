@@ -173,7 +173,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
-      model: 'gpt-4.1',
+      model: 'gpt-5.2',
       messages: [
         { role: 'system', content: systemPrompt },
         ...messages,
