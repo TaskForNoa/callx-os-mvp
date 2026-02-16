@@ -138,7 +138,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const voiceId = VOICE_IDS[voice || 'Kasia'] || VOICE_IDS['Kasia'];
 
     const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`,
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceId}?output_format=mp3_22050_32`,
       {
         method: 'POST',
         headers: {
@@ -148,14 +148,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
         body: JSON.stringify({
           text: prepareForTTS(text),
-          model_id: 'eleven_multilingual_v2',
-          // Reduce latency between user turn end → agent speaks
-          optimize_streaming_latency: 3,
+          model_id: 'eleven_turbo_v2_5',  // Turbo = much lower latency (~300ms vs ~1.5s)
           voice_settings: {
-            stability: 0.35,          // Lower = more expressive, natural
-            similarity_boost: 0.85,   // Higher = more consistent voice
-            style: 0.3,              // Some style for naturalness
-            use_speaker_boost: true,  // Enhance clarity
+            stability: 0.4,
+            similarity_boost: 0.85,
+            style: 0.15,                 // Less style = faster generation
+            use_speaker_boost: false,    // Disable for speed
           },
         }),
       }

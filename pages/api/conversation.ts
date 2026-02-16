@@ -152,7 +152,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
     case 0:
       // Step 1: Greeting
       return {
-        text: `Dzień dobry, czy rozmawiam z rodzicem ${childGenitive}? Dzwonię z Angloville, mam na imię ${state.voice || 'Karolina'}.`,
+        text: `Dzień dobry, czy rozmawiam z rodzicem ${childGenitive}? Z tej strony ${state.voice || 'Karolina'}, firma Angloville. Ma Pan/Pani chwilę na rozmowę?`,
         nextStep: 1,
       };
 
@@ -166,8 +166,8 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
         };
       }
       return {
-        text: 'Świetnie! Informuję, że ta rozmowa jest nagrywana w celach jakościowych. Dzwonię, ponieważ widzę, że Państwa dziecko uczestniczyło wcześniej w naszych programach.',
-        nextStep: 2,
+        text: `Świetnie! Dzwonię, ponieważ widzę, że ${childName} uczestniczył wcześniej w naszych programach. Ostatnio na ${lastProgram}. Czy dziecku się podobało?`,
+        nextStep: 3, // skip step 2, go directly to opinion
       };
 
     case 2:
@@ -193,18 +193,18 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
       }
       if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie')) {
         return {
-          text: `To wspaniale! Czy byliby Państwo zainteresowani tym, żebym dobrał(a) konkretny wyjazd na sezon 2026? ${offer ? `Wstępnie pasuje ${offer.label}.` : ''} Jeśli czegoś nie będę mieć w bazie, sprawdzę i wrócę mailowo.`,
+          text: `To fantastycznie! Mamy na sezon 2026 kilka opcji. ${offer ? `Wstępnie pasowałby ${offer.label}.` : ''} Czy interesuje Państwa bardziej opcja w Polsce, czy zagraniczna?`,
           nextStep: 4,
           offerUsed: offer || null,
         };
       } else if (customerSaid.includes('nie') || customerSaid.includes('średnio')) {
         return {
-          text: 'Rozumiem. Czy mogę zapytać, co moglibyśmy poprawić? To nam bardzo pomoże. A przy okazji: jaki kierunek byłby dla Państwa ciekawszy w 2026 (Polska / Malta / UK / inne)?',
+          text: 'Rozumiem. Czy mogę zapytać, co moglibyśmy poprawić? A jaki kierunek byłby ciekawszy — Polska, Malta, czy może Anglia?',
           nextStep: 4,
         };
       }
       return {
-        text: `Mamy ofertę na sezon 2026. Czy mogę zadać 2 krótkie pytania, żeby dobrać najlepszy wariant? Jeśli jakiejś informacji nie mam w bazie, sprawdzę i wrócę mailowo.`,
+        text: `Mamy ofertę na sezon 2026. Żeby dobrze dopasować — czy szukają Państwo wyjazdu w Polsce czy za granicą?`,
         nextStep: 4,
         offerUsed: offer || null,
       };
@@ -213,13 +213,12 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
       // Step 5: Listen + respond
       // IMPORTANT: no hallucinations. We can only cite facts we have in the knowledge base.
       // If we don't have facts (price/ratio/etc.), ask clarifying questions and promise a human follow-up.
-      const askClarify = (missing: string) => ({
-        text: `Jasne — żeby dobrze dopasować propozycję, dopytam o jedną rzecz: ${missing}. Jeśli nie będę mieć tej informacji w systemie, sprawdzę i wrócę do Państwa mailowo z konsultantem.`,
-        nextStep: 5,
-      });
-
       if (!offer) {
-        return { ...askClarify('czy interesuje Państwa wyjazd w Polsce czy zagranicą (np. Malta/UK) i w jakim wieku jest dziecko?'), offerUsed: null };
+        return {
+          text: 'Żeby dobrze dopasować — czy interesuje Państwa wyjazd w Polsce czy za granicą? I w jakim wieku jest dziecko?',
+          nextStep: 4,
+          offerUsed: null,
+        };
       }
 
       const priceLine = offerPrice != null
@@ -307,15 +306,15 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
 
     case 6:
       // Second try (alternative offer)
-      if (customerSaid.includes('tak') || customerSaid.includes('malta') || customerSaid.includes('trip')) {
+      if (customerSaid.includes('tak') || customerSaid.includes('malta') || customerSaid.includes('trip') || customerSaid.includes('polska') || customerSaid.includes('anglia')) {
         return {
-          text: 'Świetnie! Wyślę Państwu informacje o dostępnych programach. Dziękuję za rozmowę!',
-          nextStep: 99,
+          text: 'Świetnie! Sprawdzę dostępne warianty i wyślę mailem. Czy mogę potwierdzić adres email, który mam w systemie?',
+          nextStep: 5,
           outcome: 'Alternative Interest',
         };
       }
       return {
-        text: 'Rozumiem. Dziękuję bardzo za rozmowę i poświęcony czas. Gdyby zmienili Państwo zdanie, zapraszamy na angloville.pl. Miłego dnia!',
+        text: 'Rozumiem. Dziękuję bardzo za rozmowę i poświęcony czas. Czy mogę ewentualnie zadzwonić za jakiś czas z nowymi propozycjami?',
         nextStep: 99,
         outcome: 'Not Interested',
       };
