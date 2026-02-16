@@ -8,6 +8,7 @@ const nav = [
   { href: '/calls', label: 'Połączenia', icon: '📋' },
   { href: '/scenarios', label: 'Scenariusze', icon: '🎬' },
   { href: '/products', label: 'Produkty', icon: '🏷️' },
+  { href: '/training', label: 'Trening', icon: '🎓' },
 ];
 
 export default function Layout({ children }: { children: ReactNode }) {

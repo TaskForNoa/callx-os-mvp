@@ -195,8 +195,8 @@ export default function LeadDetail() {
           silentTicksAfterSpeech = 0;
         } else if (spoke) {
           silentTicksAfterSpeech += 1;
-          // Stop after ~0.6–0.8s of silence after user spoke
-          if (silentTicksAfterSpeech >= 4) {
+          // Stop after ~0.4–0.6s of silence after user spoke (faster turn-taking)
+          if (silentTicksAfterSpeech >= 3) {
             clearInterval(vad);
             if (rec.state === 'recording') rec.stop();
             return;

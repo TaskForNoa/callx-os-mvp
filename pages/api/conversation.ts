@@ -29,6 +29,29 @@ async function retrieveRAGContext(query: string, limit = 3): Promise<string[]> {
   }
 }
 
+// Polish name declension — genitive (dopełniacz) for "rodzicem [kogo?]"
+const GENITIVE: Record<string, string> = {
+  // Male child names
+  'Kacper': 'Kacpra', 'Bartek': 'Bartka', 'Filip': 'Filipa', 'Adam': 'Adama',
+  'Szymon': 'Szymona', 'Mateusz': 'Mateusza',
+  // Female child names
+  'Zosia': 'Zosi', 'Ola': 'Oli', 'Maja': 'Mai', 'Hania': 'Hani',
+  'Julia': 'Julii', 'Alicja': 'Alicji',
+  // Parent first names (in case used)
+  'Jan': 'Jana', 'Anna': 'Anny', 'Piotr': 'Piotra', 'Ewa': 'Ewy',
+  'Marek': 'Marka', 'Katarzyna': 'Katarzyny', 'Tomasz': 'Tomasza',
+  'Magdalena': 'Magdaleny', 'Michał': 'Michała', 'Agnieszka': 'Agnieszki',
+  'Robert': 'Roberta', 'Monika': 'Moniki',
+};
+
+function genitive(name: string): string {
+  if (GENITIVE[name]) return GENITIVE[name];
+  // Simple heuristic for common Polish endings
+  if (name.endsWith('a')) return name.slice(0, -1) + 'y';
+  if (name.endsWith('ek')) return name.slice(0, -2) + 'ka';
+  return name + 'a'; // default masculine
+}
+
 interface ConversationState {
   step: number;
   customerResponse: string;
@@ -117,7 +140,9 @@ function pickOfferForDestination(destinationRaw: string): OfferFacts | null {
 function getAgentResponse(state: ConversationState): { text: string; nextStep: number; outcome?: string; offerUsed?: OfferFacts | null; emailSecondary?: string | null } {
   const lead = state.leadData;
   const customerSaid = (state.customerResponse || '').toLowerCase();
-  const name = lead.first_name;
+  const parentName = lead.first_name;
+  const childName = lead.childName || lead.first_name;
+  const childGenitive = genitive(childName);
   const lastProgram = lead.past_programs[lead.past_programs.length - 1];
   const destination = lead.preferred_destination;
   const offer = pickOfferForDestination(destination);
@@ -127,7 +152,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
     case 0:
       // Step 1: Greeting
       return {
-        text: `Dzień dobry, czy rozmawiam z rodzicem ${name}? Dzwonię z Angloville, mam na imię ${state.voice || 'Karolina'}.`,
+        text: `Dzień dobry, czy rozmawiam z rodzicem ${childGenitive}? Dzwonię z Angloville, mam na imię ${state.voice || 'Karolina'}.`,
         nextStep: 1,
       };
 
@@ -337,10 +362,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   // RAG: retrieve similar training fragments when customer responds
+  // NOTE: RAG is disabled until embeddings are generated (avoids ~500ms latency per turn)
   let ragContext: string[] = [];
-  if (customerResponse && customerResponse.trim()) {
-    ragContext = await retrieveRAGContext(customerResponse, 3);
-  }
+  // if (customerResponse && customerResponse.trim()) {
+  //   ragContext = await retrieveRAGContext(customerResponse, 3);
+  // }
 
   const response = getAgentResponse(state);
 
