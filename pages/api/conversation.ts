@@ -1,584 +1,404 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import leadsData from '../../data/mock-leads.json';
 import productsData from '../../data/products-full.json';
-import { getEmbedding } from '../../lib/embeddings';
-import { getSupabaseAdmin } from '../../lib/supabaseAdmin';
 
-// Conversation state machine
-// 7-step flow: greeting → recording info → past program → interest → listen → offer → outcome
-
-// RAG: retrieve similar training fragments for context
-async function retrieveRAGContext(query: string, limit = 3): Promise<string[]> {
-  try {
-    const key = process.env.OPENAI_API_KEY;
-    const sbUrl = process.env.SUPABASE_URL;
-    const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!key || !sbUrl || !sbKey) return [];
-
-    const embedding = await getEmbedding(query);
-    const supabase = getSupabaseAdmin();
-    const { data } = await supabase.rpc('match_training_chunks', {
-      query_embedding: JSON.stringify(embedding),
-      match_threshold: 0.35,
-      match_count: limit,
-    });
-    return (data || []).map((r: any) => r.chunk_text);
-  } catch {
-    // RAG is best-effort — don't break conversation if it fails
-    return [];
-  }
-}
-
-// Polish name declension — genitive (dopełniacz) for "rodzicem [kogo?]"
+// ── Polish name declension — genitive ──
 const GENITIVE: Record<string, string> = {
-  // Male child names
   'Kacper': 'Kacpra', 'Bartek': 'Bartka', 'Filip': 'Filipa', 'Adam': 'Adama',
   'Szymon': 'Szymona', 'Mateusz': 'Mateusza',
-  // Female child names
   'Zosia': 'Zosi', 'Ola': 'Oli', 'Maja': 'Mai', 'Hania': 'Hani',
   'Julia': 'Julii', 'Alicja': 'Alicji',
-  // Parent first names (in case used)
   'Jan': 'Jana', 'Anna': 'Anny', 'Piotr': 'Piotra', 'Ewa': 'Ewy',
   'Marek': 'Marka', 'Katarzyna': 'Katarzyny', 'Tomasz': 'Tomasza',
   'Magdalena': 'Magdaleny', 'Michał': 'Michała', 'Agnieszka': 'Agnieszki',
   'Robert': 'Roberta', 'Monika': 'Moniki',
 };
-
 function genitive(name: string): string {
   if (GENITIVE[name]) return GENITIVE[name];
-  // Simple heuristic for common Polish endings
   if (name.endsWith('a')) return name.slice(0, -1) + 'y';
   if (name.endsWith('ek')) return name.slice(0, -2) + 'ka';
-  return name + 'a'; // default masculine
+  return name + 'a';
 }
 
-interface ConversationState {
-  step: number;
-  customerResponse: string;
-  leadData: any;
-  history: Array<{ speaker: string; text: string }>;
-  voice?: string;
-}
-
+// ── Types ──
 type Product = any;
 
 type OfferFacts = {
-  productId: string;
-  label: string;
-  regular: number | null;
-  early: number | null;
-  savings: number | null;
-  ratio?: string;
-  terminy?: string;
-  znizki?: string;
-  coZawiera?: string;
-  program?: string;
-  cechy?: string;
-  url?: string;
-  wariant?: string;
+  productId: string; label: string;
+  regular: number | null; early: number | null; savings: number | null;
+  ratio?: string; terminy?: string; znizki?: string;
+  coZawiera?: string; program?: string; cechy?: string;
+  url?: string; wariant?: string;
 };
-
-function formatPrice(price: number | null): string {
-  if (price == null) return '—';
-  return price.toLocaleString('pl-PL') + ' zł';
-}
 
 function buildOfferFacts(p: any, label: string): OfferFacts {
   const regular = p?.cenaRegularna ?? null;
   const early = p?.cenaZnizka ?? null;
-  const savings = (regular != null && early != null) ? (regular - early) : null;
   return {
-    productId: p?.id || p?.name || label,
-    label,
-    regular,
-    early,
-    savings,
-    ratio: p?.ratio,
-    terminy: p?.terminy,
-    znizki: p?.znizki,
-    coZawiera: p?.coZawiera,
-    program: p?.program,
-    cechy: p?.cechy,
-    url: p?.url,
-    wariant: p?.wariant,
+    productId: p?.id || p?.name || label, label, regular, early,
+    savings: (regular != null && early != null) ? (regular - early) : null,
+    ratio: p?.ratio, terminy: p?.terminy, znizki: p?.znizki,
+    coZawiera: p?.coZawiera, program: p?.program, cechy: p?.cechy,
+    url: p?.url, wariant: p?.wariant,
   };
 }
 
-function buildPriceLine(offer: OfferFacts): string {
-  const offerPrice = offer.early ?? offer.regular ?? null;
-  if (offerPrice == null) return 'Nie mam w bazie aktualnej ceny — sprawdzę i wrócę mailowo.';
-  if (offer.early != null && offer.regular != null && offer.early < offer.regular) {
-    return `Cena Early Bird to ${formatPrice(offer.early)} zamiast ${formatPrice(offer.regular)}${offer.savings != null ? ` (oszczędność ${formatPrice(offer.savings)})` : ''}.`;
-  }
-  return `Cena to ${formatPrice(offerPrice)}.`;
-}
-
-function pickOfferForDestination(destinationRaw: string): OfferFacts | null {
-  const dest = (destinationRaw || '').toLowerCase();
+// ── Product matching from conversation context ──
+function pickOfferFromConversation(allText: string): OfferFacts | null {
+  const t = allText.toLowerCase();
   const products = productsData as Product[];
-
-  // Helpers
-  const pick = (filterFn: (p: Product) => boolean) => {
-    const candidates = products.filter(filterFn);
-    // Prefer ones with Early Bird if present
-    candidates.sort((a, b) => {
-      const ae = a.cenaZnizka != null ? 0 : 1;
-      const be = b.cenaZnizka != null ? 0 : 1;
-      return ae - be;
-    });
-    return candidates[0] || null;
+  const pick = (fn: (p: Product) => boolean) => {
+    const c = products.filter(fn);
+    c.sort((a, b) => (a.cenaZnizka != null ? 0 : 1) - (b.cenaZnizka != null ? 0 : 1));
+    return c[0] || null;
   };
 
-  if (dest.includes('malta')) {
-    const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta') && (p.wariant || '').toLowerCase().includes('tygodniowy'))
-      || pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
-    if (!p) return null;
-    return buildOfferFacts(p, 'Junior International – Malta');
-  }
-
-  if (dest.includes('anglia') || dest.includes('uk') || dest.includes('wielka bryt')) {
-    const p = pick(p => (p.name || '').includes('Junior International') && ((p.name || '').includes('Anglia') || (p.name || '').includes('UK')));
-    if (!p) return null;
-    return buildOfferFacts(p, p.name || 'Junior International – Anglia');
-  }
-
-  // Default: Junior PL (Wakacje)
-  const p = pick(p => (p.name || '') === 'Angloville Junior' && (p.wariant || '').toLowerCase().includes('wakacje'))
-    || pick(p => (p.name || '') === 'Angloville Junior');
-
-  if (!p) return null;
-  return buildOfferFacts(p, 'Angloville Junior (Polska)');
-}
-
-// ── Detect product from full conversation context ──
-function pickOfferFromConversation(customerSaid: string, history: Array<{ speaker: string; text: string }>): OfferFacts | null {
-  const allCustomerText = history
-    .filter(h => h.speaker === 'customer')
-    .map(h => h.text)
-    .concat([customerSaid])
-    .join(' ')
-    .toLowerCase();
-
-  const products = productsData as Product[];
-  const pick = (filterFn: (p: Product) => boolean) => {
-    const candidates = products.filter(filterFn);
-    candidates.sort((a, b) => (a.cenaZnizka != null ? 0 : 1) - (b.cenaZnizka != null ? 0 : 1));
-    return candidates[0] || null;
-  };
-
-  if (allCustomerText.includes('malta')) {
+  if (t.includes('malta')) {
     const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
     if (p) return buildOfferFacts(p, 'Junior International – Malta');
   }
-  if (allCustomerText.includes('anglia') || allCustomerText.includes('uk') || allCustomerText.includes('londyn')) {
+  if (t.includes('anglia') || t.includes('uk') || t.includes('londyn')) {
     const p = pick(p => (p.name || '').includes('Junior International') && ((p.name || '').includes('Anglia') || (p.name || '').includes('UK')));
     if (p) return buildOfferFacts(p, p.name || 'Junior International – Anglia');
   }
-  if (allCustomerText.includes('narc') || allCustomerText.includes('ski') || allCustomerText.includes('stok')) {
-    const p = pick(p => (p.name || '').toLowerCase().includes('ski') || (p.name || '').toLowerCase().includes('narc'));
+  if (t.includes('narc') || t.includes('ski') || t.includes('stok')) {
+    const p = pick(p => (p.name || '').toLowerCase().includes('ski'));
     if (p) return buildOfferFacts(p, p.name || 'Junior SKI');
   }
-  if (allCustomerText.includes('dorośl') || allCustomerText.includes('dla siebie') || allCustomerText.includes('adult')) {
+  if (t.includes('dorośl') || t.includes('dla siebie') || t.includes('adult')) {
     const p = pick(p => (p.name || '').includes('Adult') || (p.name || '').includes('Angielska Wioska'));
     if (p) return buildOfferFacts(p, p.name || 'Program dla dorosłych');
   }
-  if (allCustomerText.includes('kids') || allCustomerText.match(/\b[7-9]\s*(lat|rok)/)) {
+  if (t.includes('kids') || t.match(/\b[7-9]\s*(lat|rok)/)) {
     const p = pick(p => (p.name || '').includes('Kids'));
     if (p) return buildOfferFacts(p, p.name || 'Angloville Kids');
   }
-  if (allCustomerText.includes('zagrani') || allCustomerText.includes('za granic')) {
+  if (t.includes('zagrani') || t.includes('za granic')) {
     const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
     if (p) return buildOfferFacts(p, 'Junior International – Malta');
   }
-  if (allCustomerText.includes('polsk') || allCustomerText.includes('w kraju') || allCustomerText.includes('tradycyj') || allCustomerText.includes('językow')) {
+  if (t.includes('polsk') || t.includes('w kraju') || t.includes('tradycyj') || t.includes('językow')) {
     const p = pick(p => (p.name || '') === 'Angloville Junior' && (p.wariant || '').toLowerCase().includes('wakacje'))
       || pick(p => (p.name || '') === 'Angloville Junior');
     if (p) return buildOfferFacts(p, 'Angloville Junior (Polska)');
   }
-
   return null;
 }
 
-// ════════════════════════════════════════════════════════════════
-// CONVERSATION STATE MACHINE
-// Follows scenarioFlow.ts exactly:
-//   Step 0: Powitanie + identyfikacja
-//   Step 1: Rozpoznanie potrzeb (wiek, województwo, poziom, preferencje)
-//   Step 2: Prezentacja programu (opis formatu, 40+20 NS, sesje 2:1 — BEZ ceny)
-//   Step 3: Cena + dostępność (Early Bird, raty, ostatnie miejsca)
-//   Step 4: Rezerwacja lub wysyłka maila
-//   Step 5: Zamknięcie + follow-up
-// ════════════════════════════════════════════════════════════════
+function pickOfferForDestination(dest: string): OfferFacts | null {
+  return pickOfferFromConversation(dest);
+}
 
-function getAgentResponse(state: ConversationState): { text: string; nextStep: number; outcome?: string; offerUsed?: OfferFacts | null; emailSecondary?: string | null } {
-  const lead = state.leadData;
-  const customerSaid = (state.customerResponse || '').toLowerCase();
-  const childName = lead.childName || lead.first_name;
-  const childGenitive = genitive(childName);
-  const lastProgram = lead.past_programs[lead.past_programs.length - 1];
+// ── Step definitions (mirrors scenarioFlow.ts) ──
+interface StepDef {
+  step: number;
+  name: string;
+  goal: string;
+  rules: string[];
+  canRevealPrice: boolean;
+  isTerminal?: boolean;
+}
 
-  switch (state.step) {
+const STEPS: StepDef[] = [
+  {
+    step: 0, name: 'Powitanie',
+    goal: 'Przedstaw się jako [voice] z Angloville. Potwierdź tożsamość (rodzic [childGenitive]). Zapytaj czy ma chwilę na rozmowę.',
+    rules: ['Ciepły, profesjonalny ton', 'Krótko — max 2 zdania + pytanie'],
+    canRevealPrice: false,
+  },
+  {
+    step: 1, name: 'Rozpoznanie potrzeb',
+    goal: 'Nawiąż do uczestnictwa dziecka w programach (ostatnio: [lastProgram]). Zapytaj jak się podobało. Ustal preferencje: Polska vs zagranica, wiek dziecka, narty/język.',
+    rules: ['Nie podawaj ceny', 'Pytaj o preferencje', 'Jeśli klient nie ma czasu → zaproponuj callback i zakończ'],
+    canRevealPrice: false,
+  },
+  {
+    step: 2, name: 'Prezentacja programu',
+    goal: 'Przedstaw dopasowany program z bazy wiedzy. Opisz metodę Angloville, stosunek NS do uczestników, format, lokalizację, plan programu. Na końcu zapytaj czy chce poznać cenę.',
+    rules: [
+      'NIE podawaj ceny — najpierw cechy i wyróżniki',
+      'Opisz metodę Angloville (sesje z native speakerami, nauka przez zabawę)',
+      'Podaj stosunek NS do uczestników z danych produktu',
+      'Jeśli program turystyczny — opisz trasę i miejsca',
+      'Jeśli językowy — opisz sesje 2:1, karaoke, talent show, 70h zanurzenia',
+      'Jeśli nie udało się dopasować programu — dopytaj o preferencje',
+    ],
+    canRevealPrice: false,
+  },
+  {
+    step: 3, name: 'Cena i dostępność',
+    goal: 'Podaj cenę (Early Bird jeśli jest), raty 0%, zniżki dla powracających. Podkreśl ograniczoną dostępność. Zapytaj czy wysłać szczegóły mailem.',
+    rules: [
+      'Podawaj cenę TYLKO z bazy wiedzy — jeśli brak → "sprawdzę i wrócę mailowo"',
+      'Wspomnij o ratach 0% (2-5 rat)',
+      'Wspomnij o zniżce 150 zł dla powracających',
+      '"Ostatnie miejsca" — buduj pilność',
+    ],
+    canRevealPrice: true,
+  },
+  {
+    step: 4, name: 'Rezerwacja lub wysyłka maila',
+    goal: 'Jeśli klient chce — potwierdź email i wyślij szczegóły. Jeśli się waha — zaproponuj wysyłkę maila + follow-up za kilka dni.',
+    rules: [
+      'Mam email klienta: [primaryEmail]',
+      'Zapytaj czy email jest aktualny',
+      'Nigdy nie nadpisuj primary email — można dodać secondary',
+      'Jeśli "za drogo" → raty, zniżki',
+      'Jeśli "muszę pomyśleć" → wyślij maila i umów callback',
+    ],
+    canRevealPrice: true,
+  },
+  {
+    step: 5, name: 'Zamknięcie',
+    goal: 'Potwierdź email i wyślij. Pożegnaj się ciepło. Zostaw otwarte drzwi na kontakt.',
+    rules: ['Krótko', 'Zachęć do kontaktu telefonicznego', 'Miłego dnia!'],
+    canRevealPrice: true,
+    isTerminal: true,
+  },
+];
 
-    // ══ STEP 0: Powitanie + identyfikacja ══
-    // Cel: przedstawić się, potwierdzić tożsamość, zapytać o dostępność
-    case 0:
-      return {
-        text: `Dzień dobry, czy rozmawiam z rodzicem ${childGenitive}? Z tej strony ${state.voice || 'Karolina'}, firma Angloville, programy językowe. Ma Pan/Pani teraz chwilę na rozmowę?`,
-        nextStep: 1,
-      };
+// ── LLM call ──
+async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY not set');
 
-    // ══ STEP 1: Rozpoznanie potrzeb ══
-    // Cel: ustalić kluczowe dane — kontekst historyczny + preferencje
-    // Łączymy: potwierdzenie dostępności → nawiązanie do historii → pytanie o potrzeby
-    case 1: {
-      // Klient nie ma czasu
-      if (customerSaid.includes('nie') && (customerSaid.includes('czas') || customerSaid.includes('mogę') || customerSaid.includes('teraz'))) {
-        return {
-          text: 'Rozumiem, przepraszam za kłopot. Kiedy mogłabym zadzwonić ponownie?',
-          nextStep: 99,
-          outcome: 'Callback Requested',
-        };
-      }
-      // Ma czas → nawiązanie do historii + pytanie o potrzeby
-      return {
-        text: `Dzwonię, ponieważ widzę, że ${childName} uczestniczył w naszych programach — ostatnio na ${lastProgram}. Jak dziecku się podobało? I czy szukają Państwo czegoś na sezon 2026 — w Polsce, czy może za granicą?`,
-        nextStep: 2,
-      };
-    }
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages,
+      ],
+      temperature: 0.7,
+      max_tokens: 300,
+    }),
+  });
 
-    // ══ STEP 2: Prezentacja programu ══
-    // Cel: opisać cechy i wyróżniki dopasowanego programu.
-    // Metoda Angloville, stosunek NS:uczestników, lokalizacja, plan programu.
-    // NIE podawać ceny — podajemy dopiero na pytanie klienta!
-    case 2: {
-      const offer = pickOfferFromConversation(customerSaid, state.history);
+  if (!res.ok) {
+    const err = await res.text();
+    console.error('LLM error:', err);
+    throw new Error('LLM call failed');
+  }
 
-      if (!customerSaid.trim()) {
-        return {
-          text: 'Czy szukają Państwo wyjazdu w Polsce, czy za granicą? I ile lat ma dziecko?',
-          nextStep: 2,
-        };
-      }
+  const data = await res.json();
+  return (data.choices?.[0]?.message?.content || '').trim();
+}
 
-      // Klient dał wystarczająco info → prezentujemy program (BEZ ceny)
-      if (offer) {
-        // Build rich description from KB fields
-        const ratioDesc = offer.ratio
-          ? `Program opiera się na metodzie Angloville — stosunek native speakerów do uczestników to ${offer.ratio}.`
-          : 'Program opiera się na metodzie Angloville, gdzie na dwóch polskich uczestników przypada jeden native speaker.';
+// ── Determine next step based on conversation ──
+function determineNextStep(currentStep: number, customerSaid: string, hasOffer: boolean): { nextStep: number; outcome?: string } {
+  const t = customerSaid.toLowerCase();
 
-        // Check if it's a tourist program (no language sessions)
-        const isTourist = offer.ratio && (offer.ratio.toLowerCase().includes('brak sesji') || offer.ratio.toLowerCase().includes('pilot'));
+  switch (currentStep) {
+    case 0: return { nextStep: 1 };
 
-        let programDesc = '';
-        if (offer.coZawiera) {
-          programDesc = ` W programie: ${offer.coZawiera}.`;
-        }
+    case 1:
+      if (t.includes('nie') && (t.includes('czas') || t.includes('mogę') || t.includes('teraz')))
+        return { nextStep: 99, outcome: 'Callback Requested' };
+      return { nextStep: 2 };
 
-        let presentation: string;
-        if (isTourist) {
-          // Tourist program — focus on destinations and experience
-          presentation = `Polecam ${offer.label}. To wyjazd turystyczno-językowy${offer.wariant ? ` (${offer.wariant})` : ''}.${programDesc} ${ratioDesc} Angielski w praktyce — w naturalnych sytuacjach podczas zwiedzania.`;
-        } else {
-          // Language program — focus on Angloville method
-          presentation = `Polecam ${offer.label}. ${ratioDesc} Nauka odbywa się przez zabawę — sesje językowe, karaoke, talent show, tańce irlandzkie. W ciągu tygodnia to aż 70 godzin zanurzenia w angielskim. Bez zeszytów, bez książek — dzieci uczą się tak, jak nauczyły się polskiego.${programDesc}`;
-        }
+    case 2:
+      // Stay on 2 if no product matched yet, advance to 3 if customer wants price
+      if (t.includes('cenę') || t.includes('ile') || t.includes('kosztuje') || t.includes('tak'))
+        return { nextStep: 3 };
+      if (!hasOffer) return { nextStep: 2 }; // keep discovering
+      return { nextStep: 3 }; // product matched, move to price
 
-        return {
-          text: `${presentation} Czy chciałby Pan/Pani poznać cenę i dostępne terminy?`,
-          nextStep: 3,
-          offerUsed: offer,
-        };
-      }
+    case 3:
+      if (t.includes('tak') || t.includes('wyślij') || t.includes('mail') || t.includes('chętnie') || t.includes('poproszę'))
+        return { nextStep: 4 };
+      if (t.includes('nie') || t.includes('rezygnuję'))
+        return { nextStep: 99, outcome: 'Not Interested' };
+      return { nextStep: 4 }; // default: move to email
 
-      // Klient mówi ogólnie — dopytaj z opisem opcji
-      if (customerSaid.includes('polsk') || customerSaid.includes('w kraju')) {
-        return {
-          text: 'W Polsce mamy opcję językową — tydzień z native speakerami w hotelu, sesje 2 na 1, karaoke, talent show. Jest też opcja narciarsko-językowa: pół dnia na stoku, pół dnia szkolenie językowe. Która bardziej pasuje? I ile lat ma dziecko?',
-          nextStep: 2,
-        };
-      }
-      if (customerSaid.includes('zagrani') || customerSaid.includes('za granic')) {
-        return {
-          text: 'Za granicą mamy dwie opcje. Malta — tygodniowy program z native speakerami w słonecznym klimacie, sesje 2 na 1. Anglia — wyjazd autokarem, zakwaterowanie u brytyjskich rodzin, zwiedzanie Londynu z native speakerami. Która brzmi ciekawiej?',
-          nextStep: 2,
-        };
-      }
-      if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie')) {
-        return {
-          text: 'To fantastycznie! Mamy kilka opcji na 2026. Polska, Malta, Anglia — każda oparta na metodzie Angloville z native speakerami. Który kierunek najbardziej interesuje?',
-          nextStep: 2,
-        };
-      }
-      if (customerSaid.includes('nie') || customerSaid.includes('średnio') || customerSaid.includes('słab')) {
-        return {
-          text: 'Rozumiem. Na 2026 mamy nowe opcje — może coś innego by lepiej pasowało. Polska, Malta, czy Anglia? I w jakim wieku jest dziecko?',
-          nextStep: 2,
-        };
-      }
-      // Fallback
-      return {
-        text: 'Żeby dobrze dopasować — ile lat ma dziecko? Mamy programy w Polsce, na Malcie i w Anglii, każdy oparty na metodzie Angloville z native speakerami. Który kierunek najbardziej interesuje?',
-        nextStep: 2,
-      };
-    }
+    case 4:
+      if (t.includes('tak') || t.includes('wyślij') || t.includes('aktualny') || t.includes('zgadza') || t.includes('ok') || t.includes('dobry'))
+        return { nextStep: 5 };
+      if (t.includes('nie') || t.includes('rezygnuję'))
+        return { nextStep: 99, outcome: 'Not Interested' };
+      return { nextStep: 4 }; // stay, need email confirmation
 
-    // ══ STEP 3: Cena + dostępność ══
-    // Cel: podać cenę DOPIERO gdy klient pyta. Zawsze najpierw cechy/wyróżniki.
-    case 3: {
-      const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
+    case 5:
+      return { nextStep: 99, outcome: 'Email Summary Sent (Simulated)' };
 
-      if (!offer) {
-        return {
-          text: 'Nie mam jeszcze dość informacji żeby dopasować program. Który kierunek najbardziej interesuje — Polska, Malta, czy Anglia?',
-          nextStep: 2,
-          offerUsed: null,
-        };
-      }
-
-      const priceLine = buildPriceLine(offer);
-      const terminyLine = offer.terminy ? `Terminy: ${offer.terminy}.` : '';
-
-      // Klient chce cenę
-      if (customerSaid.includes('tak') || customerSaid.includes('cenę') || customerSaid.includes('ile') || customerSaid.includes('kosztuje') || customerSaid.includes('chętnie')) {
-        return {
-          text: `${priceLine} ${terminyLine} Mamy raty 0% od 2 do 5 rat. Przy ponownym uczestnictwie jest dodatkowa zniżka 150 złotych. Zostały ostatnie miejsca. Czy wysłać szczegóły i link mailem?`,
-          nextStep: 4,
-          offerUsed: offer,
-        };
-      }
-      // Klient pyta o coś innego / waha się — wróć do cech programu
-      if (customerSaid.includes('nie') || customerSaid.includes('wiem')) {
-        return {
-          text: `Bez zobowiązań — mogę opowiedzieć więcej o programie. ${offer.coZawiera ? `W cenie jest: ${offer.coZawiera}.` : 'W cenie zakwaterowanie, wyżywienie i cały program z native speakerami.'} Czy chce Pan/Pani poznać cenę?`,
-          nextStep: 3,
-          offerUsed: offer,
-        };
-      }
-      // Default — podaj cenę (klient prawdopodobnie potwierdził zainteresowanie)
-      return {
-        text: `${priceLine} ${terminyLine} Mamy też raty 0% i zniżki dla powracających uczestników. Czy wysłać szczegóły mailem?`,
-        nextStep: 4,
-        offerUsed: offer,
-      };
-    }
-
-    // ══ STEP 4: Rezerwacja lub wysyłka maila ══
-    // Cel: klient gotowy → rezerwacja lub mail. Niezdecydowany → mail + follow-up.
-    case 4: {
-      const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
-      const primaryEmail = (lead.email || '').trim();
-
-      if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('wyślij') || customerSaid.includes('poproszę') || customerSaid.includes('link') || customerSaid.includes('mail')) {
-        return {
-          text: `Świetnie! Mam w systemie adres: ${primaryEmail}. Czy jest aktualny, czy wolą Państwo podać inny?`,
-          nextStep: 5,
-          offerUsed: offer,
-        };
-      }
-      if (customerSaid.includes('nie') || customerSaid.includes('rezygnuję') || customerSaid.includes('dzięki')) {
-        return {
-          text: 'Rozumiem. Może inna opcja by lepiej pasowała? Mamy programy w Polsce, na Malcie i w Anglii. Czy chciałby Pan/Pani, żebym wysłała porównanie mailem?',
-          nextStep: 4,
-          offerUsed: offer,
-        };
-      }
-      if (customerSaid.includes('drogo') || customerSaid.includes('dużo') || customerSaid.includes('tanio') || customerSaid.includes('budżet')) {
-        return {
-          text: 'Rozumiem. Mamy raty 0% od 2 do 5 rat. A przy ponownym uczestnictwie zniżka 150 złotych. Mogę wysłać szczegóły finansowe mailem — chciałby Pan/Pani?',
-          nextStep: 4,
-          offerUsed: offer,
-        };
-      }
-      if (customerSaid.includes('pomyśl') || customerSaid.includes('zastanow') || customerSaid.includes('porozmaw')) {
-        return {
-          text: `Oczywiście! Mogę wysłać wszystkie informacje na maila, żeby mogli Państwo spokojnie przejrzeć. Mam adres: ${primaryEmail}. Wyślę i umówimy się na telefon np. za kilka dni?`,
-          nextStep: 5,
-          offerUsed: offer,
-        };
-      }
-      // Fallback
-      return {
-        text: `Mogę wysłać pełne szczegóły i link do zapisu mailem — bez zobowiązań. Czy chciałby Pan/Pani to otrzymać?`,
-        nextStep: 4,
-        offerUsed: offer,
-      };
-    }
-
-    // ══ STEP 5: Zamknięcie + follow-up ══
-    // Cel: potwierdzić email, wysłać, pożegnać, zostawić otwarte drzwi
-    case 5: {
-      const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
-      const primaryEmail = (lead.email || '').trim();
-      const emailRegex = /([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/i;
-      const match = (state.customerResponse || '').match(emailRegex);
-      const secondaryEmail = match && match[1] ? match[1].trim() : '';
-      const hasSecondary = secondaryEmail && secondaryEmail.toLowerCase() !== primaryEmail.toLowerCase();
-
-      const confirmed = customerSaid.includes('tak') || customerSaid.includes('zgadza') || customerSaid.includes('dobry') || customerSaid.includes('ok') || customerSaid.includes('aktualny');
-      const denied = customerSaid.includes('nie') || customerSaid.includes('zły') || customerSaid.includes('nieaktual') || customerSaid.includes('inny');
-
-      if (denied && !hasSecondary) {
-        return {
-          text: 'Proszę podać adres email, na który mam wysłać szczegóły.',
-          nextStep: 5,
-        };
-      }
-
-      if (hasSecondary) {
-        return {
-          text: `Dziękuję! Wyślę podsumowanie na ${secondaryEmail}. Gdyby były pytania — proszę śmiało dzwonić na ten numer. Miłego dnia!`,
-          nextStep: 99,
-          outcome: 'Email Summary Sent (Simulated)',
-          offerUsed: offer || null,
-          emailSecondary: secondaryEmail,
-        };
-      }
-
-      if (confirmed) {
-        return {
-          text: `Doskonale! Wyślę wszystko na ${primaryEmail}. Gdyby mieli Państwo pytania — proszę dzwonić. Dziękuję za rozmowę i miłego dnia!`,
-          nextStep: 99,
-          outcome: 'Email Summary Sent (Simulated)',
-          offerUsed: offer || null,
-          emailSecondary: null,
-        };
-      }
-
-      return {
-        text: `Mam adres ${primaryEmail}. Czy jest aktualny?`,
-        nextStep: 5,
-        offerUsed: offer || null,
-      };
-    }
-
-    case 99:
-      // Conversation ended
-      return {
-        text: '',
-        nextStep: 99,
-        outcome: 'Completed',
-      };
-
-    default:
-      return {
-        text: 'Dziękuję za rozmowę. Miłego dnia!',
-        nextStep: 99,
-        outcome: 'Completed',
-      };
+    default: return { nextStep: 99, outcome: 'Completed' };
   }
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+// ── Build system prompt ──
+function buildSystemPrompt(
+  stepDef: StepDef,
+  lead: any,
+  offer: OfferFacts | null,
+  voiceName: string,
+): string {
+  const childName = lead.childName || lead.first_name;
+  const childGen = genitive(childName);
+  const lastProgram = lead.past_programs?.[lead.past_programs.length - 1] || 'Angloville';
+
+  let productContext = '';
+  if (offer) {
+    productContext = `
+DOPASOWANY PRODUKT Z BAZY WIEDZY:
+- Nazwa: ${offer.label}
+- Wariant: ${offer.wariant || 'brak'}
+- Stosunek NS do uczestników: ${offer.ratio || 'brak danych'}
+- Cechy: ${offer.cechy || 'brak'}
+- Program/trasa: ${offer.program || 'brak'}
+- Co zawiera cena: ${offer.coZawiera || 'brak'}
+- Terminy: ${offer.terminy || 'brak'}
+${stepDef.canRevealPrice ? `- Cena regularna: ${offer.regular ? offer.regular + ' zł' : 'brak'}
+- Cena Early Bird: ${offer.early ? offer.early + ' zł' : 'brak'}
+- Zniżki: ${offer.znizki || 'brak'}` : '- CENA: NIE PODAWAJ — jeszcze nie pora!'}
+- URL: ${offer.url || 'brak'}`;
   }
+
+  return `Jesteś ${voiceName} — konsultantka sprzedażowa Angloville, firmy organizującej obozy językowe dla dzieci, młodzieży i dorosłych.
+
+AKTUALNY KROK: ${stepDef.step} — ${stepDef.name}
+CEL: ${stepDef.goal
+    .replace('[voice]', voiceName)
+    .replace('[childGenitive]', childGen)
+    .replace('[childName]', childName)
+    .replace('[lastProgram]', lastProgram)
+    .replace('[primaryEmail]', lead.email || '')}
+
+ZASADY TEGO KROKU:
+${stepDef.rules.map(r => '- ' + r.replace('[primaryEmail]', lead.email || '')).join('\n')}
+
+DANE LEADA:
+- Rodzic: ${lead.first_name} ${lead.last_name}
+- Dziecko: ${childName} (dopełniacz: ${childGen})
+- Ostatni program: ${lastProgram}
+- Email: ${lead.email}
+- Preferowana destynacja: ${lead.preferred_destination || 'nieznana'}
+${productContext}
+
+BEZWZGLĘDNE ZASADY:
+1. Mów po polsku, naturalnie, jak prawdziwa konsultantka telefoniczna.
+2. NIGDY nie wymyślaj danych — podawaj TYLKO fakty z bazy wiedzy powyżej.
+3. Jeśli brakuje danych (cena/termin/link) → powiedz "sprawdzę i wrócę mailowo".
+4. ${stepDef.canRevealPrice ? 'Możesz podać cenę z bazy.' : 'NIE PODAWAJ CENY — najpierw cechy i wyróżniki programu.'}
+5. Każda wypowiedź MUSI kończyć się pytaniem (chyba że to pożegnanie).
+6. Bądź zwięzła — max 3-4 zdania. To rozmowa telefoniczna, nie wykład.
+7. Nie powtarzaj tego co już powiedziałaś w historii rozmowy.
+8. Używaj imienia rodzica w formie "Pani [imię]" / "Panie [imię]".
+
+Odpowiedz TYLKO tekstem do powiedzenia — bez oznaczeń, cudzysłowów, prefiksów.`;
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { customer_id, step, customerResponse, history, voice } = req.body;
+  if (!customer_id) return res.status(400).json({ error: 'customer_id required' });
 
-  if (!customer_id) {
-    return res.status(400).json({ error: 'customer_id required' });
-  }
+  const lead = (leadsData as any[]).find(l => l.customer_id === customer_id);
+  if (!lead) return res.status(404).json({ error: 'Lead not found' });
 
-  const lead = leadsData.find(l => l.customer_id === customer_id);
-  if (!lead) {
-    return res.status(404).json({ error: 'Lead not found' });
-  }
+  const currentStep = step || 0;
+  const voiceName = voice || 'Karolina';
+  const hist: Array<{speaker: string; text: string}> = history || [];
 
-  const state: ConversationState = {
-    step: step || 0,
-    customerResponse: customerResponse || '',
-    leadData: lead,
-    history: history || [],
-    voice: voice || null,
-  };
+  // Build full conversation text for product matching
+  const allCustomerText = hist
+    .filter(h => h.speaker === 'customer')
+    .map(h => h.text)
+    .concat([customerResponse || ''])
+    .join(' ');
 
-  // RAG: retrieve similar training fragments when customer responds
-  // NOTE: RAG is disabled until embeddings are generated (avoids ~500ms latency per turn)
-  let ragContext: string[] = [];
-  // if (customerResponse && customerResponse.trim()) {
-  //   ragContext = await retrieveRAGContext(customerResponse, 3);
-  // }
+  // Try to match product from conversation
+  const offer = pickOfferFromConversation(allCustomerText) || pickOfferForDestination(lead.preferred_destination || '');
 
-  const response = getAgentResponse(state);
+  // Get step definition
+  const stepDef = STEPS.find(s => s.step === currentStep) || STEPS[STEPS.length - 1];
 
-  // Simulated email send (MVP): if conversation is complete and outcome indicates email sent, log it.
-  // NOTE: serverless cold starts will wipe this. Good enough for Phase 2 demo.
-  if (response.nextStep === 99 && (response.outcome || '').toLowerCase().includes('email')) {
-    const primaryEmail = (lead.email || '').trim();
-    const secondaryEmail = response.emailSecondary ? String(response.emailSecondary).trim() : '';
+  // Determine next step
+  const { nextStep, outcome } = currentStep === 0
+    ? { nextStep: 1, outcome: undefined }  // First turn: always advance
+    : determineNextStep(currentStep, customerResponse || '', !!offer);
 
-    // Compose email from knowledge base facts only.
-    const offerUsed = response.offerUsed || null;
-    const subject = offerUsed
-      ? `Angloville — podsumowanie i link: ${offerUsed.label}`
-      : 'Angloville — podsumowanie i link do zapisu';
+  // Handle terminal state
+  if (currentStep === 99 || nextStep === 99) {
+    // For step 5 (closing), still generate LLM response
+    if (currentStep === 5) {
+      // Generate closing message
+      const systemPrompt = buildSystemPrompt(stepDef, lead, offer, voiceName);
+      const llmMessages = hist.map(h => ({
+        role: h.speaker === 'agent' ? 'assistant' as const : 'user' as const,
+        content: h.text,
+      }));
+      if (customerResponse) llmMessages.push({ role: 'user', content: customerResponse });
 
-    const lines: string[] = [];
-    lines.push('Dzień dobry,');
-    lines.push('');
-    lines.push('Zgodnie z rozmową — przesyłam podsumowanie i link do zapisu.');
-    lines.push('');
-
-    if (offerUsed) {
-      lines.push(`Program: ${offerUsed.label}${offerUsed.wariant ? ` (${offerUsed.wariant})` : ''}`);
-      if (offerUsed.early != null || offerUsed.regular != null) {
-        const price = offerUsed.early ?? offerUsed.regular;
-        const priceKind = offerUsed.early != null ? 'Early Bird' : 'Cena';
-        lines.push(`${priceKind}: ${formatPrice(price ?? null)}`);
-        if (offerUsed.early != null && offerUsed.regular != null && offerUsed.early < offerUsed.regular) {
-          lines.push(`Cena regularna: ${formatPrice(offerUsed.regular)}`);
-        }
-      } else {
-        lines.push('Cena: (brak w bazie dla tego wariantu — sprawdzimy i wrócimy z potwierdzeniem)');
+      try {
+        const agentText = await callLLM(systemPrompt, llmMessages);
+        return res.status(200).json({
+          agentText, nextStep: 99,
+          outcome: outcome || 'Email Summary Sent (Simulated)',
+          isComplete: true,
+          offer: offer ? { productId: offer.productId, label: offer.label, regular: offer.regular, early: offer.early, ratio: offer.ratio, terminy: offer.terminy, url: offer.url } : null,
+        });
+      } catch {
+        return res.status(200).json({
+          agentText: `Doskonale! Wyślę wszystko na ${lead.email}. Dziękuję za rozmowę i miłego dnia!`,
+          nextStep: 99, outcome: outcome || 'Completed', isComplete: true,
+        });
       }
-      if (offerUsed.ratio) lines.push(`Stosunek native speakerów do uczestników: ${offerUsed.ratio}`);
-      if (offerUsed.terminy) lines.push(`Terminy: ${offerUsed.terminy}`);
-      lines.push('');
-      lines.push(offerUsed.url ? `Link do zapisu/strony: ${offerUsed.url}` : 'Link: (brak w bazie — doślemy w kolejnym mailu)');
-    } else {
-      lines.push('Nie udało się jednoznacznie dobrać programu na podstawie danych z rozmowy — wrócimy z dopasowaniem i linkiem.');
     }
+    return res.status(200).json({
+      agentText: '', nextStep: 99, outcome: outcome || 'Completed', isComplete: true,
+    });
+  }
 
-    lines.push('');
-    lines.push('Pozdrawiam,');
-    lines.push('Angloville');
+  // Build LLM messages from history
+  const llmMessages = hist.map(h => ({
+    role: h.speaker === 'agent' ? 'assistant' as const : 'user' as const,
+    content: h.text,
+  }));
+  if (customerResponse) {
+    llmMessages.push({ role: 'user', content: customerResponse });
+  }
 
-    // Use the shared simulated email endpoint store.
-    // Importing handler is messy; do a local in-memory log here.
+  // Use the NEXT step for generation (we're generating what to say in the next step)
+  const nextStepDef = STEPS.find(s => s.step === nextStep) || stepDef;
+  const systemPrompt = buildSystemPrompt(nextStepDef, lead, offer, voiceName);
+
+  let agentText: string;
+  try {
+    agentText = await callLLM(systemPrompt, llmMessages);
+  } catch (e) {
+    // Fallback to simple response
+    console.error('LLM failed, using fallback:', e);
+    agentText = currentStep === 0
+      ? `Dzień dobry, czy rozmawiam z rodzicem ${genitive(lead.childName || lead.first_name)}? Z tej strony ${voiceName}, firma Angloville. Ma Pan/Pani chwilę na rozmowę?`
+      : 'Przepraszam, mam chwilowy problem techniczny. Czy mogę zadzwonić ponownie?';
+  }
+
+  // Simulated email on closing
+  if (nextStep === 99 && (outcome || '').toLowerCase().includes('email')) {
     (globalThis as any).__callx_emails = (globalThis as any).__callx_emails || [];
     (globalThis as any).__callx_emails.push({
       email_id: `email_${Date.now()}`,
       provider: 'simulated',
       from: 'taskfornoa@gmail.com',
-      to: primaryEmail,
-      cc: secondaryEmail && secondaryEmail.toLowerCase() !== primaryEmail.toLowerCase() ? [secondaryEmail] : [],
-      subject,
-      body: lines.join('\n'),
-      meta: {
-        customer_id,
-        offer: offerUsed ? { productId: offerUsed.productId, label: offerUsed.label } : null,
-      },
+      to: lead.email,
+      subject: offer ? `Angloville — ${offer.label}` : 'Angloville — szczegóły programu',
+      body: `Podsumowanie rozmowy — ${offer?.label || 'program Angloville'}`,
       status: 'sent',
       sent_at: new Date().toISOString(),
     });
   }
 
   res.status(200).json({
-    agentText: response.text,
-    nextStep: response.nextStep,
-    outcome: response.outcome || null,
-    isComplete: response.nextStep === 99,
-    // Basic auditability: what product (from knowledge base) we used for the offer.
-    offer: response.offerUsed ? {
-      productId: response.offerUsed.productId,
-      label: response.offerUsed.label,
-      regular: response.offerUsed.regular,
-      early: response.offerUsed.early,
-      ratio: response.offerUsed.ratio,
-      terminy: response.offerUsed.terminy,
-      url: response.offerUsed.url,
+    agentText,
+    nextStep,
+    outcome: outcome || null,
+    isComplete: nextStep === 99,
+    offer: offer ? {
+      productId: offer.productId, label: offer.label,
+      regular: offer.regular, early: offer.early,
+      ratio: offer.ratio, terminy: offer.terminy, url: offer.url,
     } : null,
-    ragContext: ragContext.length > 0 ? ragContext : undefined,
   });
 }
