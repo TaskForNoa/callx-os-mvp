@@ -100,6 +100,15 @@ function buildOfferFacts(p: any, label: string): OfferFacts {
   };
 }
 
+function buildPriceLine(offer: OfferFacts): string {
+  const offerPrice = offer.early ?? offer.regular ?? null;
+  if (offerPrice == null) return 'Nie mam w bazie aktualnej ceny — sprawdzę i wrócę mailowo.';
+  if (offer.early != null && offer.regular != null && offer.early < offer.regular) {
+    return `Cena Early Bird to ${formatPrice(offer.early)} zamiast ${formatPrice(offer.regular)}${offer.savings != null ? ` (oszczędność ${formatPrice(offer.savings)})` : ''}.`;
+  }
+  return `Cena to ${formatPrice(offerPrice)}.`;
+}
+
 function pickOfferForDestination(destinationRaw: string): OfferFacts | null {
   const dest = (destinationRaw || '').toLowerCase();
   const products = productsData as Product[];
@@ -137,6 +146,56 @@ function pickOfferForDestination(destinationRaw: string): OfferFacts | null {
   return buildOfferFacts(p, 'Angloville Junior (Polska)');
 }
 
+function pickOfferFromConversation(customerSaid: string, history: Array<{ speaker: string; text: string }>): OfferFacts | null {
+  // Analyze the FULL conversation to detect what the customer wants
+  const allCustomerText = history
+    .filter(h => h.speaker === 'customer')
+    .map(h => h.text)
+    .concat([customerSaid])
+    .join(' ')
+    .toLowerCase();
+
+  const products = productsData as Product[];
+  const pick = (filterFn: (p: Product) => boolean) => {
+    const candidates = products.filter(filterFn);
+    candidates.sort((a, b) => (a.cenaZnizka != null ? 0 : 1) - (b.cenaZnizka != null ? 0 : 1));
+    return candidates[0] || null;
+  };
+
+  // Detect destination preference
+  if (allCustomerText.includes('malta')) {
+    const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
+    if (p) return buildOfferFacts(p, 'Junior International – Malta');
+  }
+  if (allCustomerText.includes('anglia') || allCustomerText.includes('uk') || allCustomerText.includes('londyn')) {
+    const p = pick(p => (p.name || '').includes('Junior International') && ((p.name || '').includes('Anglia') || (p.name || '').includes('UK')));
+    if (p) return buildOfferFacts(p, p.name || 'Junior International – Anglia');
+  }
+  if (allCustomerText.includes('narc') || allCustomerText.includes('ski') || allCustomerText.includes('stok')) {
+    const p = pick(p => (p.name || '').toLowerCase().includes('ski') || (p.name || '').toLowerCase().includes('narc'));
+    if (p) return buildOfferFacts(p, p.name || 'Junior SKI');
+  }
+  if (allCustomerText.includes('dorośl') || allCustomerText.includes('dla siebie') || allCustomerText.includes('adult')) {
+    const p = pick(p => (p.name || '').includes('Adult') || (p.name || '').includes('Angielska Wioska'));
+    if (p) return buildOfferFacts(p, p.name || 'Program dla dorosłych');
+  }
+  if (allCustomerText.includes('kids') || allCustomerText.match(/\b[7-9]\s*(lat|rok)/)) {
+    const p = pick(p => (p.name || '').includes('Kids'));
+    if (p) return buildOfferFacts(p, p.name || 'Angloville Kids');
+  }
+  if (allCustomerText.includes('zagrani') || allCustomerText.includes('za granic')) {
+    const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
+    if (p) return buildOfferFacts(p, 'Junior International – Malta');
+  }
+  if (allCustomerText.includes('polsk') || allCustomerText.includes('w kraju')) {
+    const p = pick(p => (p.name || '') === 'Angloville Junior' && (p.wariant || '').toLowerCase().includes('wakacje'))
+      || pick(p => (p.name || '') === 'Angloville Junior');
+    if (p) return buildOfferFacts(p, 'Angloville Junior (Polska)');
+  }
+
+  return null; // not enough info yet
+}
+
 function getAgentResponse(state: ConversationState): { text: string; nextStep: number; outcome?: string; offerUsed?: OfferFacts | null; emailSecondary?: string | null } {
   const lead = state.leadData;
   const customerSaid = (state.customerResponse || '').toLowerCase();
@@ -144,152 +203,193 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
   const childName = lead.childName || lead.first_name;
   const childGenitive = genitive(childName);
   const lastProgram = lead.past_programs[lead.past_programs.length - 1];
-  const destination = lead.preferred_destination;
-  const offer = pickOfferForDestination(destination);
-  const offerPrice = offer?.early ?? offer?.regular ?? null;
 
   switch (state.step) {
+    // ── STEP 0: Powitanie ──
     case 0:
-      // Step 1: Greeting
       return {
         text: `Dzień dobry, czy rozmawiam z rodzicem ${childGenitive}? Z tej strony ${state.voice || 'Karolina'}, firma Angloville. Ma Pan/Pani chwilę na rozmowę?`,
         nextStep: 1,
       };
 
+    // ── STEP 1: Nawiązanie do historii ──
     case 1:
-      // Step 2: Recording info
       if (customerSaid.includes('nie') && (customerSaid.includes('czas') || customerSaid.includes('mogę') || customerSaid.includes('teraz'))) {
         return {
-          text: 'Rozumiem, przepraszam za kłopot. Czy mogę zadzwonić w innym terminie?',
+          text: 'Rozumiem, przepraszam za kłopot. Kiedy mogłabym zadzwonić ponownie?',
           nextStep: 99,
           outcome: 'Callback Requested',
         };
       }
       return {
-        text: `Świetnie! Dzwonię, ponieważ widzę, że ${childName} uczestniczył wcześniej w naszych programach. Ostatnio na ${lastProgram}. Czy dziecku się podobało?`,
-        nextStep: 3, // skip step 2, go directly to opinion
+        text: `Dzwonię, ponieważ widzę, że ${childName} uczestniczył wcześniej w naszych programach — ostatnio na ${lastProgram}. Czy dziecku się podobało?`,
+        nextStep: 2,
       };
 
+    // ── STEP 2: Opinia + przejście do badania potrzeb ──
     case 2:
-      // Step 3: Past program reminder
       if (!customerSaid.trim()) {
         return {
-          text: `Widzę, że ostatnio byli Państwo na programie ${lastProgram}. Czy dziecku się podobało?`,
+          text: `Czy dziecku się podobało na programie ${lastProgram}?`,
+          nextStep: 2,
+        };
+      }
+      if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie') || customerSaid.includes('dobrze')) {
+        return {
+          text: 'To fantastycznie! Mamy kilka opcji na sezon 2026. Proszę powiedzieć — szukają Państwo czegoś w Polsce, czy może za granicą?',
           nextStep: 3,
         };
       }
+      if (customerSaid.includes('nie') || customerSaid.includes('średnio') || customerSaid.includes('słab')) {
+        return {
+          text: 'Rozumiem. Czy mogę zapytać, co można byłoby poprawić? I czy mimo to rozważaliby Państwo inną opcję na 2026?',
+          nextStep: 3,
+        };
+      }
+      // Neutral / unclear
       return {
-        text: `Widzę, że ostatnio byli Państwo na programie ${lastProgram}. Czy dziecku się podobało?`,
+        text: 'Rozumiem. Na sezon 2026 mamy kilka nowych opcji. Czy interesuje Państwa wyjazd w Polsce, czy raczej za granicą?',
         nextStep: 3,
       };
 
-    case 3:
-      // Step 4: Interest question
-      if (!customerSaid.trim()) {
+    // ── STEP 3: Badanie potrzeb (kierunek, wiek, typ) ──
+    case 3: {
+      // Try to match a product from what they said
+      const offer = pickOfferFromConversation(customerSaid, state.history);
+
+      if (offer) {
+        // We found a match! Present the program
+        const priceLine = buildPriceLine(offer);
+        const ratioLine = offer.ratio ? `Na ${offer.label} stosunek native speakerów do uczestników to ${offer.ratio}.` : '';
         return {
-          text: `Przepraszam — nie usłyszałam odpowiedzi. Czy dziecku się podobało na programie ${lastProgram}?`,
+          text: `Na podstawie tego co Pan/Pani mówi, polecałabym ${offer.label}. ${ratioLine} ${priceLine} Czy chciałby Pan/Pani usłyszeć więcej szczegółów?`,
+          nextStep: 4,
+          offerUsed: offer,
+        };
+      }
+
+      // Not enough info — ask more specific questions
+      if (customerSaid.includes('polsk') || customerSaid.includes('w kraju')) {
+        return {
+          text: 'W Polsce mamy opcję językową tradycyjną i narciarsko-językową. Ile lat ma dziecko? I czy interesują Państwa narty?',
           nextStep: 3,
         };
       }
-      if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie')) {
+      if (customerSaid.includes('zagrani') || customerSaid.includes('za granic')) {
         return {
-          text: `To fantastycznie! Mamy na sezon 2026 kilka opcji. ${offer ? `Wstępnie pasowałby ${offer.label}.` : ''} Czy interesuje Państwa bardziej opcja w Polsce, czy zagraniczna?`,
-          nextStep: 4,
-          offerUsed: offer || null,
-        };
-      } else if (customerSaid.includes('nie') || customerSaid.includes('średnio')) {
-        return {
-          text: 'Rozumiem. Czy mogę zapytać, co moglibyśmy poprawić? A jaki kierunek byłby ciekawszy — Polska, Malta, czy może Anglia?',
-          nextStep: 4,
+          text: 'Za granicą mamy Maltę i Anglię. Malta to tygodniowy program z native speakerami w słonecznym klimacie, a Anglia to wyjazd autokarem z zakwaterowaniem u rodzin. Która opcja brzmi ciekawiej?',
+          nextStep: 3,
         };
       }
+      // General follow-up
       return {
-        text: `Mamy ofertę na sezon 2026. Żeby dobrze dopasować — czy szukają Państwo wyjazdu w Polsce czy za granicą?`,
-        nextStep: 4,
-        offerUsed: offer || null,
+        text: 'Żeby dobrze dopasować — ile lat ma dziecko i czy szukają Państwo wyjazdu językowego w Polsce, czy może czegoś za granicą?',
+        nextStep: 3,
       };
+    }
 
-    case 4:
-      // Step 5: Listen + respond
-      // IMPORTANT: no hallucinations. We can only cite facts we have in the knowledge base.
-      // If we don't have facts (price/ratio/etc.), ask clarifying questions and promise a human follow-up.
-      if (!offer) {
+    // ── STEP 4: Szczegóły dopasowanego programu ──
+    case 4: {
+      const offer = pickOfferFromConversation(customerSaid, state.history);
+      // Use the best offer we have (from this or previous step)
+      const bestOffer = offer || pickOfferForDestination(lead.preferred_destination);
+
+      if (!bestOffer) {
         return {
-          text: 'Żeby dobrze dopasować — czy interesuje Państwa wyjazd w Polsce czy za granicą? I w jakim wieku jest dziecko?',
-          nextStep: 4,
+          text: 'Niestety nie mam jeszcze wystarczających danych żeby dopasować program. Czy mogę dopytać — Polska czy zagranica? I w jakim wieku jest dziecko?',
+          nextStep: 3,
           offerUsed: null,
         };
       }
 
-      const priceLine = offerPrice != null
-        ? (offer.early != null && offer.regular != null && offer.early < offer.regular
-          ? `Cena Early Bird to ${formatPrice(offer.early)} zamiast ${formatPrice(offer.regular)}${offer.savings != null ? ` (oszczędność ${formatPrice(offer.savings)})` : ''}.`
-          : `Cena to ${formatPrice(offerPrice)}.`)
-        : 'Nie mam w bazie aktualnej ceny dla tego wariantu — sprawdzę i wrócę do Państwa mailowo.';
+      const priceLine = buildPriceLine(bestOffer);
+      const ratioLine = bestOffer.ratio ? `Stosunek native speakerów do uczestników: ${bestOffer.ratio}.` : '';
+      const terminyLine = bestOffer.terminy ? `Terminy: ${bestOffer.terminy}.` : '';
+      const coZawieraLine = bestOffer.coZawiera ? `W cenie: ${bestOffer.coZawiera}.` : '';
 
-      const ratioLine = offer.ratio ? `Stosunek native speakerów do uczestników: ${offer.ratio}.` : '';
-      const terminyLine = offer.terminy ? `Najbliższe terminy: ${offer.terminy}.` : '';
-
-      if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('opowiedz') || customerSaid.includes('interesuje')) {
-        const email = lead.email;
+      if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('opowiedz') || customerSaid.includes('więcej') || customerSaid.includes('interesuje')) {
         return {
-          text: `Świetnie. ${priceLine} ${ratioLine} ${terminyLine} Wyślę mailowo szczegóły (link + opis co zawiera cena). Mam adres: ${email}. Czy jest poprawny? Jeśli woli Pan/Pani drugi adres, proszę go podać — dodam jako dodatkowy.`,
+          text: `${bestOffer.label}: ${priceLine} ${ratioLine} ${terminyLine} ${coZawieraLine} Mamy jeszcze raty 0% od 2 do 5 rat. Czy chciałaby Pani, żebym wysłała szczegóły i link mailem?`,
           nextStep: 5,
-          offerUsed: offer,
+          offerUsed: bestOffer,
         };
-      } else if (customerSaid.includes('nie') || customerSaid.includes('dzięki') || customerSaid.includes('rezygnuję')) {
+      }
+      if (customerSaid.includes('nie') || customerSaid.includes('drogo') || customerSaid.includes('tani')) {
         return {
-          text: 'Rozumiem. Żeby nie zgadywać: czy woleliby Państwo opcję w Polsce, czy zagraniczną (Malta/UK)? Sprawdzę dostępne warianty i wrócę mailowo z konkretną propozycją.',
-          nextStep: 6, // Second try - offer alternative
+          text: 'Rozumiem. Mamy raty 0% do 5 rat, a przy ponownym uczestnictwie jest zniżka 150 złotych. Czy to zmienia sytuację? A może wolą Państwo inny kierunek?',
+          nextStep: 4,
+          offerUsed: bestOffer,
+        };
+      }
+      // Default: present offer
+      return {
+        text: `Proponuję ${bestOffer.label}. ${priceLine} ${ratioLine} To program ${bestOffer.wariant || 'tygodniowy'}, gdzie nauka odbywa się przez zabawę z native speakerami. Czy brzmi to interesująco?`,
+        nextStep: 5,
+        offerUsed: bestOffer,
+      };
+    }
+
+    // ── STEP 5: Potwierdzenie emaila ──
+    case 5: {
+      const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
+      const primaryEmail = (lead.email || '').trim();
+
+      if (customerSaid.includes('nie') || customerSaid.includes('dzięki') || customerSaid.includes('rezygnuję')) {
+        return {
+          text: 'Rozumiem. Czy mogę zapytać — co by Państwa bardziej zainteresowało? Może inna destynacja albo inny termin?',
+          nextStep: 7,
+          offerUsed: offer,
         };
       }
 
-      const email = lead.email;
+      if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('wyślij') || customerSaid.includes('poproszę') || customerSaid.includes('mail')) {
+        return {
+          text: `Świetnie! Mam w systemie adres: ${primaryEmail}. Czy jest aktualny, czy wolą Państwo podać inny?`,
+          nextStep: 6,
+          offerUsed: offer,
+        };
+      }
+
+      // Unclear
       return {
-        text: `W skrócie: ${offer.label}${offer.wariant ? ` (${offer.wariant})` : ''}. ${priceLine} ${ratioLine} Jeśli się zgadza, wyślę podsumowanie i link mailem. Mam adres: ${email}. Czy jest poprawny? (Jeśli ma być drugi, proszę podać — dodam jako dodatkowy.)`,
+        text: `Mogę wysłać pełne szczegóły i link do zapisu mailem. Czy chciałby Pan/Pani to otrzymać?`,
         nextStep: 5,
         offerUsed: offer,
       };
+    }
 
-    case 5: {
-      // Step 6: Email confirmation / send (simulated for now)
-      // Rules from Michał: we can confirm primary email from lead; we cannot overwrite it.
-      // If customer provides another email, we store/use it as secondary (additional).
-
+    // ── STEP 6: Email confirmation + send ──
+    case 6: {
+      const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
       const primaryEmail = (lead.email || '').trim();
       const emailRegex = /([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})/i;
       const match = (state.customerResponse || '').match(emailRegex);
       const secondaryEmail = match && match[1] ? match[1].trim() : '';
       const hasSecondary = secondaryEmail && secondaryEmail.toLowerCase() !== primaryEmail.toLowerCase();
 
-      // Interpret confirmation
-      const confirmed = customerSaid.includes('tak') || customerSaid.includes('zgadza') || customerSaid.includes('popraw') || customerSaid.includes('dobry') || customerSaid.includes('ok');
-      const wantsSend = customerSaid.includes('wyślij') || customerSaid.includes('poproszę') || customerSaid.includes('mail');
-      const denied = customerSaid.includes('nie') || customerSaid.includes('zły') || customerSaid.includes('nieaktual');
+      const confirmed = customerSaid.includes('tak') || customerSaid.includes('zgadza') || customerSaid.includes('popraw') || customerSaid.includes('dobry') || customerSaid.includes('ok') || customerSaid.includes('aktualny');
+      const denied = customerSaid.includes('nie') || customerSaid.includes('zły') || customerSaid.includes('nieaktual') || customerSaid.includes('inny');
 
-      // If they say it's wrong but didn't provide a secondary email, ask again.
       if (denied && !hasSecondary) {
         return {
-          text: `Jasne — proszę podać poprawny adres e-mail (dodam go jako dodatkowy) i wyślę podsumowanie oraz link. Obecny w systemie to: ${primaryEmail}.`,
-          nextStep: 5,
+          text: `Proszę podać adres email, na który mam wysłać szczegóły.`,
+          nextStep: 6,
         };
       }
 
-      // If they provided an email (secondary), treat it as acceptable.
-      if (hasSecondary && (confirmed || wantsSend || denied)) {
+      if (hasSecondary) {
         return {
-          text: `Dziękuję. Wyślę podsumowanie na ${primaryEmail}${hasSecondary ? ` oraz dodatkowo na ${secondaryEmail}` : ''}. Jeśli jakiejś informacji brakuje w bazie (np. link), sprawdzę i doślę w kolejnym mailu. Miłego dnia!`,
+          text: `Dziękuję! Wyślę podsumowanie na ${secondaryEmail}. Gdyby były jakieś pytania — proszę śmiało dzwonić na ten numer. Miłego dnia!`,
           nextStep: 99,
           outcome: 'Email Summary Sent (Simulated)',
           offerUsed: offer || null,
-          emailSecondary: hasSecondary ? secondaryEmail : null,
+          emailSecondary: secondaryEmail,
         };
       }
 
-      // Standard path: if they confirm the primary email.
-      if (confirmed || wantsSend) {
+      if (confirmed) {
         return {
-          text: `Doskonale. Wyślę podsumowanie i link na ${primaryEmail}. Jeśli jakiejś informacji brakuje w bazie (np. link), sprawdzę i doślę w kolejnym mailu. Dziękuję za rozmowę!`,
+          text: `Doskonale! Wyślę wszystko na ${primaryEmail}. Gdyby mieli Państwo pytania — proszę dzwonić. Dziękuję za rozmowę i miłego dnia!`,
           nextStep: 99,
           outcome: 'Email Summary Sent (Simulated)',
           offerUsed: offer || null,
@@ -298,23 +398,22 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
       }
 
       return {
-        text: `Dla pewności: mam adres ${primaryEmail}. Czy potwierdza Pan/Pani, że jest poprawny? (Jeśli ma być drugi, proszę go podać.)`,
-        nextStep: 5,
+        text: `Mam adres ${primaryEmail}. Czy jest aktualny?`,
+        nextStep: 6,
         offerUsed: offer || null,
       };
     }
 
-    case 6:
-      // Second try (alternative offer)
-      if (customerSaid.includes('tak') || customerSaid.includes('malta') || customerSaid.includes('trip') || customerSaid.includes('polska') || customerSaid.includes('anglia')) {
+    // ── STEP 7: Alternatywa / ostatnia szansa ──
+    case 7:
+      if (customerSaid.includes('tak') || customerSaid.includes('malta') || customerSaid.includes('anglia') || customerSaid.includes('polska') || customerSaid.includes('narci')) {
         return {
-          text: 'Świetnie! Sprawdzę dostępne warianty i wyślę mailem. Czy mogę potwierdzić adres email, który mam w systemie?',
-          nextStep: 5,
-          outcome: 'Alternative Interest',
+          text: 'Świetnie! Sprawdzę dostępne warianty i wyślę informacje mailem. Czy mogę potwierdzić adres email?',
+          nextStep: 6,
         };
       }
       return {
-        text: 'Rozumiem. Dziękuję bardzo za rozmowę i poświęcony czas. Czy mogę ewentualnie zadzwonić za jakiś czas z nowymi propozycjami?',
+        text: 'Rozumiem. Dziękuję za poświęcony czas. Gdyby zmienili Państwo zdanie — zapraszam na angloville.pl lub proszę oddzwonić na ten numer. Miłego dnia!',
         nextStep: 99,
         outcome: 'Not Interested',
       };
