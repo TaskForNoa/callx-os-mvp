@@ -91,6 +91,82 @@ function pickOfferForDestination(dest: string): OfferFacts | null {
   return pickOfferFromConversation(dest);
 }
 
+// ── Filter ALL matching products based on customer choices ──
+function filterMatchingProducts(allText: string): { products: OfferFacts[]; filters: string } {
+  const t = allText.toLowerCase();
+  const products = productsData as Product[];
+  const filters: string[] = [];
+
+  let filtered = [...products];
+
+  // Destination filter
+  const wantsPolska = t.includes('polsk') || t.includes('w kraju');
+  const wantsMalta = t.includes('malta') && !wantsPolska;
+  const wantsAnglia = (t.includes('anglia') || t.includes('londyn') || t.includes('uk trip')) && !wantsPolska;
+  const wantsZagranica = (t.includes('zagrani') || t.includes('za granic') || wantsMalta || wantsAnglia) && !wantsPolska;
+
+  if (wantsPolska) {
+    filtered = filtered.filter(p => {
+      const k = ((p as any).kategoriaFilter || '').toLowerCase();
+      const n = ((p as any).name || '').toLowerCase();
+      return (k.includes('polska') || (!n.includes('malta') && !n.includes('anglia') && !n.includes('uk trip') && !n.includes('eurotrip') && !n.includes('baltic') && !n.includes('italy') && !n.includes('nowy jork') && !n.includes('kaliforni') && !n.includes('miami') && !n.includes('japon')));
+    });
+    filters.push('Polska');
+  } else if (wantsZagranica) {
+    filtered = filtered.filter(p => {
+      const k = ((p as any).kategoriaFilter || '').toLowerCase();
+      const n = ((p as any).name || '').toLowerCase();
+      return k.includes('zagranica') || k.includes('europa') || k.includes('świat') || n.includes('malta') || n.includes('anglia') || n.includes('uk trip') || n.includes('eurotrip') || n.includes('international');
+    });
+    filters.push('Zagranica');
+    if (wantsMalta) { filtered = filtered.filter(p => ((p as any).name || '').toLowerCase().includes('malta')); filters.push('Malta'); }
+    if (wantsAnglia) { filtered = filtered.filter(p => { const n = ((p as any).name || '').toLowerCase(); return n.includes('anglia') || n.includes('uk trip'); }); filters.push('Anglia/UK'); }
+  }
+
+  // Age group filter
+  const ageMatch = t.match(/(\d{1,2})\s*(lat|rok|letni)/);
+  const age = ageMatch ? parseInt(ageMatch[1]) : null;
+  if (age) {
+    if (age >= 7 && age <= 10) {
+      filtered = filtered.filter(p => (p as any).wiekGrupa === 'Dzieci 7-10' || ((p as any).name || '').includes('Kids'));
+      filters.push(`Wiek: ${age} lat (Kids)`);
+    } else if (age >= 11 && age <= 18) {
+      filtered = filtered.filter(p => (p as any).wiekGrupa === 'Młodzież 11-18' || ((p as any).segment || '').includes('11'));
+      filters.push(`Wiek: ${age} lat (Junior)`);
+    } else if (age >= 18) {
+      filtered = filtered.filter(p => (p as any).wiekGrupa === 'Dorośli 18+');
+      filters.push(`Wiek: ${age} lat (Dorosły)`);
+    }
+  }
+
+  // City filter — check terminyLista
+  const cities = ['warszaw', 'kraków', 'krakow', 'poznań', 'poznan', 'wrocław', 'wroclaw', 'katowic', 'gdańsk', 'gdansk', 'łódź', 'lodz'];
+  let cityFilter = '';
+  for (const c of cities) {
+    if (t.includes(c)) { cityFilter = c; break; }
+  }
+  if (cityFilter) {
+    filtered = filtered.filter(p => {
+      const tl = (p as any).terminyLista as any[] || [];
+      const td = ((p as any).terminyDetale || '').toLowerCase();
+      return tl.some((tt: any) => (tt.miastoZbiorki || '').toLowerCase().includes(cityFilter)) || td.includes(cityFilter);
+    });
+    filters.push(`Wyjazd z: ${cityFilter.charAt(0).toUpperCase() + cityFilter.slice(1)}`);
+  }
+
+  // Deduplicate by name+wariant
+  const seen = new Set<string>();
+  const deduped: OfferFacts[] = [];
+  for (const p of filtered) {
+    const key = `${(p as any).name}|${(p as any).wariant || ''}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    deduped.push(buildOfferFacts(p, (p as any).name || 'Produkt'));
+  }
+
+  return { products: deduped.slice(0, 8), filters: filters.join(' → ') };
+}
+
 // ── Step definitions (mirrors scenarioFlow.ts) ──
 interface StepDef {
   step: number;
@@ -122,16 +198,16 @@ const STEPS: StepDef[] = [
   },
   {
     step: 2, name: 'Prezentacja programu',
-    goal: 'Zawężaj program krok po kroku. Kolejność: 1) Polska/zagranica 2) miasto wyjazdu 3) miesiąc (lipiec/sierpień/ferie). Jak masz te dane → opisz program z metodą Angloville. TRZYMAJ SIĘ wyboru klienta!',
+    goal: 'Pomagaj klientowi wybrać program krok po kroku. Patrz na PASUJĄCE PRODUKTY i przedstaw je. Kolejność zawężania: 1) Polska/zagranica → pokaż TYPY programów 2) klient wybiera typ → pokaż dostępne warianty/miasta 3) klient wybiera wariant → pokaż terminy. TRZYMAJ SIĘ wyboru klienta!',
     rules: [
       'NIE podawaj ceny — najpierw cechy i wyróżniki',
-      'BEZWZGLĘDNIE trzymaj się tego co klient wybrał — jeśli wybrał Polskę, NIE wracaj do Malty/Anglii!',
-      'Jeśli masz kierunek ale nie miasto → dopytaj o miasto wyjazdu',
-      'Jeśli masz kierunek + miasto ale nie miesiąc → dopytaj o miesiąc',
-      'Jeśli masz kierunek + miasto + miesiąc → opisz program: metoda Angloville, sesje, stosunek NS:uczestników',
-      'Jeśli językowy — sesje 2:1, karaoke, talent show, 70h zanurzenia',
-      'Jeśli turystyczny — opisz trasę',
-      'Na końcu zapytaj czy chce poznać cenę',
+      'BEZWZGLĘDNIE trzymaj się tego co klient wybrał — jeśli wybrał Polskę, NIE wracaj do Malty/Anglii/zagranicy!',
+      'Jeśli klient wybrał kierunek → przedstaw KRÓTKO (1 zdanie) jakie TYPY programów mamy w tym kierunku (np. "W Polsce mamy obóz językowy Junior, obóz dla młodszych Kids, oraz Junior SKI zimą")',
+      'Jeśli klient wybrał typ programu → pokaż z jakich miast jest wyjazd',
+      'Jeśli klient wybrał miasto → pokaż dostępne terminy z listy PASUJĄCYCH PRODUKTÓW',
+      'Jeśli klient pytał "co macie" → przedstaw kategorie, NIE szczegóły jednego programu',
+      'Nie zasypuj klienta informacjami — podaj 2-3 opcje i zapytaj co go interesuje',
+      'Na końcu (gdy klient wybrał konkretny program+termin) zapytaj czy chce poznać cenę',
     ],
     canRevealPrice: false,
   },
@@ -297,15 +373,45 @@ function buildSystemPrompt(
   offer: OfferFacts | null,
   voiceName: string,
   customerContext?: string,
+  matchingProducts?: { products: OfferFacts[]; filters: string },
 ): string {
   const childName = lead.childName || lead.first_name;
   const childGen = genitive(childName);
   const lastProgram = lead.past_programs?.[lead.past_programs.length - 1] || 'Angloville';
 
   let productContext = '';
-  if (offer) {
+
+  // Show list of matching products (filtered by customer choices)
+  if (matchingProducts && matchingProducts.products.length > 0) {
     productContext = `
-DOPASOWANY PRODUKT Z BAZY WIEDZY:
+PASUJĄCE PRODUKTY Z BAZY WIEDZY (filtry: ${matchingProducts.filters || 'brak'}):
+${matchingProducts.products.map((p, i) => {
+  let entry = `\n${i + 1}. ${p.label}${p.wariant ? ` (${p.wariant})` : ''}`;
+  if (p.ratio) entry += `\n   Stosunek NS: ${p.ratio}`;
+  if (p.cechy) entry += `\n   Cechy: ${p.cechy}`;
+  if (p.terminy) entry += `\n   Terminy: ${p.terminy}`;
+  if (p.terminyLista && p.terminyLista.length > 0) {
+    entry += `\n   Dostępne turnusy:`;
+    p.terminyLista.slice(0, 5).forEach((t: any) => {
+      entry += `\n     • ${t.termin} | ${t.hotel} | z: ${t.miastoZbiorki} | ${t.dostepnosc}`;
+    });
+    if (p.terminyLista.length > 5) entry += `\n     ... i ${p.terminyLista.length - 5} więcej`;
+  }
+  if (stepDef.canRevealPrice) {
+    if (p.regular) entry += `\n   Cena: ${p.regular} zł`;
+    if (p.early) entry += ` (Early Bird: ${p.early} zł)`;
+  }
+  if (p.url) entry += `\n   URL: ${p.url}`;
+  return entry;
+}).join('\n')}
+
+WAŻNE: Prezentuj TYLKO produkty z powyższej listy. Jeśli klient wybrał Polskę — przedstaw TYPY programów dostępnych w Polsce. Jeśli wybrał zagranicę — przedstaw co mamy za granicą. NIE wracaj do odrzuconych kierunków!`;
+  }
+
+  // Single selected product (when customer narrowed down to one)
+  if (offer && (!matchingProducts || matchingProducts.products.length <= 1)) {
+    productContext = `
+WYBRANY PRODUKT Z BAZY WIEDZY:
 - Nazwa: ${offer.label}
 - Wariant: ${offer.wariant || 'brak'}
 - Stosunek NS do uczestników: ${offer.ratio || 'brak danych'}
@@ -387,6 +493,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Try to match product from conversation
   const offer = pickOfferFromConversation(allCustomerText) || pickOfferForDestination(lead.preferred_destination || '');
 
+  // Get ALL matching products based on customer choices (for browsing)
+  const allConversationText = hist.map(h => h.text).concat([customerResponse || '']).join(' ');
+  const matchingProducts = filterMatchingProducts(allConversationText);
+
   // Get step definition
   const stepDef = STEPS.find(s => s.step === currentStep) || STEPS[STEPS.length - 1];
 
@@ -449,7 +559,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const genStepDef = STEPS.find(s => s.step === generateForStep) || stepDef;
-  const systemPrompt = buildSystemPrompt(genStepDef, lead, offer, voiceName, customerContext);
+  const systemPrompt = buildSystemPrompt(genStepDef, lead, offer, voiceName, customerContext, matchingProducts);
 
   let agentText: string;
   try {
