@@ -138,11 +138,16 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
     }
   }
 
-  // Destination filter
+  // Destination / branch filter
   const wantsPolska = t.includes('polsk') || t.includes('w kraju');
   const wantsMalta = t.includes('malta') && !wantsPolska;
   const wantsAnglia = (t.includes('anglia') || t.includes('londyn') || t.includes('uk trip')) && !wantsPolska;
   const wantsZagranica = (t.includes('zagrani') || t.includes('za granic') || wantsMalta || wantsAnglia) && !wantsPolska;
+
+  // If client chose "mocno językowa" right after International vs Plus question,
+  // we should stay within "Junior International" branch (Malta/Anglia), not Poland.
+  const wantsInternationalBranch = (t.includes('junior international') || (t.includes('mocno') && t.includes('język')) || t.includes('typowo język')) && !wantsPolska;
+  const wantsPlusBranch = (t.includes('junior plus') || t.includes('turystycz') || t.includes('objazd')) && !wantsPolska;
 
   if (wantsPolska) {
     filtered = filtered.filter(p => {
@@ -151,15 +156,31 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
       return (k.includes('polska') || (!n.includes('malta') && !n.includes('anglia') && !n.includes('uk trip') && !n.includes('eurotrip') && !n.includes('baltic') && !n.includes('italy') && !n.includes('nowy jork') && !n.includes('kaliforni') && !n.includes('miami') && !n.includes('japon')));
     });
     filters.push('Polska');
-  } else if (wantsZagranica) {
+  } else if (wantsZagranica || wantsInternationalBranch || wantsPlusBranch) {
     filtered = filtered.filter(p => {
       const k = ((p as any).kategoriaFilter || '').toLowerCase();
       const n = ((p as any).name || '').toLowerCase();
-      return k.includes('zagranica') || k.includes('europa') || k.includes('świat') || n.includes('malta') || n.includes('anglia') || n.includes('uk trip') || n.includes('eurotrip') || n.includes('international');
+      return k.includes('zagranica') || k.includes('europa') || k.includes('świat') || n.includes('malta') || n.includes('anglia') || n.includes('uk trip') || n.includes('eurotrip') || n.includes('international') || n.includes('junior plus');
     });
     filters.push('Zagranica');
+
+    if (wantsInternationalBranch) {
+      filtered = filtered.filter(p => {
+        const n = ((p as any).name || '').toLowerCase();
+        return n.includes('junior international') || n.includes('international');
+      });
+      filters.push('Gałąź: Junior International');
+    }
+    if (wantsPlusBranch) {
+      filtered = filtered.filter(p => {
+        const n = ((p as any).name || '').toLowerCase();
+        return n.includes('junior plus') || n.includes('uk trip') || n.includes('eurotrip') || n.includes('baltic') || n.includes('italy');
+      });
+      filters.push('Gałąź: Junior Plus');
+    }
+
     if (wantsMalta) { filtered = filtered.filter(p => ((p as any).name || '').toLowerCase().includes('malta')); filters.push('Malta'); }
-    if (wantsAnglia) { filtered = filtered.filter(p => { const n = ((p as any).name || '').toLowerCase(); return n.includes('anglia') || n.includes('uk trip'); }); filters.push('Anglia/UK'); }
+    if (wantsAnglia) { filtered = filtered.filter(p => { const n = ((p as any).name || '').toLowerCase(); return n.includes('anglia') || n.includes('uk'); }); filters.push('Anglia/UK'); }
   }
 
   // Age group filter
@@ -265,7 +286,7 @@ Ogólna logika zawężania (nie sztywna kolejność — dostosuj do rozmowy):
 Patrz na PASUJĄCE PRODUKTY poniżej — to Twoja baza wiedzy. Prezentuj TYLKO produkty z tej listy.`,
     rules: [
       'NIE podawaj ceny — najpierw cechy i wyróżniki. W tym kroku NIE wolno podawać żadnych kwot ani używać „zł”/„PLN”, chyba że klient wprost zapyta o cenę ("ile kosztuje", "jaka cena").',
-      'TRZYMAJ SIĘ wyborów klienta — jeśli wybrał Polskę, NIE wracaj do zagranicy!',
+      'TRZYMAJ SIĘ wyborów klienta — jeśli wybrał Polskę, NIE wracaj do zagranicy; jeśli wybrał "Junior International" (mocno językowy) — NIE proponuj Angloville Junior w Polsce, tylko Malta/Anglia!',
       'Max 2-3 opcje na raz + 1 pytanie',
       'Jeśli klient pyta "co macie" → opisz kategorie krótko, nie szczegóły',
       'Jeśli możesz coś zaproponować na podstawie kontekstu (wiek, poprzedni program) — zrób to',
@@ -368,7 +389,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
         { role: 'system', content: systemPrompt },
         ...messages.filter(m => m.content).map(m => ({ role: m.role, content: m.content || '' })),
       ],
-      temperature: 0.7,
+      temperature: 0.4,
       max_completion_tokens: 300,
     }),
   });
@@ -535,6 +556,11 @@ BEZWZGLĘDNE ZASADY:
 10. Stosunek "1 NS : 2 uczestników" czytaj jako "jeden native speaker na dwóch uczestników".
 11. JEDNO PYTANIE NA RAZ. Nigdy nie zadawaj dwóch ani więcej pytań w jednej wypowiedzi. Zadaj jedno pytanie i czekaj na odpowiedź.
 12. KONTYNUUJ rozmowę — nie zaczynaj od nowa. Jeśli już się przedstawiłaś, NIE rób tego ponownie.
+
+
+
+WZORZEC STYLU (trzymaj się tej konstrukcji i tonu):
+"Panie Janie, w dwa tysiące dwudziestym szóstym roku dla młodzieży mamy za granicą dwie formuły: Junior International (Malta albo Anglia — mocno językowo, dużo rozmów z native speakerami) oraz Junior Plus (więcej turystycznie). Która formuła bardziej Panu pasuje dla Kacpra?"
 
 Odpowiedz TYLKO tekstem do powiedzenia — bez oznaczeń, cudzysłowów, prefiksów.`;
 }
