@@ -231,7 +231,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
         ...messages.filter(m => m.content).map(m => ({ role: m.role, content: m.content || '' })),
       ],
       temperature: 0.7,
-      max_tokens: 300,
+      max_completion_tokens: 300,
     }),
   });
 
