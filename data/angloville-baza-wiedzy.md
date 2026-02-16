@@ -1,6 +1,9 @@
 # Baza Wiedzy o Programach Angloville — CallX OS
 **Ostatnia aktualizacja:** 2026-02-16
-**Źródła:** Excel zestawienie (Michał), Regulaminy PDF (angloville.pl), strony produktowe
+**Źródła:** Excel zestawienie (Michał), Regulaminy PDF (angloville.pl), strony produktowe (web scraping)
+
+> ZASADA: AI agent CallX NIGDY nie podaje cen/ofert z pamięci — TYLKO z tego pliku.
+> Jeśli informacja nie istnieje w tym pliku, agent mówi "Sprawdzę to i oddzwonię" lub kieruje do kontakt@angloville.pl / +48 533 655 147.
 
 ---
 
@@ -644,12 +647,188 @@
 - **Co zawiera cena:** –
 - **URL:** https://angloville.pl/wp-content/uploads/2023/01/regulamin-angloville-meets-dorosli-2023-1.pdf
 
+---
+
+## 10. SZCZEGÓŁOWE OPISY PRODUKTÓW (ze stron angloville.pl)
+
+### Angloville Kids (7–11 lat)
+- 7 dni = 60 godzin zabaw w języku angielskim
+- 1 Native Speaker na 6 uczestników
+- FunBook – pamiętniczek z obozu ze zdjęciem grupowym
+- Dwie wycieczki lub warsztaty w trakcie programu
+- Nauka przez kreatywną zabawę i gry na świeżym powietrzu
+- Wychowawcy z doświadczeniem w pracy z dziećmi
+
+### Angloville Junior (11–18 lat)
+- Sesje konwersacyjne 1 native speaker na 2 uczestników (formuła 2 na 1)
+- Metoda immersji językowej – całkowite zanurzenie w angielskim
+- Różne akcenty: brytyjski, amerykański, australijski, irlandzki
+- Native Speakerzy to absolwenci anglojęzycznych uniwersytetów z UK, USA
+- Nauka przez konwersacje, projekty zespołowe i aktywności
+
+### Angloville Junior + Narty ❄️ (11–18 lat)
+- Połączenie obozu narciarskiego z kursem językowym
+- Sesje konwersacyjne 2 na 1 z Native Speakerami
+- Codziennie 4 godziny jazdy na stokach narciarskich
+- Zajęcia z wykwalifikowanym instruktorem narciarstwa
+- Ubezpieczenie SKI w cenie
+- Kulig z Native Speakerami zakończony ogniskiem
+- Ski Bus na stok, wypożyczalnia sprzętu na miejscu
+- Lokalizacja: Małe Ciche (stok 1 km od hotelu, 7 tras 90–1300m)
+
+### Angloville Family (rodzice + dzieci 7–14 lat)
+- Rodzinny program językowy – dorośli i dzieci razem
+- Sesje 2 na 1 dla dorosłych, sesje 3 na 1 + gry/zabawy dla dzieci
+- Wspólne zajęcia rodzinne i grupowe z podziałem na kategorie wiekowe
+- Spotkania z Mentorem
+- Rodzinny panel dyskusyjny
+- Social Time wieczorem
+
+### Junior International – Malta (13–18 lat)
+- Sesje konwersacyjne 2 na 1 i 1 na 1 z NS
+- Wycieczki: Mdina, Rabat, Klify Dingli, Malta National Aquarium, Gozo, Popeye Village, Valletta
+- Koordynatorzy NS delegowani z Angloville Ireland
+- Odkrywanie kultury i lokalnych zwyczajów Malty
+- Park wodny (lato)
+
+### Junior International – Anglia (13–18 lat)
+- 10 dni aktywnego kontaktu z językiem angielskim
+- 100 godzin interakcji z Native Speakerami
+- Formuła 2 na 1 (2 uczestników na 1 NS)
+- Różne akcenty: USA, Anglia, Australia, Kanada
+- Zakwaterowanie na kampusie uniwersyteckim
+- Przygotowanie do matury ustnej, First Certificate, studiów zagranicznych
+- Przelot samolotem w cenie
+
+### Junior Plus – UK Trip (12–18 lat)
+- Program prowadzony w 100% po angielsku przez koordynatorów NS
+- Zwiedzanie Londynu, Westminsteru, muzeów
+- Przewodnicy anglojęzyczni
+- Zakwaterowanie: rodziny goszczące (Standard) lub hotele (Intensive)
+
+### Junior Plus – Eurotrip (12–18 lat)
+- Program w 100% po angielsku
+- Trasa: Paryż + Disneyland, Bruksela, Amsterdam, Aquapark, Berlin
+- Koordynatorzy NS przez cały program
+- Uczestnicy z UK, Irlandii, USA mogą dołączyć w wybranych terminach
+
+### Junior Plus – Baltic Trip (12–18 lat)
+- Program w 100% po angielsku
+- Trasa: Ryga, Tallinn, Sztokholm, Helsinki, Park Narodowy Lahemaa, Wilno
+- Muzeum Vasa w Sztokholmie
+- Rejsy nocne promami
+- Koordynatorzy NS
+
+### Junior Plus – Italy Trip (12–18 lat)
+- Program w 100% po angielsku
+- Trasa: Wenecja + rejs po Lagunie, San Marino, Rimini (plaża), Rzym + Watykan, Florencja, park Gardaland
+- Koordynatorzy NS
+
+### Nowy Jork – młodzież (14–18 lat)
+- Program po angielsku przez koordynatorów NS + kierownik wycieczki z Polski
+- 7 dni: Times Square, Statua Wolności, Wall Street, Met Museum, Central Park, Brooklyn, Top of the Rock
+- 14 dni: + Toronto, CN Tower, Niagara, Waszyngton DC (Capitol, Biały Dom, Smithsonian), Filadelfia
+- Program międzynarodowy – skład grupy może się różnić
+
+### Kalifornia – młodzież (14–18 lat)
+- Program w całości po angielsku
+- Koordynatorzy NS + kierownik wycieczki z Polski
+- Aleja Gwiazd, Beverly Hills, Griffith Observatory
+- Route 66, Wielki Kanion, Monument Valley, Kanion Antylopy
+- Las Vegas, San Francisco, Universal Studio
+- Program międzynarodowy
+
+### Miami – młodzież (14–18 lat)
+- Program po angielsku przez koordynatorów NS + kierownik z Polski
+- Downtown Miami, Little Havana, rejs po Biscayne Bay
+- Key West, Wynwood Walls
+- Everglades (speedboat safari)
+- South Beach, Ocean Drive
+
+### Japonia – młodzież (14–18 lat)
+- Program w języku angielskim
+- Koordynatorzy NS + kierownik wycieczki z Polski
+- Tokio: Asakusa, Sensō-ji, Tokyo Skytree, Harajuku, Shibuya
+- Góra Fuji, Kioto, Fushimi Inari Taisha, Nara
+- Hiroszima, Wyspa Miyajima, Osaka
+- Program międzynarodowy
+
+### Angielska Wioska – dorośli (18+)
+- 70h konwersacji 1 na 1 z native speakerami w 6 dni
+- Kontakt z native speakerami przez cały czas
+- Zakaz mówienia po polsku
+- Różne akcenty: brytyjski, amerykański, australijski, irlandzki
+- Dyskusje, negocjacje, prezentacje
+- 6 dni konwersacji = 400h tradycyjnego kursu językowego
+- Efekt porównywalny do miesiąca w Wielkiej Brytanii
+- Wariant Premium: 1 na 1 z NS | Standard: 1 na 1 z NS | Tandem: 2 na 1 z NS
+
+### Angielska Wioska – nauka od podstaw (dorośli)
+- Dla osób zaczynających od zera
+- Etap 1: 4x w tygodniu po 30 min z polskim lektorem online (3–6 mies.)
+- Etap 2: 6 dni w Angielskiej Wiosce, rozmowy 1 na 1 z native speakerami
+- Etap 3 (opcja): 2 spotkania tyg. 1 na 1 z NS online (3 mies.)
+- Ograniczona liczba miejsc
+
+### Kalifornia 40+ (dorośli)
+- Program dwujęzyczny: po polsku i po angielsku
+- Pilot polski + koordynatorzy Native Speakerzy
+- Komfortowe tempo zwiedzania
+- Możliwość naturalnej praktyki języka bez presji
+
+### Japonia 40+ (dorośli)
+- Program dwujęzyczny: pilot polsko- i anglojęzyczny
+- Komfortowe zwiedzanie, spokojne tempo
+- Kontakt z kulturą, inspirujące rozmowy
+- Przejazd Shinkansenem (pociąg szybki)
+
+### Nowy Jork + Toronto 40+ (dorośli)
+- Program dwujęzyczny: po polsku i po angielsku
+- Pilot polski + pilot anglojęzyczny
+- Toronto: CN Tower, Kensington Market; Niagara; Watkins Glen
+- Waszyngton: Capitol, Biały Dom, Smithsonian
+- Filadelfia: Rocky Steps, Independence Hall
+- Nowy Jork: Manhattan, Brooklyn, Statua Wolności, Met Museum
+- Możliwość wyboru poziomu kontaktu z angielskim
+
+### Kalifornia 18–40 (young adults)
+- Formuła "Erasmus dla dorosłych" (18–40)
+- Międzynarodowa grupa z różnych krajów Europy (UK, Włochy itd.)
+- Koordynatorzy Native Speakerzy
+- Immersja językowa i kulturowa
+
+### Japonia 18–40 (young adults)
+- Formuła "Erasmus dla dorosłych" (18–40)
+- Międzynarodowa grupa z różnych krajów Europy
+- Koordynatorzy Native Speakerzy
+
+### Rok w USA – wymiana uczniowska (15–18.5 lat)
+- Uczęszczanie do amerykańskiego liceum jako pełnoprawny uczeń
+- Pobyt w amerykańskiej rodzinie goszczącej
+- Lokalny koordynator w stałym kontakcie
+- System oceniania literowy (A–F), semestry: jesienny, zimowy, wiosenny
+- Ograniczona liczba uczestników
+- PreCAMP przed wyjazdem
+- **Wymagania:** komunikatywny angielski, dobry stan zdrowia, stopnie min. dobre (2–3 lata wstecz)
+
+### Rok w Kanadzie – wymiana uczniowska (14–18.5 lat)
+- Szkoły publiczne w Kanadzie (od Kolumbii Brytyjskiej po Nową Szkocję)
+- Zakwaterowanie u rodzin goszczących
+- Możliwość uzyskania kanadyjskiego high school diploma
+- Program roczny, semestralny lub kilkutygodniowy (elastyczny)
+- **Wymagania:** angielski min. B1
+- Wsparcie zespołu Angloville na każdym etapie
+
+### Angloville MEETS – online (dorośli)
+- Spotkania online z Native Speakerami umawiane przez serwis
+- Kontynuacja po programie stacjonarnym
+- Czas: 6 miesięcy
 
 ---
 
-## DANE UZUPEŁNIAJĄCE Z REGULAMINÓW PDF
+## 11. DANE Z REGULAMINÓW PDF (angloville.pl)
 
-### Breakdown ceny (kurs + turystyka) — Polska
+### Breakdown ceny (kurs + turystyka) — programy w Polsce
 | Produkt | Sezon | Opłata za Kurs | Opłata za Turystykę | Łącznie |
 |---|---|---|---|---|
 | Junior | Lato 2026 | 2 699 zł | 2 000 zł | 4 699 zł |
@@ -663,11 +842,34 @@
 | Adult Standard | 2026 | 3 999 zł | 2 000 zł | 5 999 zł |
 | Adult Tandem | 2026 | 2 999 zł | 2 000 zł | 4 999 zł |
 
+### Cennik zagranica (z regulaminu lato 2026)
+| Program | Cena |
+|---|---|
+| Junior Plus Eurotrip Intensive / UK Trip Hotel Intensive | 5 999 zł |
+| Junior Plus Italy/Baltic/Eurotrip Standard | 5 299 zł |
+| Junior Plus UK Trip Host Families Standard | 4 699 zł |
+| Junior International Malta 1 tyg. | 7 699 zł |
+| Junior International Malta 2 tyg. / Londyn / Canterbury | 12 499 zł |
+| Junior Adventure NY/Miami 1 tyg. (4 os. pokój) | 14 999 zł |
+| Junior Adventure NY/Miami 1 tyg. (2 os. pokój) | 15 999 zł |
+| Junior Adventure Toronto+NY dłuższy (4 os.) | 19 999 zł |
+| Junior Adventure Toronto+NY dłuższy (2 os.) | 21 999 zł |
+| Junior Adventure Toronto+NY krótszy (4 os.) | 10 999 zł |
+| Junior Adventure Toronto+NY krótszy (2 os.) | 12 999 zł |
+| Junior Adventure Japan 29.06–10.07.2026 | 19 499 zł |
+| Junior Adventure Japan inne terminy | 17 999 zł |
+
+### Cennik zagranica (z regulaminu zima 2026)
+| Program | Cena |
+|---|---|
+| Junior Plus UK Trip | 6 299 zł |
+| Junior International Malta 1 tyg. | 7 499 zł |
+
 ### Ratio NS : uczestnik
 | Produkt | Ratio |
 |---|---|
-| Kids (7-11) | 1 NS : 6 uczestników |
-| Junior (11-18) | 1 NS : 2 (sesje 2 na 1) |
+| Kids (7–11) | 1 NS : 6 uczestników |
+| Junior (11–18) | 1 NS : 2 (sesje 2 na 1) |
 | Junior SKI | 1 NS : 2 (sesje 2 na 1) |
 | Family Adult | 2 na 1 z NS |
 | Family Kids | 3 na 1 + gry/zabawy |
@@ -682,14 +884,16 @@
 | Adult Premium/Standard | 1 NS : 1 uczestnik (70h w 6 dni) |
 | Adult Tandem | 1 NS : 2 uczestników (70h w 6 dni) |
 | Tripy 40+ | Pilot PL + pilot EN, program dwujęzyczny |
-| Tripy 18-40 | Koordynatorzy NS, grupa międzynarodowa |
+| Tripy 18–40 | Koordynatorzy NS, grupa międzynarodowa |
 
 ### Ubezpieczenie (w cenie programu)
 - **Polska (obozy PL):** Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN
 - **Zagranica (młodzież):** Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR
 - **Opcjonalnie:** Ubezpieczenie od kosztów rezygnacji 100% (Signal Iduna)
+- **OWU zagranica:** https://app.signal-iduna.pl/files/IPID_OWU_Bezpieczne%20Podroze.pdf.pdf
+- **OWU rezygnacja:** https://app.signal-iduna.pl/files/IPID%20OWUKIT2018%20Ankes1%20Klauzule1,2,3.pdf.pdf
 
-### Zasady rezygnacji — Kurs (obozy PL)
+### Zasady rezygnacji — Kurs (obozy PL: Kids, Junior, SKI)
 | Termin przed rozpoczęciem | Koszt rezygnacji (% opłaty za Kurs) |
 |---|---|
 | >30 dni | 25% |
@@ -699,7 +903,7 @@
 | 6 dni lub mniej | 92% |
 | W trakcie kursu | 100% |
 
-### Zasady rezygnacji — Impreza Turystyczna
+### Zasady rezygnacji — Impreza Turystyczna (obozy PL)
 | Termin przed rozpoczęciem | Koszt rezygnacji (% opłaty za IT) |
 |---|---|
 | >28 dni | 0% (bezpłatne) |
@@ -710,20 +914,64 @@
 | 2 dni lub mniej | 95% |
 | W trakcie | 100% |
 
+### Zasady rezygnacji — Zagranica (Junior International, Junior Plus)
+| Termin przed rozpoczęciem | Koszt rezygnacji (% opłaty za IT) |
+|---|---|
+| >30 dni | 25% |
+| 29–21 dni | 50% |
+| 20–7 dni | 70% |
+| 6–3 dni | 80% |
+| 2 dni lub mniej | 95% |
+| W trakcie | 100% |
+
 ### Zasady zniżek za polecenie (z regulaminu)
 - Polecić można **wyłącznie** osobę, która nigdy nie była klientem Angloville
 - Klient rozpoznawany po adresie email
+- Polecający podaje adres email swój i osoby polecanej
+- Osoba polecana dokonuje zapisu wyłącznie przy pomocy adresu podanego przez polecającego
 - Zniżka polecającego odejmowana od **opłaty turystycznej (2. płatność)**
 - Zniżka poleconego odejmowana od **opłaty szkoleniowej (1. płatność)**
+- Zniżka nalicza się po: (1) opłacie 1. raty przez polecającego, (2) zapisie i opłacie 1. raty przez poleconego
 - **Max poleconych:** 2 osoby w roku kalendarzowym
 - System poleceń działa wyłącznie w danym roku kalendarzowym
 - Kwota zniżki zależy od programu (300–1 200 zł)
+- Można polecić więcej osób i sumować zniżki (max 2 premiowane)
 
-### Kontakt Angloville
+### Zmiana terminu kursu
+- Możliwa za zgodą Organizatora (może odmówić bez podania przyczyny)
+- Może wymagać aneksu i opłaty administracyjnej
+- Po zmianie terminu — zasady rezygnacji liczone od kosztów rzeczywiście poniesionych
+
+### Kurs online (gdy odwołany wyjazd)
+- Junior: 75 lekcji po 20 min, do wykorzystania w 5 miesięcy
+- Kids: 60 lekcji po 20 min, do wykorzystania w 5 miesięcy
+- SKI: 50 lekcji po 20 min, do wykorzystania w 5 miesięcy
+
+### Płatności
+- Wpłaty przez PayU, tPay lub przelew bankowy
+- Raty 0% (harmonogram od Organizatora)
+- Opłata za kurs: przy rejestracji lub do 3 dni od potwierdzenia
+- Opłata za turystykę: najpóźniej 14 dni przed rozpoczęciem (PL) / 30 dni (zagranica)
+- Faktury: VAT Marża (turystyka), wystawiane do 15. dnia miesiąca po wpłacie
+
+### Odstąpienie od umowy (konsument)
+- 14 dni od zawarcia umowy (poza lokalem / na odległość) — bez podania przyczyny
+- Nie dotyczy Imprezy Turystycznej (ustawa o imprezach turystycznych)
+- Rozpoczęcie kursu = utrata prawa do odstąpienia
+
+---
+
+## 12. DANE KONTAKTOWE ANGLOVILLE
+
 - **Tel:** +48 533 655 147
 - **Email:** kontakt@angloville.pl
 - **RODO:** rodo@angloville.pl
 - **Adres:** Angloville sp. z o.o., ul. Św. Leonarda 1/8, 25-311 Kielce
-- **KRS:** 0000541765, NIP: 6572916430, REGON: 360712701
+- **KRS:** 0000541765
+- **NIP:** 6572916430
+- **REGON:** 360712701
 - **Organizator Turystyki nr:** 119/15 (Marszałek Woj. Świętokrzyskiego)
-- **Ubezpieczyciel:** Signal Iduna TU S.A., Warszawa
+- **Gwarancja ubezpieczeniowa:** ważna, dla Organizatorów Turystyki
+- **Ubezpieczyciel:** Signal Iduna TU S.A., ul. Przyokopowa 31, 01-208 Warszawa
+- **Strona:** https://angloville.pl
+- **Panel klienta:** https://angloville.pl/panel-klienta/
