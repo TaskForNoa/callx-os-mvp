@@ -93,36 +93,51 @@ export default function Training() {
       }
 
       try {
-        const reader = new FileReader();
-        const b64: string = await new Promise((resolve) => {
-          reader.onloadend = () => resolve((reader.result as string).split(',')[1]);
-          reader.readAsDataURL(file);
-        });
-
-        const res = await fetch('/api/training/upload', {
+        // 1) Get signed upload URL (private bucket)
+        const s1 = await fetch('/api/training/signed-upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ audio: b64, fileName: file.name, mimeType: file.type || undefined }),
+          body: JSON.stringify({ fileName: file.name, contentType: file.type || undefined }),
         });
-        const data = await res.json();
+        const d1 = await s1.json();
+        if (!s1.ok) throw new Error(d1?.details || d1?.error || 'Nie udało się uzyskać signed URL');
+
+        // 2) Upload file directly to Supabase Storage (avoids Vercel size limits)
+        const put = await fetch(d1.signedUrl, {
+          method: 'PUT',
+          headers: { 'Content-Type': file.type || 'application/octet-stream' },
+          body: file,
+        });
+        if (!put.ok) {
+          const t = await put.text().catch(() => '');
+          throw new Error(`Upload do storage nie powiódł się (${put.status}). ${t}`);
+        }
+
+        // 3) Ask backend to download->Deepgram->store transcript->delete audio
+        const s2 = await fetch('/api/training/transcribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ path: d1.path, fileName: file.name, contentType: file.type || undefined }),
+        });
+        const d2 = await s2.json();
 
         if (idx !== -1) {
-          if (!res.ok) {
+          if (!s2.ok) {
             updated[idx].status = 'error';
-            updated[idx].transcript = data?.details || data?.error || 'Błąd transkrypcji';
+            updated[idx].transcript = d2?.details || d2?.error || 'Błąd transkrypcji';
+            if (d2?.transcriptId) updated[idx].id = d2.transcriptId;
           } else {
-            updated[idx].status = data.transcript ? 'done' : 'error';
-            updated[idx].transcript = data.transcript || 'Brak transkrypcji';
-            // Replace local id with server transcript id when available
-            if (data.transcriptId) updated[idx].id = data.transcriptId;
-            if (data.createdAt) updated[idx].uploadedAt = data.createdAt;
+            updated[idx].status = d2.transcript ? 'done' : 'error';
+            updated[idx].transcript = d2.transcript || 'Brak transkrypcji';
+            if (d2.transcriptId) updated[idx].id = d2.transcriptId;
+            if (d2.createdAt) updated[idx].uploadedAt = d2.createdAt;
           }
           saveFiles([...updated]);
         }
       } catch (e: any) {
         if (idx !== -1) {
           updated[idx].status = 'error';
-          updated[idx].transcript = e?.message ? `Błąd transkrypcji: ${e.message}` : 'Błąd transkrypcji';
+          updated[idx].transcript = e?.message ? `Błąd: ${e.message}` : 'Błąd';
           saveFiles([...updated]);
         }
       }
