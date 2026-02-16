@@ -140,19 +140,66 @@ export default function LeadDetail() {
         } catch { resolve(''); }
       };
       rec.start(250);
-      let spoke = false, silent = 0, ticks = 0;
+
+      // Simple VAD (voice activity detection)
+      // Previous fixed threshold caused missed speech on some mics → full 15s wait.
+      // We calibrate a noise floor for ~1s, then use a dynamic threshold.
+      let spoke = false;
+      let silentTicksAfterSpeech = 0;
+      let ticks = 0;
+      let floorSum = 0;
+      let floorN = 0;
+      let dynamicThreshold = 0.008; // fallback
+
       const vad = setInterval(() => {
-        if (abortRef.current) { clearInterval(vad); if (rec.state === 'recording') rec.stop(); return; }
-        if (rec.state !== 'recording') { clearInterval(vad); return; }
+        if (abortRef.current) {
+          clearInterval(vad);
+          if (rec.state === 'recording') rec.stop();
+          return;
+        }
+        if (rec.state !== 'recording') {
+          clearInterval(vad);
+          return;
+        }
+
         const d = new Float32Array(ana.fftSize);
         ana.getFloatTimeDomainData(d);
-        let s = 0; for (let i = 0; i < d.length; i++) s += d[i] * d[i];
+        let s = 0;
+        for (let i = 0; i < d.length; i++) s += d[i] * d[i];
         const rms = Math.sqrt(s / d.length);
-        if (rms > 0.01) { spoke = true; silent = 0; }
-        else if (spoke) { silent++; if (silent >= 6) { clearInterval(vad); if (rec.state === 'recording') rec.stop(); return; } }
-        ticks++;
+
+        // Calibrate first ~1s (5 ticks)
+        if (ticks < 5) {
+          floorSum += rms;
+          floorN += 1;
+          const floor = floorSum / Math.max(1, floorN);
+          // Threshold: a bit above noise floor
+          dynamicThreshold = Math.max(0.004, floor * 3.5);
+        }
+
+        const isSpeech = rms > dynamicThreshold;
+
+        if (isSpeech) {
+          spoke = true;
+          silentTicksAfterSpeech = 0;
+        } else if (spoke) {
+          silentTicksAfterSpeech += 1;
+          // Stop after ~0.8–1.2s of silence after user spoke
+          if (silentTicksAfterSpeech >= 5) {
+            clearInterval(vad);
+            if (rec.state === 'recording') rec.stop();
+            return;
+          }
+        }
+
+        ticks += 1;
         setListenSec(Math.floor(ticks / 5));
-        if (ticks > 75) { clearInterval(vad); if (rec.state === 'recording') rec.stop(); }
+
+        // Hard cap: 8s (instead of 15s) to reduce "waiting" feeling
+        if (ticks > 40) {
+          clearInterval(vad);
+          if (rec.state === 'recording') rec.stop();
+        }
       }, 200);
     } catch {
       setError('Brak mikrofonu — zezwól w przeglądarce!');
