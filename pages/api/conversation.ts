@@ -91,13 +91,38 @@ function pickOfferForDestination(dest: string): OfferFacts | null {
   return pickOfferFromConversation(dest);
 }
 
+// ── Determine target age group from lead data ──
+function getLeadAgeGroup(lead: any): 'youth' | 'adult' | 'unknown' {
+  const pastProgs = (lead.past_programs || []).join(' ').toLowerCase();
+  const childName = lead.childName || '';
+  if (childName || pastProgs.includes('junior') || pastProgs.includes('kids') || pastProgs.includes('malta') || pastProgs.includes('anglia')) return 'youth';
+  if (pastProgs.includes('adult') || pastProgs.includes('wioska') || pastProgs.includes('tandem') || pastProgs.includes('premium')) return 'adult';
+  return 'unknown';
+}
+
 // ── Filter ALL matching products based on customer choices ──
-function filterMatchingProducts(allText: string): { products: OfferFacts[]; filters: string } {
+function filterMatchingProducts(allText: string, lead?: any): { products: OfferFacts[]; filters: string } {
   const t = allText.toLowerCase();
   const products = productsData as Product[];
   const filters: string[] = [];
 
   let filtered = [...products];
+
+  // Age group filter from lead data
+  if (lead) {
+    const ageGroup = getLeadAgeGroup(lead);
+    if (ageGroup === 'youth') {
+      filtered = filtered.filter(p => {
+        const wg = ((p as any).wiekGrupa || '').toLowerCase();
+        const n = ((p as any).name || '').toLowerCase();
+        return wg.includes('dzieci') || wg.includes('młodzież') || wg === '' || n.includes('junior') || n.includes('kids');
+      });
+      filters.push('Młodzież/Dzieci');
+    } else if (ageGroup === 'adult') {
+      filtered = filtered.filter(p => ((p as any).wiekGrupa || '').includes('Dorośli'));
+      filters.push('Dorośli');
+    }
+  }
 
   // Destination filter
   const wantsPolska = t.includes('polsk') || t.includes('w kraju');
@@ -456,6 +481,8 @@ DANE LEADA:
 - Ostatni program: ${lastProgram}
 - Email: ${lead.email}
 - Preferowana destynacja: ${lead.preferred_destination || 'nieznana'}
+${lead.childName ? `
+⚠️ TO JEST KAMPANIA DLA MŁODZIEŻY/DZIECI — rozmowa dotyczy WYŁĄCZNIE programów dla ${childName}. NIE proponuj programów dla dorosłych! Wszystkie propozycje muszą dotyczyć obozów dla dzieci/młodzieży.` : ''}
 ${productContext}
 
 ${customerContext || ''}
@@ -505,7 +532,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Get ALL matching products based on customer choices (for browsing)
   const allConversationText = hist.map(h => h.text).concat([customerResponse || '']).join(' ');
-  const matchingProducts = filterMatchingProducts(allConversationText);
+  const matchingProducts = filterMatchingProducts(allConversationText, lead);
 
   // Get step definition
   const stepDef = STEPS.find(s => s.step === currentStep) || STEPS[STEPS.length - 1];
