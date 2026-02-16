@@ -108,20 +108,27 @@ const STEPS: StepDef[] = [
   },
   {
     step: 1, name: 'Rozpoznanie potrzeb',
-    goal: 'Nawiąż do uczestnictwa dziecka w programach (ostatnio: [lastProgram]). Zapytaj jak się podobało. Ustal preferencje: Polska vs zagranica, wiek dziecka, narty/język.',
-    rules: ['Nie podawaj ceny', 'Pytaj o preferencje', 'Jeśli klient nie ma czasu → zaproponuj callback i zakończ'],
+    goal: 'Nawiąż do uczestnictwa dziecka [childName] w programach (ostatnio: [lastProgram]). Zapytaj jak się podobało. Ustal preferencje: Polska vs zagranica, wiek dziecka, narty/język. NIE prezentuj jeszcze żadnego produktu — dopiero zbierasz informacje.',
+    rules: [
+      'Nie podawaj ceny',
+      'Nie proponuj jeszcze konkretnego produktu',
+      'Pytaj o preferencje: kierunek, wiek, typ programu',
+      'Jeśli klient nie ma czasu → zaproponuj callback i zakończ',
+      'Jeśli klient sam mówi co go interesuje → zapamiętaj i przejdź dalej',
+    ],
     canRevealPrice: false,
   },
   {
     step: 2, name: 'Prezentacja programu',
-    goal: 'Przedstaw dopasowany program z bazy wiedzy. Opisz metodę Angloville, stosunek NS do uczestników, format, lokalizację, plan programu. Na końcu zapytaj czy chce poznać cenę.',
+    goal: 'Na podstawie odpowiedzi klienta, przedstaw dopasowany program. Opisz metodę Angloville, stosunek NS do uczestników, lokalizację, co zawiera. Jeśli nie wiesz jeszcze czego klient szuka — dopytaj zamiast proponować.',
     rules: [
       'NIE podawaj ceny — najpierw cechy i wyróżniki',
       'Opisz metodę Angloville (sesje z native speakerami, nauka przez zabawę)',
       'Podaj stosunek NS do uczestników z danych produktu',
       'Jeśli program turystyczny — opisz trasę i miejsca',
       'Jeśli językowy — opisz sesje 2:1, karaoke, talent show, 70h zanurzenia',
-      'Jeśli nie udało się dopasować programu — dopytaj o preferencje',
+      'Jeśli NIE MASZ dopasowanego produktu — DOPYTAJ o preferencje zamiast zgadywać',
+      'Na końcu zapytaj czy chce poznać cenę',
     ],
     canRevealPrice: false,
   },
@@ -196,28 +203,33 @@ function determineNextStep(currentStep: number, customerSaid: string, hasOffer: 
     case 1:
       if (t.includes('nie') && (t.includes('czas') || t.includes('mogę') || t.includes('teraz')))
         return { nextStep: 99, outcome: 'Callback Requested' };
-      return { nextStep: 2 };
+      // Customer confirmed availability / answered about past program → move to presentation
+      return { nextStep: 2 };  // needs discovery done, move to program presentation
 
     case 2:
-      // Stay on 2 if no product matched yet, advance to 3 if customer wants price
-      if (t.includes('cenę') || t.includes('ile') || t.includes('kosztuje') || t.includes('tak'))
+      // Stay on 2 until product is matched AND customer shows interest
+      if (!hasOffer) return { nextStep: 2 }; // keep discovering needs
+      // Product matched — but only advance if customer wants to hear more/price
+      if (t.includes('cenę') || t.includes('ile') || t.includes('kosztuje') || t.includes('tak') || t.includes('chętnie') || t.includes('dalej'))
         return { nextStep: 3 };
-      if (!hasOffer) return { nextStep: 2 }; // keep discovering
-      return { nextStep: 3 }; // product matched, move to price
+      // Customer responded but not explicitly asking for price — present program (stay on 2 to show features first)
+      return { nextStep: 2 };
 
     case 3:
       if (t.includes('tak') || t.includes('wyślij') || t.includes('mail') || t.includes('chętnie') || t.includes('poproszę'))
         return { nextStep: 4 };
-      if (t.includes('nie') || t.includes('rezygnuję'))
+      if (t.includes('rezygnuję') || (t.includes('nie') && t.includes('zainteresow')))
         return { nextStep: 99, outcome: 'Not Interested' };
+      if (t.includes('drogo') || t.includes('tani'))
+        return { nextStep: 3 }; // stay — handle price objection
       return { nextStep: 4 }; // default: move to email
 
     case 4:
       if (t.includes('tak') || t.includes('wyślij') || t.includes('aktualny') || t.includes('zgadza') || t.includes('ok') || t.includes('dobry'))
         return { nextStep: 5 };
-      if (t.includes('nie') || t.includes('rezygnuję'))
+      if (t.includes('rezygnuję') || (t.includes('nie') && t.includes('zainteresow')))
         return { nextStep: 99, outcome: 'Not Interested' };
-      return { nextStep: 4 }; // stay, need email confirmation
+      return { nextStep: 4 }; // stay, handle objection or get email
 
     case 5:
       return { nextStep: 99, outcome: 'Email Summary Sent (Simulated)' };
@@ -314,41 +326,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Get step definition
   const stepDef = STEPS.find(s => s.step === currentStep) || STEPS[STEPS.length - 1];
 
-  // Determine next step
-  const { nextStep, outcome } = currentStep === 0
-    ? { nextStep: 1, outcome: undefined }  // First turn: always advance
-    : determineNextStep(currentStep, customerResponse || '', !!offer);
+  // First turn (no customer response yet) → generate for CURRENT step (greeting)
+  const isFirstTurn = !customerResponse || !customerResponse.trim();
 
-  // Handle terminal state
-  if (currentStep === 99 || nextStep === 99) {
-    // For step 5 (closing), still generate LLM response
-    if (currentStep === 5) {
-      // Generate closing message
-      const systemPrompt = buildSystemPrompt(stepDef, lead, offer, voiceName);
-      const llmMessages = hist.map(h => ({
-        role: h.speaker === 'agent' ? 'assistant' as const : 'user' as const,
-        content: h.text,
-      }));
-      if (customerResponse) llmMessages.push({ role: 'user', content: customerResponse });
-
-      try {
-        const agentText = await callLLM(systemPrompt, llmMessages);
-        return res.status(200).json({
-          agentText, nextStep: 99,
-          outcome: outcome || 'Email Summary Sent (Simulated)',
-          isComplete: true,
-          offer: offer ? { productId: offer.productId, label: offer.label, regular: offer.regular, early: offer.early, ratio: offer.ratio, terminy: offer.terminy, url: offer.url } : null,
-        });
-      } catch {
-        return res.status(200).json({
-          agentText: `Doskonale! Wyślę wszystko na ${lead.email}. Dziękuję za rozmowę i miłego dnia!`,
-          nextStep: 99, outcome: outcome || 'Completed', isComplete: true,
-        });
-      }
-    }
-    return res.status(200).json({
-      agentText: '', nextStep: 99, outcome: outcome || 'Completed', isComplete: true,
-    });
+  // Determine next step (only if customer has spoken)
+  let nextStep: number;
+  let outcome: string | undefined;
+  if (isFirstTurn) {
+    // Generate for current step, but tell frontend the next step to use
+    // Step 0 first turn → generate greeting, advance to step 1 for next call
+    nextStep = currentStep === 0 ? 1 : currentStep;
+    outcome = undefined;
+  } else {
+    const result = determineNextStep(currentStep, customerResponse, !!offer);
+    nextStep = result.nextStep;
+    outcome = result.outcome;
   }
 
   // Build LLM messages from history
@@ -356,13 +348,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     role: h.speaker === 'agent' ? 'assistant' as const : 'user' as const,
     content: h.text,
   }));
-  if (customerResponse) {
+  if (customerResponse && customerResponse.trim()) {
     llmMessages.push({ role: 'user', content: customerResponse });
   }
 
-  // Use the NEXT step for generation (we're generating what to say in the next step)
-  const nextStepDef = STEPS.find(s => s.step === nextStep) || stepDef;
-  const systemPrompt = buildSystemPrompt(nextStepDef, lead, offer, voiceName);
+  // Always generate in the context of CURRENT step.
+  // The agent responds within this step, then we advance to nextStep for the next turn.
+  const generateForStep = currentStep;
+
+  // For terminal states (99), generate a proper goodbye
+  if (generateForStep === 99 || nextStep === 99) {
+    const goodbyePrompt = buildSystemPrompt(
+      {
+        step: 99, name: 'Pożegnanie',
+        goal: 'Pożegnaj się ciepło i profesjonalnie. Jeśli klient nie jest zainteresowany — uszanuj to. Jeśli wysyłamy mail — potwierdź. Zostaw otwarte drzwi.',
+        rules: ['Krótko — 1-2 zdania', 'Dziękuj za czas', 'Zaproś do kontaktu w przyszłości', 'Miłego dnia'],
+        canRevealPrice: false,
+        isTerminal: true,
+      },
+      lead, offer, voiceName,
+    );
+
+    let agentText: string;
+    try {
+      agentText = await callLLM(goodbyePrompt, llmMessages);
+    } catch {
+      agentText = 'Rozumiem. Dziękuję za poświęcony czas. Gdyby zmienili Państwo zdanie — zapraszam do kontaktu. Miłego dnia!';
+    }
+
+    return res.status(200).json({
+      agentText, nextStep: 99,
+      outcome: outcome || 'Completed',
+      isComplete: true,
+      offer: offer ? { productId: offer.productId, label: offer.label, regular: offer.regular, early: offer.early, ratio: offer.ratio, terminy: offer.terminy, url: offer.url } : null,
+    });
+  }
+
+  const genStepDef = STEPS.find(s => s.step === generateForStep) || stepDef;
+  const systemPrompt = buildSystemPrompt(genStepDef, lead, offer, voiceName);
 
   let agentText: string;
   try {
