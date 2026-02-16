@@ -1,9 +1,33 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import leadsData from '../../data/mock-leads.json';
 import productsData from '../../data/products-full.json';
+import { getEmbedding } from '../../lib/embeddings';
+import { getSupabaseAdmin } from '../../lib/supabaseAdmin';
 
 // Conversation state machine
 // 7-step flow: greeting → recording info → past program → interest → listen → offer → outcome
+
+// RAG: retrieve similar training fragments for context
+async function retrieveRAGContext(query: string, limit = 3): Promise<string[]> {
+  try {
+    const key = process.env.OPENAI_API_KEY;
+    const sbUrl = process.env.SUPABASE_URL;
+    const sbKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!key || !sbUrl || !sbKey) return [];
+
+    const embedding = await getEmbedding(query);
+    const supabase = getSupabaseAdmin();
+    const { data } = await supabase.rpc('match_training_chunks', {
+      query_embedding: JSON.stringify(embedding),
+      match_threshold: 0.65,
+      match_count: limit,
+    });
+    return (data || []).map((r: any) => r.chunk_text);
+  } catch {
+    // RAG is best-effort — don't break conversation if it fails
+    return [];
+  }
+}
 
 interface ConversationState {
   step: number;
@@ -288,7 +312,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
   }
 }
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -311,6 +335,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     history: history || [],
     voice: voice || null,
   };
+
+  // RAG: retrieve similar training fragments when customer responds
+  let ragContext: string[] = [];
+  if (customerResponse && customerResponse.trim()) {
+    ragContext = await retrieveRAGContext(customerResponse, 3);
+  }
 
   const response = getAgentResponse(state);
 
@@ -391,5 +421,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       terminy: response.offerUsed.terminy,
       url: response.offerUsed.url,
     } : null,
+    ragContext: ragContext.length > 0 ? ragContext : undefined,
   });
 }
