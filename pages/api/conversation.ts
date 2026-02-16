@@ -72,6 +72,8 @@ type OfferFacts = {
   terminy?: string;
   znizki?: string;
   coZawiera?: string;
+  program?: string;
+  cechy?: string;
   url?: string;
   wariant?: string;
 };
@@ -95,6 +97,8 @@ function buildOfferFacts(p: any, label: string): OfferFacts {
     terminy: p?.terminy,
     znizki: p?.znizki,
     coZawiera: p?.coZawiera,
+    program: p?.program,
+    cechy: p?.cechy,
     url: p?.url,
     wariant: p?.wariant,
   };
@@ -243,8 +247,9 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
     }
 
     // ══ STEP 2: Prezentacja programu ══
-    // Cel: opisać format dopasowanego programu. 40 uczestników + 20 NS, sesje 2:1,
-    //      karaoke, talent show, 70h zanurzenia. NIE podawać jeszcze ceny!
+    // Cel: opisać cechy i wyróżniki dopasowanego programu.
+    // Metoda Angloville, stosunek NS:uczestników, lokalizacja, plan programu.
+    // NIE podawać ceny — podajemy dopiero na pytanie klienta!
     case 2: {
       const offer = pickOfferFromConversation(customerSaid, state.history);
 
@@ -255,74 +260,104 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
         };
       }
 
-      // Klient dał jakieś info → prezentujemy format programu (BEZ ceny)
+      // Klient dał wystarczająco info → prezentujemy program (BEZ ceny)
       if (offer) {
-        const ratioLine = offer.ratio ? `Stosunek native speakerów do uczestników to ${offer.ratio}.` : 'Na dwóch polskich uczestników przypada jeden native speaker.';
+        // Build rich description from KB fields
+        const ratioDesc = offer.ratio
+          ? `Program opiera się na metodzie Angloville — stosunek native speakerów do uczestników to ${offer.ratio}.`
+          : 'Program opiera się na metodzie Angloville, gdzie na dwóch polskich uczestników przypada jeden native speaker.';
+
+        // Check if it's a tourist program (no language sessions)
+        const isTourist = offer.ratio && (offer.ratio.toLowerCase().includes('brak sesji') || offer.ratio.toLowerCase().includes('pilot'));
+
+        let programDesc = '';
+        if (offer.coZawiera) {
+          programDesc = ` W programie: ${offer.coZawiera}.`;
+        }
+
+        let presentation: string;
+        if (isTourist) {
+          // Tourist program — focus on destinations and experience
+          presentation = `Polecam ${offer.label}. To wyjazd turystyczno-językowy${offer.wariant ? ` (${offer.wariant})` : ''}.${programDesc} ${ratioDesc} Angielski w praktyce — w naturalnych sytuacjach podczas zwiedzania.`;
+        } else {
+          // Language program — focus on Angloville method
+          presentation = `Polecam ${offer.label}. ${ratioDesc} Nauka odbywa się przez zabawę — sesje językowe, karaoke, talent show, tańce irlandzkie. W ciągu tygodnia to aż 70 godzin zanurzenia w angielskim. Bez zeszytów, bez książek — dzieci uczą się tak, jak nauczyły się polskiego.${programDesc}`;
+        }
+
         return {
-          text: `Na podstawie tego co Pan/Pani mówi, polecam ${offer.label}. To wyjazd, gdzie do grupy 40 polskich uczestników dołącza 20 native speakerów. ${ratioLine} Nauka odbywa się przez zabawę — sesje językowe, karaoke, talent show, tańce irlandzkie. W ciągu tygodnia to aż 70 godzin zanurzenia w angielskim. Czy chciałby Pan/Pani poznać cenę i dostępne terminy?`,
+          text: `${presentation} Czy chciałby Pan/Pani poznać cenę i dostępne terminy?`,
           nextStep: 3,
           offerUsed: offer,
         };
       }
 
-      // Klient mówi ogólnie — dopytaj
+      // Klient mówi ogólnie — dopytaj z opisem opcji
       if (customerSaid.includes('polsk') || customerSaid.includes('w kraju')) {
         return {
-          text: 'W Polsce mamy opcję językową tradycyjną i narciarsko-językową. Jak dziecko radzi sobie z angielskim? I czy interesują Państwa narty?',
+          text: 'W Polsce mamy opcję językową — tydzień z native speakerami w hotelu, sesje 2 na 1, karaoke, talent show. Jest też opcja narciarsko-językowa: pół dnia na stoku, pół dnia szkolenie językowe. Która bardziej pasuje? I ile lat ma dziecko?',
           nextStep: 2,
         };
       }
       if (customerSaid.includes('zagrani') || customerSaid.includes('za granic')) {
         return {
-          text: 'Za granicą mamy Maltę i Anglię. Malta to tygodniowy program z native speakerami w słonecznym klimacie, a Anglia to wyjazd z zakwaterowaniem u rodzin brytyjskich. Która opcja brzmi ciekawiej?',
+          text: 'Za granicą mamy dwie opcje. Malta — tygodniowy program z native speakerami w słonecznym klimacie, sesje 2 na 1. Anglia — wyjazd autokarem, zakwaterowanie u brytyjskich rodzin, zwiedzanie Londynu z native speakerami. Która brzmi ciekawiej?',
           nextStep: 2,
         };
       }
       if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie')) {
         return {
-          text: 'To fantastycznie! Mamy kilka opcji na sezon 2026. Żeby dobrze dopasować — szukają Państwo czegoś w Polsce, czy raczej za granicą? I w jakim jest wieku dziecko?',
+          text: 'To fantastycznie! Mamy kilka opcji na 2026. Polska, Malta, Anglia — każda oparta na metodzie Angloville z native speakerami. Który kierunek najbardziej interesuje?',
           nextStep: 2,
         };
       }
       if (customerSaid.includes('nie') || customerSaid.includes('średnio') || customerSaid.includes('słab')) {
         return {
-          text: 'Rozumiem. Mamy na 2026 nowe opcje, może coś innego by lepiej pasowało. Czy szukaliby Państwo wyjazdu w Polsce, czy za granicą?',
+          text: 'Rozumiem. Na 2026 mamy nowe opcje — może coś innego by lepiej pasowało. Polska, Malta, czy Anglia? I w jakim wieku jest dziecko?',
           nextStep: 2,
         };
       }
       // Fallback
       return {
-        text: 'Żeby dobrze dopasować program — ile lat ma dziecko? I czy bardziej interesuje Państwa Polska, Malta, czy może Anglia?',
+        text: 'Żeby dobrze dopasować — ile lat ma dziecko? Mamy programy w Polsce, na Malcie i w Anglii, każdy oparty na metodzie Angloville z native speakerami. Który kierunek najbardziej interesuje?',
         nextStep: 2,
       };
     }
 
     // ══ STEP 3: Cena + dostępność ══
-    // Cel: podać cenę (Early Bird), raty, podkreślić ograniczoną dostępność
+    // Cel: podać cenę DOPIERO gdy klient pyta. Zawsze najpierw cechy/wyróżniki.
     case 3: {
       const offer = pickOfferFromConversation(customerSaid, state.history) || pickOfferForDestination(lead.preferred_destination);
 
       if (!offer) {
         return {
-          text: 'Nie mam jeszcze dość informacji żeby podać cenę. Proszę powiedzieć — który kierunek najbardziej interesuje?',
+          text: 'Nie mam jeszcze dość informacji żeby dopasować program. Który kierunek najbardziej interesuje — Polska, Malta, czy Anglia?',
           nextStep: 2,
           offerUsed: null,
         };
       }
 
       const priceLine = buildPriceLine(offer);
-      const terminyLine = offer.terminy ? `Najbliższe terminy: ${offer.terminy}.` : '';
+      const terminyLine = offer.terminy ? `Terminy: ${offer.terminy}.` : '';
 
-      if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('cenę') || customerSaid.includes('ile') || customerSaid.includes('kosztuje') || !customerSaid.includes('nie')) {
+      // Klient chce cenę
+      if (customerSaid.includes('tak') || customerSaid.includes('cenę') || customerSaid.includes('ile') || customerSaid.includes('kosztuje') || customerSaid.includes('chętnie')) {
         return {
-          text: `${priceLine} ${terminyLine} Mamy raty 0% od 2 do 5 rat. Zostały ostatnie miejsca na ten termin. Czy chciałby Pan/Pani, żebym wysłała szczegóły i link do zapisu mailem?`,
+          text: `${priceLine} ${terminyLine} Mamy raty 0% od 2 do 5 rat. Przy ponownym uczestnictwie jest dodatkowa zniżka 150 złotych. Zostały ostatnie miejsca. Czy wysłać szczegóły i link mailem?`,
           nextStep: 4,
           offerUsed: offer,
         };
       }
-      // Klient waha się
+      // Klient pyta o coś innego / waha się — wróć do cech programu
+      if (customerSaid.includes('nie') || customerSaid.includes('wiem')) {
+        return {
+          text: `Bez zobowiązań — mogę opowiedzieć więcej o programie. ${offer.coZawiera ? `W cenie jest: ${offer.coZawiera}.` : 'W cenie zakwaterowanie, wyżywienie i cały program z native speakerami.'} Czy chce Pan/Pani poznać cenę?`,
+          nextStep: 3,
+          offerUsed: offer,
+        };
+      }
+      // Default — podaj cenę (klient prawdopodobnie potwierdził zainteresowanie)
       return {
-        text: `Rozumiem. Mogę podać cenę bez zobowiązań — ${priceLine} Mamy raty 0%. Czy to mieści się w budżecie?`,
+        text: `${priceLine} ${terminyLine} Mamy też raty 0% i zniżki dla powracających uczestników. Czy wysłać szczegóły mailem?`,
         nextStep: 4,
         offerUsed: offer,
       };
