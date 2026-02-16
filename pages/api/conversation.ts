@@ -215,42 +215,21 @@ function extractCustomerContext(allText: string): string {
 }
 
 // ── LLM call ──
-const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'claude-3-haiku-20240307';
-
-// Anthropic requires strictly alternating user/assistant, starting with user
-function sanitizeMessages(msgs: Array<{role: string; content: string}>): Array<{role: string; content: string}> {
-  const out: Array<{role: string; content: string}> = [];
-  for (const m of msgs) {
-    const role = m.role === 'system' ? 'user' : m.role;
-    if (out.length > 0 && out[out.length - 1].role === role) {
-      // Merge consecutive same-role messages
-      out[out.length - 1].content += '\n' + m.content;
-    } else {
-      out.push({ role, content: m.content });
-    }
-  }
-  // Must start with 'user'
-  if (out.length > 0 && out[0].role !== 'user') {
-    out.unshift({ role: 'user', content: '(rozpoczęcie rozmowy)' });
-  }
-  return out;
-}
+const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'gpt-4o-mini';
 
 async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
-  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.TASKFORNOA_ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error('OPENAI_API_KEY not set');
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
+  const res = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
     body: JSON.stringify({
       model: CALLX_MODEL,
-      system: systemPrompt,
-      messages: sanitizeMessages(messages),
+      messages: [
+        { role: 'system', content: systemPrompt },
+        ...messages,
+      ],
       temperature: 0.7,
       max_tokens: 300,
     }),
@@ -263,7 +242,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
   }
 
   const data = await res.json();
-  return (data.content?.[0]?.text || '').trim();
+  return (data.choices?.[0]?.message?.content || '').trim();
 }
 
 // ── Determine next step based on conversation ──
