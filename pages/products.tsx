@@ -6,6 +6,7 @@ interface Product {
   kategoria: string;
   kategoriaFilter: string;
   podkategoria?: string;
+  wiekGrupa?: 'Dorośli 18+' | 'Dzieci 7-10' | 'Młodzież 11-18';
   name: string;
   segment: string;
   wariant: string;
@@ -22,15 +23,11 @@ interface Product {
   ubezpieczenie: string;
 }
 
-const CATEGORIES = [
+const AGE_CATEGORIES = [
   { key: 'Wszystkie', label: 'Wszystkie', color: 'bg-av-navy', icon: '📦' },
-  { key: 'Dorośli — Angielska Wioska', label: 'Angielska Wioska', color: 'bg-av-blue', icon: '🏠' },
-  { key: 'Dorośli — Wyjazdy', label: 'Wyjazdy dorośli', color: 'bg-indigo-600', icon: '✈️' },
-  { key: 'Dzieci i młodzież — Polska', label: 'Obozy PL', color: 'bg-green-600', icon: '🇵🇱' },
-  { key: 'Dzieci i młodzież — Zagranica', label: 'Zagranica', color: 'bg-purple-600', icon: '🌍' },
-  { key: 'Dzieci i młodzież — Europa', label: 'Europa', color: 'bg-sky-600', icon: '🇪🇺' },
-  { key: 'Dzieci i młodzież — Świat', label: 'Świat', color: 'bg-av-orange', icon: '🌎' },
-  { key: 'Wymiana uczniowska', label: 'Wymiana', color: 'bg-red-600', icon: '🎓' },
+  { key: 'Dorośli 18+', label: 'Dorośli 18+', color: 'bg-av-blue', icon: '🧑‍💼' },
+  { key: 'Dzieci 7-10', label: 'Dzieci 7–10', color: 'bg-green-600', icon: '🧒' },
+  { key: 'Młodzież 11-18', label: 'Młodzież 11–18', color: 'bg-indigo-600', icon: '🧑‍🎓' },
 ];
 
 const CATEGORY_BADGE: Record<string, string> = {
@@ -158,7 +155,7 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: (p: Produc
 }
 
 export default function ProductsPage() {
-  const [activeCategory, setActiveCategory] = useState('Wszystkie');
+  const [activeAgeCategory, setActiveAgeCategory] = useState<'Wszystkie' | 'Dorośli 18+' | 'Dzieci 7-10' | 'Młodzież 11-18'>('Wszystkie');
   const [search, setSearch] = useState('');
   const [products, setProducts] = useState<Product[]>(productsData as Product[]);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
@@ -177,7 +174,7 @@ export default function ProductsPage() {
   }, []);
 
   const filtered = products.filter(p => {
-    if (activeCategory !== 'Wszystkie' && p.kategoriaFilter !== activeCategory) return false;
+    if (activeAgeCategory !== 'Wszystkie' && p.wiekGrupa !== activeAgeCategory) return false;
     if (search) {
       const q = search.toLowerCase();
       return (
@@ -235,14 +232,14 @@ export default function ProductsPage() {
 
         {/* Category tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {CATEGORIES.map(cat => {
-            const count = cat.key === 'Wszystkie' ? products.length : products.filter(p => p.kategoriaFilter === cat.key).length;
+          {AGE_CATEGORIES.map(cat => {
+            const count = cat.key === 'Wszystkie' ? products.length : products.filter(p => p.wiekGrupa === cat.key).length;
             return (
               <button
                 key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
+                onClick={() => setActiveAgeCategory(cat.key as any)}
                 className={`px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                  activeCategory === cat.key
+                  activeAgeCategory === cat.key
                     ? `${cat.color} text-white shadow-md`
                     : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
                 }`}

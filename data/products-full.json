@@ -17,7 +17,8 @@
     "url": "https://angloville.pl/dla-doroslych/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 40+"
+    "podkategoria": "Wyjazdy 40+",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "japonia-a-2-os-w-pokoju",
@@ -37,7 +38,8 @@
     "url": "https://angloville.pl/dla-doroslych/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 40+"
+    "podkategoria": "Wyjazdy 40+",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "japonia-b-1-os-w-pokoju",
@@ -57,7 +59,8 @@
     "url": "https://angloville.pl/dla-doroslych/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 40+"
+    "podkategoria": "Wyjazdy 40+",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "nowy-jork-toronto-a-2-os-w-pokoju",
@@ -77,7 +80,8 @@
     "url": "https://angloville.pl/dla-doroslych/wyjazd-jezykowy-nowy-jork/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 40+"
+    "podkategoria": "Wyjazdy 40+",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "nowy-jork-toronto-b-1-os-w-pokoju",
@@ -97,7 +101,8 @@
     "url": "https://angloville.pl/dla-doroslych/wyjazd-jezykowy-nowy-jork/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 40+"
+    "podkategoria": "Wyjazdy 40+",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "kalifornia-a-2-os-w-pokoju-2",
@@ -117,7 +122,8 @@
     "url": "https://angloville.pl/young-adults/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 18-40"
+    "podkategoria": "Wyjazdy 18-40",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "kalifornia-b-1-os-w-pokoju",
@@ -137,7 +143,8 @@
     "url": "https://angloville.pl/young-adults/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 18-40"
+    "podkategoria": "Wyjazdy 18-40",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "japonia-a-2-os-w-pokoju-2",
@@ -157,7 +164,8 @@
     "url": "https://angloville.pl/young-adults/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 18-40"
+    "podkategoria": "Wyjazdy 18-40",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "japonia-b-1-os-w-pokoju-2",
@@ -177,7 +185,8 @@
     "url": "https://angloville.pl/young-adults/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Wyjazdy 18-40"
+    "podkategoria": "Wyjazdy 18-40",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-usa-trip-new-york-trip-4-os-w-pokoju",
@@ -197,7 +206,8 @@
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Adult USA Trip"
+    "podkategoria": "Adult USA Trip",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-usa-trip-new-york-trip-2-os-w-pokoju",
@@ -217,7 +227,8 @@
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Adult USA Trip"
+    "podkategoria": "Adult USA Trip",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-usa-trip-california-trip-4-os-w-pokoju",
@@ -237,7 +248,8 @@
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Adult USA Trip"
+    "podkategoria": "Adult USA Trip",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-usa-trip-california-trip-2-os-w-pokoju",
@@ -257,7 +269,8 @@
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Adult USA Trip"
+    "podkategoria": "Adult USA Trip",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-premium-80-lekcji-online",
@@ -277,7 +290,8 @@
     "url": "https://angloville.pl/angloville-adult-premium/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-premium-48-lekcji-online",
@@ -297,7 +311,8 @@
     "url": "https://angloville.pl/angloville-adult-premium/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-tandem-80-lekcji-online",
@@ -317,7 +332,8 @@
     "url": "https://angloville.pl/angloville-adult-tandem/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-tandem-48-lekcji-online",
@@ -337,7 +353,8 @@
     "url": "https://angloville.pl/angloville-adult-tandem/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-weekend-80-lekcji-online",
@@ -357,7 +374,8 @@
     "url": "https://angloville.pl/angloville-adult-weekend/",
     "ratio": "Wg programu",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-weekend-48-lekcji-online",
@@ -377,7 +395,8 @@
     "url": "https://angloville.pl/angloville-adult-weekend/",
     "ratio": "Wg programu",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-adult-standard",
@@ -397,7 +416,8 @@
     "url": "https://angloville.pl/angloville-adult-standard/",
     "ratio": "1 NS : 1 (lub brak danych)",
     "ubezpieczenie": "",
-    "podkategoria": "Pakiety Pro (pobyt + online)"
+    "podkategoria": "Pakiety Pro (pobyt + online)",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "adult-premium-pobyt",
@@ -417,7 +437,8 @@
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Angielska Wioska w Polsce"
+    "podkategoria": "Angielska Wioska w Polsce",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-standard-pobyt",
@@ -437,7 +458,8 @@
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Angielska Wioska w Polsce"
+    "podkategoria": "Angielska Wioska w Polsce",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-tandem-pobyt",
@@ -457,7 +479,8 @@
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Angielska Wioska w Polsce"
+    "podkategoria": "Angielska Wioska w Polsce",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-weekend-pobyt",
@@ -477,7 +500,8 @@
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "Zależy od wariantu",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Angielska Wioska w Polsce"
+    "podkategoria": "Angielska Wioska w Polsce",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-kids",
@@ -497,7 +521,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-kids/",
     "ratio": "1 NS : 6 uczestników",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe w Polsce"
+    "podkategoria": "Obozy językowe w Polsce",
+    "wiekGrupa": "Dzieci 7-10"
   },
   {
     "id": "angloville-junior-wakacje-2026",
@@ -517,7 +542,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe w Polsce"
+    "podkategoria": "Obozy językowe w Polsce",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-junior-ferie-2026",
@@ -537,7 +563,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe w Polsce"
+    "podkategoria": "Obozy językowe w Polsce",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angielska-wioska-narty-ferie-2026",
@@ -557,7 +584,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-ski/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Angielska Wioska w Polsce"
+    "podkategoria": "Angielska Wioska w Polsce",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-family-adult-family",
@@ -577,7 +605,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-family/",
     "ratio": "2 na 1 z NS",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe w Polsce"
+    "podkategoria": "Obozy językowe w Polsce",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-family-kids-family",
@@ -597,7 +626,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-family/",
     "ratio": "3 na 1 + gry/zabawy",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe w Polsce"
+    "podkategoria": "Obozy językowe w Polsce",
+    "wiekGrupa": "Dzieci 7-10"
   },
   {
     "id": "junior-international-malta-wariant-tygodniowy-wakacje-2026",
@@ -617,7 +647,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe za granicą"
+    "podkategoria": "Obozy językowe za granicą",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-international-malta-wariant-dwutygodniowy-wakacje-2026",
@@ -637,7 +668,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe za granicą"
+    "podkategoria": "Obozy językowe za granicą",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-international-malta-ferie-2026",
@@ -657,7 +689,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe za granicą"
+    "podkategoria": "Obozy językowe za granicą",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-international-anglia-wakacje-2026",
@@ -677,7 +710,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-anglia/",
     "ratio": "1 NS : 2 (formuła 2 na 1)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
-    "podkategoria": "Obozy językowe za granicą"
+    "podkategoria": "Obozy językowe za granicą",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-londyn-uk-trip-wariant-intensive",
@@ -697,7 +731,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-londyn/",
     "ratio": "1 NS : 3 uczestników",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-londyn-uk-trip-wariant-standard",
@@ -717,7 +752,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-londyn/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-eurotrip-wariant-standard",
@@ -737,7 +773,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/",
     "ratio": "BRAK sesji językowych",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-eurotrip-wariant-intensive",
@@ -757,7 +794,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/",
     "ratio": "1 NS : 3",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-baltic-trip-wakacje-2026",
@@ -777,7 +815,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "junior-plus-italy-trip-wakacje-2026",
@@ -797,7 +836,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-italy-trip/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe w Europie"
+    "podkategoria": "Obozy turystyczno-językowe w Europie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "nowy-jork-tygodniowy-4-os-w-pokoju",
@@ -817,7 +857,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "nowy-jork-tygodniowy-2-os-w-pokoju",
@@ -837,7 +878,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "nowy-jork-dwutygodniowy-4-os-w-pokoju",
@@ -857,7 +899,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "nowy-jork-dwutygodniowy-2-os-w-pokoju",
@@ -877,7 +920,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "kalifornia-a-4-os-w-pokoju",
@@ -897,7 +941,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/kalifornia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "kalifornia-b-2-os-w-pokoju",
@@ -917,7 +962,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/kalifornia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "miami-a-4-os-w-pokoju",
@@ -937,7 +983,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/miami/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "miami-b-2-os-w-pokoju",
@@ -957,7 +1004,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/miami/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "japonia-termin-2906-10072026",
@@ -977,7 +1025,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/japonia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "japonia-pozostae-terminy",
@@ -997,7 +1046,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/japonia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
     "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
-    "podkategoria": "Obozy turystyczno-językowe na świecie"
+    "podkategoria": "Obozy turystyczno-językowe na świecie",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "wymiana-do-usa-rok-w-usa-finansowanie-0",
@@ -1017,7 +1067,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/rok-w-usa/",
     "ratio": "Host family + lokalny koordynator",
     "ubezpieczenie": "",
-    "podkategoria": "Wymiana uczniowska"
+    "podkategoria": "Wymiana uczniowska",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "wymiana-do-kanady-rok-w-kanadzie",
@@ -1037,7 +1088,8 @@
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/rok-w-kanadzie/",
     "ratio": "Host family + lokalny koordynator",
     "ubezpieczenie": "",
-    "podkategoria": "Wymiana uczniowska"
+    "podkategoria": "Wymiana uczniowska",
+    "wiekGrupa": "Młodzież 11-18"
   },
   {
     "id": "angloville-meets-doroli-zakup-po-zakoczeniu-programu",
@@ -1057,7 +1109,8 @@
     "url": "https://angloville.pl/wp-content/uploads/2023/01/regulamin-angloville-meets-dorosli-2023-1.pdf",
     "ratio": "Spotkania online 1 na 1 z NS",
     "ubezpieczenie": "",
-    "podkategoria": "Online (MEETS)"
+    "podkategoria": "Online (MEETS)",
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-meets-doroli-zakup-przed-rozpoczciem-programu",
@@ -1077,6 +1130,7 @@
     "url": "https://angloville.pl/wp-content/uploads/2023/01/regulamin-angloville-meets-dorosli-2023-1.pdf",
     "ratio": "Spotkania online 1 na 1 z NS",
     "ubezpieczenie": "",
-    "podkategoria": "Online (MEETS)"
+    "podkategoria": "Online (MEETS)",
+    "wiekGrupa": "Dorośli 18+"
   }
 ]

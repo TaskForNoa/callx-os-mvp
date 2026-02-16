@@ -9,6 +9,7 @@ interface ConversationState {
   customerResponse: string;
   leadData: any;
   history: Array<{ speaker: string; text: string }>;
+  voice?: string;
 }
 
 function getAgentResponse(state: ConversationState): { text: string; nextStep: number; outcome?: string } {
@@ -22,7 +23,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
     case 0:
       // Step 1: Greeting
       return {
-        text: `Dzień dobry, czy rozmawiam z rodzicem ${name}? Dzwonię z Angloville, mam na imię Kasia.`,
+        text: `Dzień dobry, czy rozmawiam z rodzicem ${name}? Dzwonię z Angloville, mam na imię ${state.voice || 'Karolina'}.`,
         nextStep: 1,
       };
 
@@ -141,7 +142,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { customer_id, step, customerResponse, history } = req.body;
+  const { customer_id, step, customerResponse, history, voice } = req.body;
 
   if (!customer_id) {
     return res.status(400).json({ error: 'customer_id required' });
@@ -157,6 +158,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     customerResponse: customerResponse || '',
     leadData: lead,
     history: history || [],
+    voice: voice || null,
   };
 
   const response = getAgentResponse(state);

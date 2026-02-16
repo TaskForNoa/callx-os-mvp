@@ -234,7 +234,7 @@ export default function LeadDetail() {
     let step = 0, lastText = '';
     while (step !== 99 && !abortRef.current) {
       try {
-        const r = await axios.post('/api/conversation', { customer_id: lead.customer_id, step, customerResponse: lastText });
+        const r = await axios.post('/api/conversation', { customer_id: lead.customer_id, step, customerResponse: lastText, voice });
         if (abortRef.current) break;
         if (r.data.agentText) await speak(r.data.agentText);
         if (abortRef.current) break;
