@@ -199,23 +199,25 @@ const STEPS: StepDef[] = [
   },
   {
     step: 2, name: 'Prezentacja programu',
-    goal: `Pomagaj klientowi wybrać program LEJKIEM PYTAŃ — krok po kroku, po JEDNYM pytaniu. Kolejność:
-1) Polska czy zagranica? (jeśli nie wiadomo)
-2) Jeśli POLSKA → jakie TYPY programów mamy (Junior językowy, Kids, Junior SKI zimą) — krótko, 1 zdanie
-3) Jeśli ZAGRANICA → stricte językowy (Malta, Anglia) czy językowo-turystyczny (Plus: UK Trip, Eurotrip, Baltic, Italy, lub Świat: Kalifornia, Japonia, NY)?
-4) Klient wybiera TYP → pytaj o MIESIĄC (lipiec czy sierpień / ferie)
-5) Klient wybiera MIESIĄC → pytaj o MIASTO ZBIÓRKI (z jakich miast mamy wyjazdy)
-6) Klient wybiera MIASTO → przedstaw dostępne TURNUSY (termin + hotel + krótki opis hotelu)
-7) Klient wybiera TURNUS → zapytaj czy chce poznać cenę
-TRZYMAJ SIĘ LEJKA — nie przeskakuj kroków!`,
+    goal: `Pomóż klientowi wybrać konkretny program. Twój cel końcowy: dojść do KONKRETNEGO produktu + termin + hotel, żebyś mogła wysłać link do zapisu.
+
+Prowadź rozmowę naturalnie — zadawaj pytania, które pomagają zawęzić wybór. Jeśli klient nie wie czego chce, zaproponuj na podstawie tego co wiesz o nim (wiek dziecka, poprzednie programy). Jeśli klient wie — nie pytaj o to co już powiedział.
+
+Ogólna logika zawężania (nie sztywna kolejność — dostosuj do rozmowy):
+- Polska vs zagranica
+- Typ programu (językowy / turystyczny / narciarsko-językowy)
+- Miesiąc (lipiec / sierpień / ferie)
+- Miasto zbiórki
+- Konkretny turnus (termin + hotel)
+
+Patrz na PASUJĄCE PRODUKTY poniżej — to Twoja baza wiedzy. Prezentuj TYLKO produkty z tej listy.`,
     rules: [
       'NIE podawaj ceny — najpierw cechy i wyróżniki',
-      'BEZWZGLĘDNIE trzymaj się tego co klient wybrał — jeśli wybrał Polskę, NIE wracaj do zagranicy!',
-      'JEDEN KROK LEJKA NA RAZ — nie przeskakuj! Jeśli nie wiesz kierunku, pytaj o kierunek. Jeśli nie wiesz typu, pytaj o typ. Itd.',
-      'NIE zasypuj klienta informacjami — max 2-3 opcje + 1 pytanie',
-      'Patrz na PASUJĄCE PRODUKTY — prezentuj TYLKO to co tam jest',
-      'Kiedy opisujesz typ programu: 1 zdanie z kluczowym wyróżnikiem (np. "Junior to obóz językowy z native speakerami, jeden NS na dwóch uczestników")',
-      'Na końcu (gdy klient wybrał konkretny turnus) zapytaj czy chce poznać cenę',
+      'TRZYMAJ SIĘ wyborów klienta — jeśli wybrał Polskę, NIE wracaj do zagranicy!',
+      'Max 2-3 opcje na raz + 1 pytanie',
+      'Jeśli klient pyta "co macie" → opisz kategorie krótko, nie szczegóły',
+      'Jeśli możesz coś zaproponować na podstawie kontekstu (wiek, poprzedni program) — zrób to',
+      'Gdy dojdziesz do konkretnego programu + termin + hotel → zapytaj czy chce poznać cenę lub dostać link do zapisu',
     ],
     canRevealPrice: false,
   },
