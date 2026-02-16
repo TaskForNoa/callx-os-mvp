@@ -120,14 +120,15 @@ const STEPS: StepDef[] = [
   },
   {
     step: 2, name: 'Prezentacja programu',
-    goal: 'Na podstawie odpowiedzi klienta, przedstaw dopasowany program. Opisz metodę Angloville, stosunek NS do uczestników, lokalizację, co zawiera. Jeśli nie wiesz jeszcze czego klient szuka — dopytaj zamiast proponować.',
+    goal: 'Zawężaj program krok po kroku. Kolejność: 1) Polska/zagranica 2) miasto wyjazdu 3) miesiąc (lipiec/sierpień/ferie). Jak masz te dane → opisz program z metodą Angloville. TRZYMAJ SIĘ wyboru klienta!',
     rules: [
       'NIE podawaj ceny — najpierw cechy i wyróżniki',
-      'Opisz metodę Angloville (sesje z native speakerami, nauka przez zabawę)',
-      'Podaj stosunek NS do uczestników z danych produktu',
-      'Jeśli program turystyczny — opisz trasę i miejsca',
-      'Jeśli językowy — opisz sesje 2:1, karaoke, talent show, 70h zanurzenia',
-      'Jeśli NIE MASZ dopasowanego produktu — DOPYTAJ o preferencje zamiast zgadywać',
+      'BEZWZGLĘDNIE trzymaj się tego co klient wybrał — jeśli wybrał Polskę, NIE wracaj do Malty/Anglii!',
+      'Jeśli masz kierunek ale nie miasto → dopytaj o miasto wyjazdu',
+      'Jeśli masz kierunek + miasto ale nie miesiąc → dopytaj o miesiąc',
+      'Jeśli masz kierunek + miasto + miesiąc → opisz program: metoda Angloville, sesje, stosunek NS:uczestników',
+      'Jeśli językowy — sesje 2:1, karaoke, talent show, 70h zanurzenia',
+      'Jeśli turystyczny — opisz trasę',
       'Na końcu zapytaj czy chce poznać cenę',
     ],
     canRevealPrice: false,
@@ -163,6 +164,53 @@ const STEPS: StepDef[] = [
     isTerminal: true,
   },
 ];
+
+// ── Extract conversation context (what customer already decided) ──
+function extractCustomerContext(allText: string): string {
+  const t = allText.toLowerCase();
+  const facts: string[] = [];
+
+  // Destination
+  if (t.includes('polsk') || t.includes('w kraju')) facts.push('WYBRANO: Polska (NIE wracaj do Malty/Anglii!)');
+  else if (t.includes('malta')) facts.push('WYBRANO: Malta (NIE proponuj Polski!)');
+  else if (t.includes('anglia') || t.includes('londyn') || t.includes('uk')) facts.push('WYBRANO: Anglia/UK (NIE proponuj Polski!)');
+  else if (t.includes('zagrani') || t.includes('za granic')) facts.push('WYBRANO: zagranica (dopytaj: Malta czy Anglia)');
+
+  // Season
+  if (t.includes('wakacj') || t.includes('lato') || t.includes('lipiec') || t.includes('sierp')) facts.push('SEZON: wakacje (lipiec-sierpień)');
+  else if (t.includes('feri') || t.includes('zim') || t.includes('stycz') || t.includes('lut')) facts.push('SEZON: ferie zimowe');
+
+  // Month
+  if (t.includes('lipiec') || t.includes('lipc')) facts.push('MIESIĄC: lipiec');
+  if (t.includes('sierp')) facts.push('MIESIĄC: sierpień');
+  if (t.includes('stycz')) facts.push('MIESIĄC: styczeń');
+  if (t.includes('lut')) facts.push('MIESIĄC: luty');
+
+  // City
+  if (t.includes('warszaw')) facts.push('MIASTO WYJAZDU: Warszawa');
+  if (t.includes('kraków') || t.includes('krakow')) facts.push('MIASTO WYJAZDU: Kraków');
+  if (t.includes('poznań') || t.includes('poznan')) facts.push('MIASTO WYJAZDU: Poznań');
+  if (t.includes('gdańsk') || t.includes('gdansk')) facts.push('MIASTO WYJAZDU: Gdańsk');
+  if (t.includes('wrocław') || t.includes('wroclaw')) facts.push('MIASTO WYJAZDU: Wrocław');
+  if (t.includes('katowic')) facts.push('MIASTO WYJAZDU: Katowice');
+  if (t.includes('łódź') || t.includes('lodz')) facts.push('MIASTO WYJAZDU: Łódź');
+
+  // Age
+  const ageMatch = t.match(/(\d{1,2})\s*(lat|rok|letni)/);
+  if (ageMatch) facts.push(`WIEK DZIECKA: ${ageMatch[1]} lat`);
+
+  // Type
+  if (t.includes('narc') || t.includes('ski') || t.includes('stok')) facts.push('TYP: narciarsko-językowy');
+  if (t.includes('językow') || t.includes('tradycyj')) facts.push('TYP: językowy tradycyjny');
+
+  // Objections/sentiment
+  if (t.includes('drogo') || t.includes('dużo')) facts.push('OBIEKCJA: cena za wysoka');
+  if (t.includes('pomyśl') || t.includes('zastanow')) facts.push('STATUS: musi się zastanowić');
+
+  return facts.length > 0
+    ? '\nCO KLIENT JUŻ USTALIŁ (ZAPAMIĘTAJ — nie wracaj do tematów które już rozstrzygnął!):\n' + facts.map(f => '• ' + f).join('\n')
+    : '';
+}
 
 // ── LLM call ──
 async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
@@ -244,6 +292,7 @@ function buildSystemPrompt(
   lead: any,
   offer: OfferFacts | null,
   voiceName: string,
+  customerContext?: string,
 ): string {
   const childName = lead.childName || lead.first_name;
   const childGen = genitive(childName);
@@ -287,6 +336,8 @@ DANE LEADA:
 - Preferowana destynacja: ${lead.preferred_destination || 'nieznana'}
 ${productContext}
 
+${customerContext || ''}
+
 BEZWZGLĘDNE ZASADY:
 1. Mów po polsku, naturalnie, jak prawdziwa konsultantka telefoniczna.
 2. NIGDY nie wymyślaj danych — podawaj TYLKO fakty z bazy wiedzy powyżej.
@@ -321,6 +372,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     .map(h => h.text)
     .concat([customerResponse || ''])
     .join(' ');
+
+  // Extract what customer already decided
+  const customerContext = extractCustomerContext(allCustomerText);
 
   // Try to match product from conversation
   const offer = pickOfferFromConversation(allCustomerText) || pickOfferForDestination(lead.preferred_destination || '');
@@ -368,7 +422,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         canRevealPrice: false,
         isTerminal: true,
       },
-      lead, offer, voiceName,
+      lead, offer, voiceName, customerContext,
     );
 
     let agentText: string;
@@ -387,7 +441,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const genStepDef = STEPS.find(s => s.step === generateForStep) || stepDef;
-  const systemPrompt = buildSystemPrompt(genStepDef, lead, offer, voiceName);
+  const systemPrompt = buildSystemPrompt(genStepDef, lead, offer, voiceName, customerContext);
 
   let agentText: string;
   try {
