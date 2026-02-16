@@ -91,11 +91,12 @@ function pickOfferForDestination(dest: string): OfferFacts | null {
   return pickOfferFromConversation(dest);
 }
 
-// ── Determine target age group from lead data ──
-function getLeadAgeGroup(lead: any): 'youth' | 'adult' | 'unknown' {
+// ── Determine target segment from lead data ──
+function getLeadSegment(lead: any): 'junior' | 'kids' | 'adult' | 'unknown' {
   const pastProgs = (lead.past_programs || []).join(' ').toLowerCase();
-  const childName = lead.childName || '';
-  if (childName || pastProgs.includes('junior') || pastProgs.includes('kids') || pastProgs.includes('malta') || pastProgs.includes('anglia')) return 'youth';
+  if (pastProgs.includes('kids')) return 'kids';
+  if (pastProgs.includes('junior') || pastProgs.includes('malta') || pastProgs.includes('anglia') || pastProgs.includes('eurotrip') || pastProgs.includes('uk trip')) return 'junior';
+  if (lead.childName) return 'junior'; // has child → default to junior
   if (pastProgs.includes('adult') || pastProgs.includes('wioska') || pastProgs.includes('tandem') || pastProgs.includes('premium')) return 'adult';
   return 'unknown';
 }
@@ -108,17 +109,24 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
 
   let filtered = [...products];
 
-  // Age group filter from lead data
+  // Segment filter from lead data (pasti campaign)
   if (lead) {
-    const ageGroup = getLeadAgeGroup(lead);
-    if (ageGroup === 'youth') {
+    const segment = getLeadSegment(lead);
+    if (segment === 'junior') {
       filtered = filtered.filter(p => {
-        const wg = ((p as any).wiekGrupa || '').toLowerCase();
+        const wg = ((p as any).wiekGrupa || '');
         const n = ((p as any).name || '').toLowerCase();
-        return wg.includes('dzieci') || wg.includes('młodzież') || wg === '' || n.includes('junior') || n.includes('kids');
+        return wg === 'Młodzież 11-18' || n.includes('junior') || n.includes('international');
       });
-      filters.push('Młodzież/Dzieci');
-    } else if (ageGroup === 'adult') {
+      filters.push('Junior (11-18)');
+    } else if (segment === 'kids') {
+      filtered = filtered.filter(p => {
+        const wg = ((p as any).wiekGrupa || '');
+        const n = ((p as any).name || '').toLowerCase();
+        return wg === 'Dzieci 7-10' || n.includes('kids');
+      });
+      filters.push('Kids (7-10)');
+    } else if (segment === 'adult') {
       filtered = filtered.filter(p => ((p as any).wiekGrupa || '').includes('Dorośli'));
       filters.push('Dorośli');
     }
@@ -481,8 +489,13 @@ DANE LEADA:
 - Ostatni program: ${lastProgram}
 - Email: ${lead.email}
 - Preferowana destynacja: ${lead.preferred_destination || 'nieznana'}
-${lead.childName ? `
-⚠️ TO JEST KAMPANIA DLA MŁODZIEŻY/DZIECI — rozmowa dotyczy WYŁĄCZNIE programów dla ${childName}. NIE proponuj programów dla dorosłych! Wszystkie propozycje muszą dotyczyć obozów dla dzieci/młodzieży.` : ''}
+${(() => {
+  const seg = getLeadSegment(lead);
+  if (seg === 'junior') return `\n⚠️ KAMPANIA: PASTI JUNIOR (11-18 lat). Rozmowa dotyczy WYŁĄCZNIE programów dla młodzieży dla ${childName}. NIE proponuj Kids, NIE proponuj programów dla dorosłych!`;
+  if (seg === 'kids') return `\n⚠️ KAMPANIA: PASTI KIDS (7-10 lat). Rozmowa dotyczy WYŁĄCZNIE programów Kids dla ${childName}. NIE proponuj Junior, NIE proponuj programów dla dorosłych!`;
+  if (seg === 'adult') return `\n⚠️ KAMPANIA: PASTI ADULT. Proponuj WYŁĄCZNIE programy dla dorosłych.`;
+  return '';
+})()}
 ${productContext}
 
 ${customerContext || ''}
