@@ -193,6 +193,19 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
     filters.push(`Wyjazd z: ${cityFilter.charAt(0).toUpperCase() + cityFilter.slice(1)}`);
   }
 
+  // Prioritize "Świat" when customer asks for non-Europe/world
+  const wantsWorld = t.includes('poza europ') || t.includes('świat') || t.includes('stany') || t.includes('usa') || t.includes('nowy jork') || t.includes('kaliforni') || t.includes('miami') || t.includes('japon');
+  if (wantsWorld) {
+    filtered.sort((a: any, b: any) => {
+      const ak = String(a.kategoriaFilter || '').toLowerCase();
+      const bk = String(b.kategoriaFilter || '').toLowerCase();
+      const aw = ak.includes('świat') ? 0 : 1;
+      const bw = bk.includes('świat') ? 0 : 1;
+      return aw - bw;
+    });
+    filters.push('Priorytet: Świat');
+  }
+
   // Deduplicate by name+wariant
   const seen = new Set<string>();
   const deduped: OfferFacts[] = [];
@@ -251,7 +264,7 @@ Ogólna logika zawężania (nie sztywna kolejność — dostosuj do rozmowy):
 
 Patrz na PASUJĄCE PRODUKTY poniżej — to Twoja baza wiedzy. Prezentuj TYLKO produkty z tej listy.`,
     rules: [
-      'NIE podawaj ceny — najpierw cechy i wyróżniki',
+      'NIE podawaj ceny — najpierw cechy i wyróżniki. W tym kroku NIE wolno podawać żadnych kwot ani używać „zł”/„PLN”, chyba że klient wprost zapyta o cenę ("ile kosztuje", "jaka cena").',
       'TRZYMAJ SIĘ wyborów klienta — jeśli wybrał Polskę, NIE wracaj do zagranicy!',
       'Max 2-3 opcje na raz + 1 pytanie',
       'Jeśli klient pyta "co macie" → opisz kategorie krótko, nie szczegóły',
@@ -513,7 +526,7 @@ BEZWZGLĘDNE ZASADY:
 1. Mów po polsku, naturalnie, jak prawdziwa konsultantka telefoniczna.
 2. NIGDY nie wymyślaj danych — podawaj TYLKO fakty z bazy wiedzy powyżej.
 3. Jeśli brakuje danych (cena/termin/link) LUB klient pyta o coś, czego nie widzisz w PASUJĄCYCH PRODUKTACH → powiedz "nie widzę tego teraz w bazie, sprawdzę i wrócę mailowo".
-4. ${stepDef.canRevealPrice ? 'Możesz podać cenę z bazy.' : 'NIE PODAWAJ CENY — najpierw cechy i wyróżniki programu.'}
+4. ${stepDef.canRevealPrice ? 'Możesz podać cenę z bazy.' : 'NIE PODAWAJ CENY ani żadnych kwot — najpierw cechy i wyróżniki programu. Cenę podajesz TYLKO gdy klient wprost o nią poprosi.'}
 5. Każda wypowiedź MUSI kończyć się pytaniem (chyba że to pożegnanie).
 6. Bądź zwięzła — max 2-3 zdania. To rozmowa telefoniczna, nie wykład.
 7. NIGDY NIE POWTARZAJ się — nie przedstawiaj się ponownie, nie powtarzaj pytań ani informacji z wcześniejszej części rozmowy. Czytaj historię!
