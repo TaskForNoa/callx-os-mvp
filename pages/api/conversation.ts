@@ -215,19 +215,23 @@ function extractCustomerContext(allText: string): string {
 }
 
 // ── LLM call ──
-async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('OPENAI_API_KEY not set');
+const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'claude-haiku-3-5-20241022';
 
-  const res = await fetch('https://api.openai.com/v1/chat/completions', {
+async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
+  const apiKey = process.env.ANTHROPIC_API_KEY || process.env.TASKFORNOA_ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+    },
     body: JSON.stringify({
-      model: 'gpt-5.2',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        ...messages,
-      ],
+      model: CALLX_MODEL,
+      system: systemPrompt,
+      messages: messages.map(m => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })),
       temperature: 0.7,
       max_tokens: 300,
     }),
@@ -235,12 +239,12 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
 
   if (!res.ok) {
     const err = await res.text();
-    console.error('LLM error:', err);
+    console.error('LLM error:', res.status, err);
     throw new Error('LLM call failed');
   }
 
   const data = await res.json();
-  return (data.choices?.[0]?.message?.content || '').trim();
+  return (data.content?.[0]?.text || '').trim();
 }
 
 // ── Determine next step based on conversation ──
