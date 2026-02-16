@@ -36,7 +36,7 @@ export default function LeadDetail() {
 
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
-  const [voice, setVoice] = useState('Kasia');
+  const [voice, setVoice] = useState<'Karolina' | 'Kasia' | 'Marek'>('Karolina');
   const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
 
   const [callActive, setCallActive] = useState(false);
@@ -279,7 +279,7 @@ export default function LeadDetail() {
               phase === 'processing' ? 'bg-av-orange/30 text-orange-200' :
               'bg-white/10 text-white/60'
             }`}>
-              {phase === 'agent-speaking' ? '🗣️ Kasia mówi...' :
+              {phase === 'agent-speaking' ? `🗣️ ${voice} mówi...` :
                phase === 'listening' ? `🎤 ${listenSec}s` :
                phase === 'processing' ? '⏳ Przetwarzam...' : ''}
             </span>
@@ -334,8 +334,9 @@ export default function LeadDetail() {
             {/* Controls */}
             <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
               <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Ustawienia</h2>
-              <select value={voice} onChange={e => setVoice(e.target.value)} disabled={callActive}
+              <select value={voice} onChange={e => setVoice(e.target.value as any)} disabled={callActive}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-av-blue">
+                <option value="Karolina">🎭 Karolina (Sales)</option>
                 <option value="Kasia">🎭 Kasia (Kobieta)</option>
                 <option value="Marek">🎭 Marek (Mężczyzna)</option>
               </select>
@@ -397,7 +398,7 @@ export default function LeadDetail() {
                         : 'bg-av-orange/10 text-gray-900 rounded-br-md'
                     }`}>
                       <div className="text-[10px] font-semibold uppercase tracking-wider opacity-50 mb-0.5">
-                        {m.speaker === 'agent' ? '🤖 Kasia' : '👤 Klient'}
+                        {m.speaker === 'agent' ? `🤖 ${voice}` : '👤 Klient'}
                       </div>
                       <div className="text-sm leading-relaxed">{m.text}</div>
                     </div>

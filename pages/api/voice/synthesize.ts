@@ -5,7 +5,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const ELEVENLABS_KEY = process.env.ELEVENLABS_API_KEY;
+  const ELEVENLABS_KEY = process.env.ELEVENLABS_API_KEY || process.env.TASKFORNOA_ELEVENLABS_KEY;
   if (!ELEVENLABS_KEY) {
     return res.status(500).json({ error: 'ElevenLabs API key not configured' });
   }
@@ -21,8 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Sarah = warm professional female, Jessica = playful warm female
     // Roger = casual male, Eric = smooth trustworthy male
     const VOICE_IDS: Record<string, string> = {
-      'Kasia': 'EXAVITQu4vr4xnSDxMaL',  // Sarah - Mature, Reassuring
-      'Marek': 'cjVigY5qzO86Huf0OWal',   // Eric - Smooth, Trustworthy
+      'Karolina': 'JPqeLnDkrDAHja5bUoLU', // Karolina (Sales Angloville) — cloned
+      'Kasia': 'EXAVITQu4vr4xnSDxMaL',    // Sarah - Mature, Reassuring
+      'Marek': 'cjVigY5qzO86Huf0OWal',    // Eric - Smooth, Trustworthy
     };
 
     const voiceId = VOICE_IDS[voice || 'Kasia'] || VOICE_IDS['Kasia'];
