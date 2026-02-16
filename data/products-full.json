@@ -2,7 +2,7 @@
   {
     "id": "kalifornia-a-2-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Kalifornia",
     "segment": "40+ (strona: /dla-doroslych/)",
     "wariant": "A: 2 os. w pokoju",
@@ -16,12 +16,13 @@
     "coZawiera": "Przeloty WAW–LAX–WAW; noclegi w hotelach; śniadania; opieka pilota + Native Speakerów; transport na trasie; ubezpieczenie + TFG/TFP; możliwość rat 0%.",
     "url": "https://angloville.pl/dla-doroslych/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 40+"
   },
   {
     "id": "japonia-a-2-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Japonia",
     "segment": "40+ (strona: /dla-doroslych/)",
     "wariant": "A: 2 os. w pokoju",
@@ -35,12 +36,13 @@
     "coZawiera": "Przeloty WAW–HND / KIX–WAW; noclegi; śniadania; program zwiedzania; opieka; ubezpieczenie + TFG/TFP; raty 0%.",
     "url": "https://angloville.pl/dla-doroslych/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 40+"
   },
   {
     "id": "japonia-b-1-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Japonia",
     "segment": "40+ (strona: /dla-doroslych/)",
     "wariant": "B: 1 os. w pokoju",
@@ -54,12 +56,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-doroslych/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 40+"
   },
   {
     "id": "nowy-jork-toronto-a-2-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Nowy Jork + Toronto",
     "segment": "40+ (strona: /dla-doroslych/)",
     "wariant": "A: 2 os. w pokoju",
@@ -73,12 +76,13 @@
     "coZawiera": "Przeloty WAW–YYZ / JFK–WAW; noclegi; śniadania; transport; opieka koordynatorów Native Speakerów; ubezpieczenie + TFG/TFP; raty 0%.",
     "url": "https://angloville.pl/dla-doroslych/wyjazd-jezykowy-nowy-jork/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 40+"
   },
   {
     "id": "nowy-jork-toronto-b-1-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Nowy Jork + Toronto",
     "segment": "40+ (strona: /dla-doroslych/)",
     "wariant": "B: 1 os. w pokoju",
@@ -92,12 +96,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-doroslych/wyjazd-jezykowy-nowy-jork/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 40+"
   },
   {
     "id": "kalifornia-a-2-os-w-pokoju-2",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Kalifornia",
     "segment": "18–40 (strona: /young-adults/)",
     "wariant": "A: 2 os. w pokoju",
@@ -111,12 +116,13 @@
     "coZawiera": "Przeloty; hotele; śniadania; transport; opieka koordynatorów Native Speakerów; ubezpieczenie + TFG/TFP; raty 0%.",
     "url": "https://angloville.pl/young-adults/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 18-40"
   },
   {
     "id": "kalifornia-b-1-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Kalifornia",
     "segment": "18–40 (strona: /young-adults/)",
     "wariant": "B: 1 os. w pokoju",
@@ -130,12 +136,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/young-adults/kalifornia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 18-40"
   },
   {
     "id": "japonia-a-2-os-w-pokoju-2",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Japonia",
     "segment": "18–40 (strona: /young-adults/)",
     "wariant": "A: 2 os. w pokoju",
@@ -149,12 +156,13 @@
     "coZawiera": "Przeloty; noclegi; śniadania; opieka; ubezpieczenie; raty 0%.",
     "url": "https://angloville.pl/young-adults/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 18-40"
   },
   {
     "id": "japonia-b-1-os-w-pokoju-2",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Japonia",
     "segment": "18–40 (strona: /young-adults/)",
     "wariant": "B: 1 os. w pokoju",
@@ -168,12 +176,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/young-adults/japonia/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Wyjazdy 18-40"
   },
   {
     "id": "adult-usa-trip-new-york-trip-4-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Adult USA Trip",
     "segment": "dorośli (wg strony)",
     "wariant": "New York Trip – 4 os. w pokoju",
@@ -187,12 +196,13 @@
     "coZawiera": "Loty; hotele; śniadania i obiadokolacje; transfery; autokar; opiekun; spotkanie przedwyjazdowe; ubezpieczenie; TFG/TFP.",
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Adult USA Trip"
   },
   {
     "id": "adult-usa-trip-new-york-trip-2-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Adult USA Trip",
     "segment": "dorośli (wg strony)",
     "wariant": "New York Trip – 2 os. w pokoju",
@@ -206,12 +216,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Adult USA Trip"
   },
   {
     "id": "adult-usa-trip-california-trip-4-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Adult USA Trip",
     "segment": "dorośli (wg strony)",
     "wariant": "California Trip – 4 os. w pokoju",
@@ -225,12 +236,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Adult USA Trip"
   },
   {
     "id": "adult-usa-trip-california-trip-2-os-w-pokoju",
     "kategoria": "Wyjazdy turystyczno‑językowe (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Wyjazdy",
     "name": "Adult USA Trip",
     "segment": "dorośli (wg strony)",
     "wariant": "California Trip – 2 os. w pokoju",
@@ -244,12 +256,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-doroslych/adult-usa-trip/",
     "ratio": "Pilot PL + pilot EN, program dwujęzyczny",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Adult USA Trip"
   },
   {
     "id": "angloville-adult-premium-80-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Premium",
     "segment": "dorośli",
     "wariant": "80 lekcji online",
@@ -263,12 +276,13 @@
     "coZawiera": "6 dni pobytu w wybranym hotelu/terminie + 80 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-premium/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-premium-48-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Premium",
     "segment": "dorośli",
     "wariant": "48 lekcji online",
@@ -282,12 +296,13 @@
     "coZawiera": "6 dni pobytu + 48 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-premium/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-tandem-80-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Tandem",
     "segment": "dorośli",
     "wariant": "80 lekcji online",
@@ -301,12 +316,13 @@
     "coZawiera": "6 dni pobytu + 80 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-tandem/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-tandem-48-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Tandem",
     "segment": "dorośli",
     "wariant": "48 lekcji online",
@@ -320,12 +336,13 @@
     "coZawiera": "6 dni pobytu + 48 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-tandem/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-weekend-80-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Weekend",
     "segment": "dorośli",
     "wariant": "80 lekcji online",
@@ -339,12 +356,13 @@
     "coZawiera": "6 dni pobytu + 80 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-weekend/",
     "ratio": "Wg programu",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-weekend-48-lekcji-online",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Weekend",
     "segment": "dorośli",
     "wariant": "48 lekcji online",
@@ -358,12 +376,13 @@
     "coZawiera": "6 dni pobytu + 48 × 30 min lekcji online.",
     "url": "https://angloville.pl/angloville-adult-weekend/",
     "ratio": "Wg programu",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "angloville-adult-standard",
     "kategoria": "Pakiety Adult Pro (pobyt + online)",
-    "kategoriaFilter": "Pakiety Pro",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Adult Standard",
     "segment": "dorośli",
     "wariant": "",
@@ -377,12 +396,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/angloville-adult-standard/",
     "ratio": "1 NS : 1 (lub brak danych)",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Pakiety Pro (pobyt + online)"
   },
   {
     "id": "adult-premium-pobyt",
     "kategoria": "Angielska Wioska (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angielska Wioska Premium",
     "segment": "18+ lat",
     "wariant": "1 na 1 z Native Speakerem",
@@ -396,12 +416,13 @@
     "coZawiera": "Zakwaterowanie w hotelu, pełne wyżywienie, 70h sesji 1:1 z NS, materiały, certyfikat, ubezpieczenie.",
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Angielska Wioska w Polsce"
   },
   {
     "id": "adult-standard-pobyt",
     "kategoria": "Angielska Wioska (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angielska Wioska Standard",
     "segment": "18+ lat",
     "wariant": "1 na 1 z Native Speakerem",
@@ -415,12 +436,13 @@
     "coZawiera": "Zakwaterowanie w hotelu, pełne wyżywienie, 70h sesji 1:1 z NS, materiały, certyfikat, ubezpieczenie.",
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Angielska Wioska w Polsce"
   },
   {
     "id": "adult-tandem-pobyt",
     "kategoria": "Angielska Wioska (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angielska Wioska Tandem",
     "segment": "18+ lat",
     "wariant": "2 na 1 z Native Speakerem",
@@ -434,12 +456,13 @@
     "coZawiera": "Zakwaterowanie w hotelu, pełne wyżywienie, 70h sesji 2:1 z NS, materiały, certyfikat, ubezpieczenie.",
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Angielska Wioska w Polsce"
   },
   {
     "id": "adult-weekend-pobyt",
     "kategoria": "Angielska Wioska (dorośli)",
-    "kategoriaFilter": "Dorośli",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville Weekend",
     "segment": "18+ lat",
     "wariant": "Weekend z Native Speakerem",
@@ -453,12 +476,13 @@
     "coZawiera": "Zakwaterowanie, wyżywienie, sesje z NS, materiały.",
     "url": "https://angloville.pl/angielska-wioska/",
     "ratio": "Zależy od wariantu",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Angielska Wioska w Polsce"
   },
   {
     "id": "angloville-kids",
     "kategoria": "Obozy językowe w Polsce (dzieci/młodzież)",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dzieci i młodzież — Polska",
     "name": "Angloville Kids",
     "segment": "7–11",
     "wariant": "",
@@ -472,12 +496,13 @@
     "coZawiera": "Zakwaterowanie + wyżywienie + program językowy (wg standardu ofert obozowych na stronie).",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-kids/",
     "ratio": "1 NS : 6 uczestników",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe w Polsce"
   },
   {
     "id": "angloville-junior-wakacje-2026",
     "kategoria": "Obozy językowe w Polsce (dzieci/młodzież)",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dzieci i młodzież — Polska",
     "name": "Angloville Junior",
     "segment": "11–18",
     "wariant": "Wakacje 2026",
@@ -491,12 +516,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe w Polsce"
   },
   {
     "id": "angloville-junior-ferie-2026",
     "kategoria": "Obozy językowe w Polsce (dzieci/młodzież)",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dzieci i młodzież — Polska",
     "name": "Angloville Junior",
     "segment": "11–18",
     "wariant": "Ferie 2026",
@@ -510,12 +536,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe w Polsce"
   },
   {
     "id": "angielska-wioska-narty-ferie-2026",
     "kategoria": "Obozy językowe w Polsce (dzieci/młodzież)",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angielska Wioska + Narty",
     "segment": "11–18",
     "wariant": "Ferie 2026",
@@ -529,12 +556,13 @@
     "coZawiera": "Ubezpieczenie SKI i elementy programu narciarskiego + część językowa (wg strony).",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-ski/",
     "ratio": "1 NS : 2 (sesje 2 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Angielska Wioska w Polsce"
   },
   {
     "id": "angloville-family-adult-family",
     "kategoria": "Kursy rodzinne",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dzieci i młodzież — Polska",
     "name": "Angloville Family",
     "segment": "rodzice + dzieci",
     "wariant": "Adult Family",
@@ -548,12 +576,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-family/",
     "ratio": "2 na 1 z NS",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe w Polsce"
   },
   {
     "id": "angloville-family-kids-family",
     "kategoria": "Kursy rodzinne",
-    "kategoriaFilter": "Młodzież PL",
+    "kategoriaFilter": "Dzieci i młodzież — Polska",
     "name": "Angloville Family",
     "segment": "rodzice + dzieci",
     "wariant": "Kids Family",
@@ -567,12 +596,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-family/",
     "ratio": "3 na 1 + gry/zabawy",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe w Polsce"
   },
   {
     "id": "junior-international-malta-wariant-tygodniowy-wakacje-2026",
     "kategoria": "Obozy językowe za granicą",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Zagranica",
     "name": "Junior International – Malta",
     "segment": "13–18",
     "wariant": "Wariant tygodniowy (Wakacje 2026)",
@@ -586,12 +616,13 @@
     "coZawiera": "Wg strony: podróż samolotem + opieka kadry; szczegóły pakietu na stronie.",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe za granicą"
   },
   {
     "id": "junior-international-malta-wariant-dwutygodniowy-wakacje-2026",
     "kategoria": "Obozy językowe za granicą",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Zagranica",
     "name": "Junior International – Malta",
     "segment": "13–18",
     "wariant": "Wariant dwutygodniowy (Wakacje 2026)",
@@ -605,12 +636,13 @@
     "coZawiera": "Jak wyżej.",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe za granicą"
   },
   {
     "id": "junior-international-malta-ferie-2026",
     "kategoria": "Obozy językowe za granicą",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Zagranica",
     "name": "Junior International – Malta",
     "segment": "13–18",
     "wariant": "Ferie 2026",
@@ -624,12 +656,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-malta/",
     "ratio": "1 NS : 2 (sesje 2 na 1 i 1 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe za granicą"
   },
   {
     "id": "junior-international-anglia-wakacje-2026",
     "kategoria": "Obozy językowe za granicą",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Zagranica",
     "name": "Junior International – Anglia",
     "segment": "13–18",
     "wariant": "Wakacje 2026",
@@ -643,12 +676,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-international-anglia/",
     "ratio": "1 NS : 2 (formuła 2 na 1)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 20 000 PLN",
+    "podkategoria": "Obozy językowe za granicą"
   },
   {
     "id": "junior-plus-londyn-uk-trip-wariant-intensive",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Londyn (UK Trip)",
     "segment": "12–18",
     "wariant": "Wariant Intensive",
@@ -662,12 +696,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-londyn/",
     "ratio": "1 NS : 3 uczestników",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "junior-plus-londyn-uk-trip-wariant-standard",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Londyn (UK Trip)",
     "segment": "12–18",
     "wariant": "Wariant Standard",
@@ -681,12 +716,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-londyn/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "junior-plus-eurotrip-wariant-standard",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Eurotrip",
     "segment": "12–18",
     "wariant": "Wariant Standard",
@@ -700,12 +736,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/",
     "ratio": "BRAK sesji językowych",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "junior-plus-eurotrip-wariant-intensive",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Eurotrip",
     "segment": "12–18",
     "wariant": "Wariant Intensive",
@@ -719,12 +756,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-eurotrip/",
     "ratio": "1 NS : 3",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "junior-plus-baltic-trip-wakacje-2026",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Baltic Trip",
     "segment": "12–18",
     "wariant": "Wakacje 2026",
@@ -738,12 +776,13 @@
     "coZawiera": "Transport z Warszawy; transport lokalny; asysta opiekuna; ubezpieczenie (wg strony).",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-baltic-trip/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "junior-plus-italy-trip-wakacje-2026",
     "kategoria": "Obozy turystyczno‑językowe w Europie",
-    "kategoriaFilter": "Zagranica",
+    "kategoriaFilter": "Dzieci i młodzież — Europa",
     "name": "Junior Plus – Italy Trip",
     "segment": "12–18",
     "wariant": "Wakacje 2026",
@@ -757,12 +796,13 @@
     "coZawiera": "Transport z większych miast; transport lokalny; asysta opiekuna; ubezpieczenie (wg strony).",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/angloville-junior-plus-italy-trip/",
     "ratio": "BRAK sesji językowych (koordynatorzy NS)",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe w Europie"
   },
   {
     "id": "nowy-jork-tygodniowy-4-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Nowy Jork",
     "segment": "14–18",
     "wariant": "Tygodniowy – 4 os. w pokoju",
@@ -776,12 +816,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "nowy-jork-tygodniowy-2-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Nowy Jork",
     "segment": "14–18",
     "wariant": "Tygodniowy – 2 os. w pokoju",
@@ -795,12 +836,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "nowy-jork-dwutygodniowy-4-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Nowy Jork",
     "segment": "14–18",
     "wariant": "Dwutygodniowy – 4 os. w pokoju",
@@ -814,12 +856,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "nowy-jork-dwutygodniowy-2-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Nowy Jork",
     "segment": "14–18",
     "wariant": "Dwutygodniowy – 2 os. w pokoju",
@@ -833,12 +876,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/nowy-jork/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "kalifornia-a-4-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Kalifornia",
     "segment": "14–18",
     "wariant": "A – 4 os. w pokoju",
@@ -852,12 +896,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/kalifornia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "kalifornia-b-2-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Kalifornia",
     "segment": "14–18",
     "wariant": "B – 2 os. w pokoju",
@@ -871,12 +916,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/kalifornia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "miami-a-4-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Miami",
     "segment": "14–18",
     "wariant": "A – 4 os. w pokoju",
@@ -890,12 +936,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/miami/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "miami-b-2-os-w-pokoju",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Miami",
     "segment": "14–18",
     "wariant": "B – 2 os. w pokoju",
@@ -909,12 +956,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/miami/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "japonia-termin-2906-10072026",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Japonia",
     "segment": "14–18",
     "wariant": "Termin 29.06–10.07.2026",
@@ -928,12 +976,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/japonia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "japonia-pozostae-terminy",
     "kategoria": "Obozy turystyczno‑językowe na świecie",
-    "kategoriaFilter": "Świat",
+    "kategoriaFilter": "Dzieci i młodzież — Świat",
     "name": "Japonia",
     "segment": "14–18",
     "wariant": "Pozostałe terminy",
@@ -947,12 +996,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/japonia/",
     "ratio": "Koordynatorzy NS + kierownik PL",
-    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR"
+    "ubezpieczenie": "Signal Iduna — KL 20 000 EUR + NNW 15 000 EUR",
+    "podkategoria": "Obozy turystyczno-językowe na świecie"
   },
   {
     "id": "wymiana-do-usa-rok-w-usa-finansowanie-0",
     "kategoria": "Wymiany uczniowskie",
-    "kategoriaFilter": "Exchange",
+    "kategoriaFilter": "Wymiana uczniowska",
     "name": "Wymiana do USA (Rok w USA)",
     "segment": "15–18.5",
     "wariant": "Finansowanie 0%",
@@ -966,12 +1016,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/rok-w-usa/",
     "ratio": "Host family + lokalny koordynator",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Wymiana uczniowska"
   },
   {
     "id": "wymiana-do-kanady-rok-w-kanadzie",
     "kategoria": "Wymiany uczniowskie",
-    "kategoriaFilter": "Exchange",
+    "kategoriaFilter": "Wymiana uczniowska",
     "name": "Wymiana do Kanady (Rok w Kanadzie)",
     "segment": "14–18.5",
     "wariant": "",
@@ -985,12 +1036,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/dla-dzieci-i-mlodziezy/rok-w-kanadzie/",
     "ratio": "Host family + lokalny koordynator",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Wymiana uczniowska"
   },
   {
     "id": "angloville-meets-doroli-zakup-po-zakoczeniu-programu",
     "kategoria": "Online",
-    "kategoriaFilter": "Online",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville MEETS (dorośli)",
     "segment": "uczestnicy Angielskiej Wioski",
     "wariant": "zakup po zakończeniu programu",
@@ -1004,12 +1056,13 @@
     "coZawiera": "",
     "url": "https://angloville.pl/wp-content/uploads/2023/01/regulamin-angloville-meets-dorosli-2023-1.pdf",
     "ratio": "Spotkania online 1 na 1 z NS",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Online (MEETS)"
   },
   {
     "id": "angloville-meets-doroli-zakup-przed-rozpoczciem-programu",
     "kategoria": "Online",
-    "kategoriaFilter": "Online",
+    "kategoriaFilter": "Dorośli — Angielska Wioska",
     "name": "Angloville MEETS (dorośli)",
     "segment": "uczestnicy Angielskiej Wioski",
     "wariant": "zakup przed rozpoczęciem programu",
@@ -1023,6 +1076,7 @@
     "coZawiera": "",
     "url": "https://angloville.pl/wp-content/uploads/2023/01/regulamin-angloville-meets-dorosli-2023-1.pdf",
     "ratio": "Spotkania online 1 na 1 z NS",
-    "ubezpieczenie": ""
+    "ubezpieczenie": "",
+    "podkategoria": "Online (MEETS)"
   }
 ]

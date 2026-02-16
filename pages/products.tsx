@@ -5,6 +5,7 @@ interface Product {
   id: string;
   kategoria: string;
   kategoriaFilter: string;
+  podkategoria?: string;
   name: string;
   segment: string;
   wariant: string;
@@ -22,24 +23,24 @@ interface Product {
 }
 
 const CATEGORIES = [
-  { key: 'Wszystkie', color: 'bg-av-navy' },
-  { key: 'Dorośli', color: 'bg-av-blue' },
-  { key: 'Młodzież PL', color: 'bg-green-600' },
-  { key: 'Zagranica', color: 'bg-purple-600' },
-  { key: 'Świat', color: 'bg-av-orange' },
-  { key: 'Exchange', color: 'bg-red-600' },
-  { key: 'Online', color: 'bg-teal-600' },
-  { key: 'Pakiety Pro', color: 'bg-indigo-600' },
+  { key: 'Wszystkie', label: 'Wszystkie', color: 'bg-av-navy', icon: '📦' },
+  { key: 'Dorośli — Angielska Wioska', label: 'Angielska Wioska', color: 'bg-av-blue', icon: '🏠' },
+  { key: 'Dorośli — Wyjazdy', label: 'Wyjazdy dorośli', color: 'bg-indigo-600', icon: '✈️' },
+  { key: 'Dzieci i młodzież — Polska', label: 'Obozy PL', color: 'bg-green-600', icon: '🇵🇱' },
+  { key: 'Dzieci i młodzież — Zagranica', label: 'Zagranica', color: 'bg-purple-600', icon: '🌍' },
+  { key: 'Dzieci i młodzież — Europa', label: 'Europa', color: 'bg-sky-600', icon: '🇪🇺' },
+  { key: 'Dzieci i młodzież — Świat', label: 'Świat', color: 'bg-av-orange', icon: '🌎' },
+  { key: 'Wymiana uczniowska', label: 'Wymiana', color: 'bg-red-600', icon: '🎓' },
 ];
 
 const CATEGORY_BADGE: Record<string, string> = {
-  'Dorośli': 'bg-av-blue/10 text-av-blue border-av-blue/20',
-  'Młodzież PL': 'bg-green-50 text-green-700 border-green-200',
-  'Zagranica': 'bg-purple-50 text-purple-700 border-purple-200',
-  'Świat': 'bg-orange-50 text-av-orange border-orange-200',
-  'Exchange': 'bg-red-50 text-red-700 border-red-200',
-  'Online': 'bg-teal-50 text-teal-700 border-teal-200',
-  'Pakiety Pro': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Dorośli — Angielska Wioska': 'bg-av-blue/10 text-av-blue border-av-blue/20',
+  'Dorośli — Wyjazdy': 'bg-indigo-50 text-indigo-700 border-indigo-200',
+  'Dzieci i młodzież — Polska': 'bg-green-50 text-green-700 border-green-200',
+  'Dzieci i młodzież — Zagranica': 'bg-purple-50 text-purple-700 border-purple-200',
+  'Dzieci i młodzież — Europa': 'bg-sky-50 text-sky-700 border-sky-200',
+  'Dzieci i młodzież — Świat': 'bg-orange-50 text-av-orange border-orange-200',
+  'Wymiana uczniowska': 'bg-red-50 text-red-700 border-red-200',
 };
 
 function formatPrice(price: number | null): string {
@@ -50,6 +51,7 @@ function formatPrice(price: number | null): string {
 function ProductCard({ product, onEdit }: { product: Product; onEdit: (p: Product) => void }) {
   const [expanded, setExpanded] = useState(false);
   const badge = CATEGORY_BADGE[product.kategoriaFilter] || 'bg-gray-50 text-gray-700 border-gray-200';
+  const badgeLabel = (product as any).podkategoria || product.kategoriaFilter;
   const hasDiscount = product.cenaZnizka !== null && product.cenaRegularna !== null && product.cenaZnizka < product.cenaRegularna;
 
   return (
@@ -58,7 +60,7 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: (p: Produc
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="flex-1">
             <span className={`inline-block text-xs font-medium px-2 py-0.5 rounded-full border mb-2 ${badge}`}>
-              {product.kategoriaFilter}
+              {badgeLabel}
             </span>
             <h3 className="text-lg font-bold text-av-navy">{product.name}</h3>
             {product.wariant && (
@@ -233,20 +235,22 @@ export default function ProductsPage() {
 
         {/* Category tabs */}
         <div className="flex flex-wrap gap-2 mb-6">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.key}
-              onClick={() => setActiveCategory(cat.key)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeCategory === cat.key
-                  ? `${cat.color} text-white shadow-md`
-                  : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              {cat.key}
-              {cat.key === 'Wszystkie' ? ` (${products.length})` : ` (${products.filter(p => p.kategoriaFilter === cat.key).length})`}
-            </button>
-          ))}
+          {CATEGORIES.map(cat => {
+            const count = cat.key === 'Wszystkie' ? products.length : products.filter(p => p.kategoriaFilter === cat.key).length;
+            return (
+              <button
+                key={cat.key}
+                onClick={() => setActiveCategory(cat.key)}
+                className={`px-3 py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                  activeCategory === cat.key
+                    ? `${cat.color} text-white shadow-md`
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                {cat.icon} {cat.label} ({count})
+              </button>
+            );
+          })}
         </div>
 
         {/* Results count */}
@@ -254,12 +258,28 @@ export default function ProductsPage() {
           Wyświetlono {filtered.length} z {products.length} produktów
         </p>
 
-        {/* Product grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mb-12">
-          {filtered.map(p => (
-            <ProductCard key={p.id} product={p} onEdit={handleEdit} />
-          ))}
-        </div>
+        {/* Product grid — grouped by podkategoria */}
+        {(() => {
+          const groups: Record<string, Product[]> = {};
+          filtered.forEach(p => {
+            const key = (p as any).podkategoria || p.kategoriaFilter || 'Inne';
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(p);
+          });
+          return Object.entries(groups).map(([groupName, groupProducts]) => (
+            <div key={groupName} className="mb-8">
+              <h2 className="text-lg font-bold text-av-navy mb-3 flex items-center gap-2">
+                {groupName}
+                <span className="text-xs font-normal text-gray-400">({groupProducts.length})</span>
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {groupProducts.map(p => (
+                  <ProductCard key={p.id} product={p} onEdit={handleEdit} />
+                ))}
+              </div>
+            </div>
+          ));
+        })()}
 
         {filtered.length === 0 && (
           <div className="text-center py-12 text-gray-400">
