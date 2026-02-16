@@ -228,7 +228,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
           : `Cena to ${formatPrice(offerPrice)}.`)
         : 'Nie mam w bazie aktualnej ceny dla tego wariantu — sprawdzę i wrócę do Państwa mailowo.';
 
-      const ratioLine = offer.ratio ? `Proporcja native speakerów: ${offer.ratio}.` : '';
+      const ratioLine = offer.ratio ? `Stosunek native speakerów do uczestników: ${offer.ratio}.` : '';
       const terminyLine = offer.terminy ? `Najbliższe terminy: ${offer.terminy}.` : '';
 
       if (customerSaid.includes('tak') || customerSaid.includes('chętnie') || customerSaid.includes('opowiedz') || customerSaid.includes('interesuje')) {
@@ -400,7 +400,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         lines.push('Cena: (brak w bazie dla tego wariantu — sprawdzimy i wrócimy z potwierdzeniem)');
       }
-      if (offerUsed.ratio) lines.push(`Proporcja native speakerów: ${offerUsed.ratio}`);
+      if (offerUsed.ratio) lines.push(`Stosunek native speakerów do uczestników: ${offerUsed.ratio}`);
       if (offerUsed.terminy) lines.push(`Terminy: ${offerUsed.terminy}`);
       lines.push('');
       lines.push(offerUsed.url ? `Link do zapisu/strony: ${offerUsed.url}` : 'Link: (brak w bazie — doślemy w kolejnym mailu)');

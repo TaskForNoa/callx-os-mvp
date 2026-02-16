@@ -216,7 +216,7 @@ export default function Scenarios() {
               <div className="px-5 pb-5">
                 <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
                   <strong>⚠️ Zero-hallucination:</strong> Agent podaje TYLKO dane z bazy produktów.
-                  Brak ceny/ratio/linku → „sprawdzę i wrócę mailowo".
+                  Brak ceny/stosunku NS/linku → „sprawdzę i wrócę mailowo".
                 </div>
               </div>
             </div>

@@ -77,7 +77,7 @@ const pastiScenario: ScenarioDefinition = {
       step: 2,
       icon: '📖',
       title: 'Prezentacja programu',
-      goal: 'Opisać format programu dopasowanego do potrzeb. Kluczowe info: struktura (40 uczestników + 20 NS), ratio 2:1, sesje językowe, animacje, czas trwania. NIE podawać jeszcze ceny — najpierw zaangażować opisem.',
+      goal: 'Opisać format programu dopasowanego do potrzeb. Kluczowe info: struktura (40 uczestników + 20 NS), stosunek 2:1 (native speakerów do uczestników), sesje językowe, animacje, czas trwania. NIE podawać jeszcze ceny — najpierw zaangażować opisem.',
       exampleScript: 'Nasze programy to wyjazdy, gdzie do grupy 40 polskich uczestników dołącza 20 native speakerów. Nauka odbywa się przez zabawę — sesje 2 na 1, karaoke, talent show, tańce szkockie. Cały tydzień, 70h zanurzenia w angielskim.',
       possibleOutcomes: ['Zainteresowany → pytanie o cenę', 'Pytania szczegółowe → odpowiedzi', 'Zna już → przejście do ceny'],
       realExamples: [

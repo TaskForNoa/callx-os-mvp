@@ -130,7 +130,7 @@ function ProductCard({ product, onEdit }: { product: Product; onEdit: (p: Produc
           )}
           {product.ratio && (
             <div>
-              <span className="font-semibold text-av-navy">Proporcja NS:</span>
+              <span className="font-semibold text-av-navy">Stosunek NS do uczestników:</span>
               <span className="text-gray-600 ml-2">{product.ratio}</span>
             </div>
           )}
@@ -391,13 +391,13 @@ function KnowledgeBaseSection() {
 
       {/* Ratio NS */}
       <section>
-        <h3 className="text-lg font-bold text-av-navy mb-3">👥 Proporcja Native Speaker : uczestnik</h3>
+        <h3 className="text-lg font-bold text-av-navy mb-3">👥 Stosunek native speakerów do uczestników</h3>
         <div className="overflow-x-auto">
           <table className="min-w-full border border-gray-200 rounded-lg text-xs">
             <thead className="bg-av-navy text-white">
               <tr>
                 <th className="px-3 py-2 text-left">Produkt</th>
-                <th className="px-3 py-2 text-left">Ratio</th>
+                <th className="px-3 py-2 text-left">Stosunek</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
