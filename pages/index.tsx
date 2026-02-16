@@ -69,71 +69,55 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-av-blue-bg">
-      <header className="bg-av-navy text-white">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-av-orange rounded-lg flex items-center justify-center text-xl font-bold">C</div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">CallX OS</h1>
-              <p className="text-blue-300 text-xs">by Angloville</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-4 text-sm">
-            <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-xs font-medium">● Live</span>
+    <main className="p-8">
+      <h1 className="text-2xl font-bold text-av-navy mb-6">Dashboard</h1>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Leady</div>
+          <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.leads}</div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Połączenia</div>
+          <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.calls}</div>
+        </div>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Konwersja</div>
+          <div className="text-3xl font-bold text-av-blue mt-1">
+            {loading ? '—' : stats.calls > 0 ? Math.round((stats.calls / stats.leads) * 100) + '%' : '0%'}
           </div>
         </div>
-      </header>
+        <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Śr. czas</div>
+          <div className="text-3xl font-bold text-av-navy mt-1">—</div>
+        </div>
+      </div>
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Leady</div>
-            <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.leads}</div>
-          </div>
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Połączenia</div>
-            <div className="text-3xl font-bold text-av-navy mt-1">{loading ? '—' : stats.calls}</div>
-          </div>
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Konwersja</div>
-            <div className="text-3xl font-bold text-av-blue mt-1">
-              {loading ? '—' : stats.calls > 0 ? Math.round((stats.calls / stats.leads) * 100) + '%' : '0%'}
-            </div>
-          </div>
-          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-            <div className="text-xs text-gray-500 uppercase tracking-wider font-medium">Śr. czas</div>
-            <div className="text-3xl font-bold text-av-navy mt-1">—</div>
-          </div>
-        </div>
+      <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Szybkie akcje</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <Link href="/leads" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
+          <div className="w-12 h-12 bg-av-blue/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-blue/20">📞</div>
+          <h3 className="font-semibold text-av-navy">Leady</h3>
+          <p className="text-gray-500 text-sm mt-1">Przeglądaj i dzwoń do {stats.leads} leadów</p>
+        </Link>
+        <Link href="/scenarios" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
+          <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-blue-100">🎬</div>
+          <h3 className="font-semibold text-av-navy">Scenariusze</h3>
+          <p className="text-gray-500 text-sm mt-1">Zarządzaj scenariuszami rozmów</p>
+        </Link>
+        <Link href="/products" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-orange hover:shadow-md">
+          <div className="w-12 h-12 bg-av-orange/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-orange/20">🏷️</div>
+          <h3 className="font-semibold text-av-navy">Produkty</h3>
+          <p className="text-gray-500 text-sm mt-1">Baza produktów Angloville</p>
+        </Link>
+      </div>
 
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Szybkie akcje</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <Link href="/leads" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
-            <div className="w-12 h-12 bg-av-blue/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-blue/20">📞</div>
-            <h3 className="font-semibold text-av-navy">Leady</h3>
-            <p className="text-gray-500 text-sm mt-1">Przeglądaj i dzwoń do {stats.leads} leadów</p>
-          </Link>
-          <Link href="/calls" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-blue hover:shadow-md">
-            <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-green-100">📊</div>
-            <h3 className="font-semibold text-av-navy">Historia połączeń</h3>
-            <p className="text-gray-500 text-sm mt-1">Przeglądaj historię i transkrypty</p>
-          </Link>
-          <Link href="/training" className="group bg-white rounded-xl p-6 shadow-sm border border-gray-100 hover:border-av-orange hover:shadow-md">
-            <div className="w-12 h-12 bg-av-orange/10 rounded-lg flex items-center justify-center text-2xl mb-3 group-hover:bg-av-orange/20">📁</div>
-            <h3 className="font-semibold text-av-navy">Dane treningowe</h3>
-            <p className="text-gray-500 text-sm mt-1">Załaduj nagrania rozmów</p>
-          </Link>
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <h2 className="font-semibold text-av-navy mb-4">Ostatnia aktywność</h2>
+        <div className="text-gray-400 text-center py-12">
+          <div className="text-4xl mb-3">📞</div>
+          <p>Brak połączeń — zacznij od sekcji Leady</p>
         </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-          <h2 className="font-semibold text-av-navy mb-4">Ostatnia aktywność</h2>
-          <div className="text-gray-400 text-center py-12">
-            <div className="text-4xl mb-3">📞</div>
-            <p>Brak połączeń — zacznij od sekcji Leady</p>
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

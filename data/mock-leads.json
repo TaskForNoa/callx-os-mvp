@@ -11,7 +11,12 @@
     "has_siblings": false,
     "last_contact_date": "2024-06-15",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Kacper",
+    "recommendedProgram": "Junior Malta 2026",
+    "recommendedReason": "Uczestnik 2x Malta — lojalny klient, wysoka konwersja na powtórkę",
+    "outcome": null
   },
   {
     "customer_id": "1002",
@@ -25,7 +30,12 @@
     "has_siblings": true,
     "last_contact_date": "2024-07-20",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Zosia",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "1 program w PL, rodzeństwo — potencjał na 2 zapisy, rabat rodzeństwa",
+    "outcome": null
   },
   {
     "customer_id": "1003",
@@ -39,7 +49,12 @@
     "has_siblings": false,
     "last_contact_date": "2024-08-10",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Bartek",
+    "recommendedProgram": "Junior UK 2026",
+    "recommendedReason": "3 programy, progresja PL→UK→Malta→UK — powracający, preferuje UK",
+    "outcome": null
   },
   {
     "customer_id": "1004",
@@ -53,7 +68,12 @@
     "has_siblings": true,
     "last_contact_date": "2024-05-15",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Ola",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "Przeszła z Kids do Junior — naturalny upgrade, rodzeństwo",
+    "outcome": null
   },
   {
     "customer_id": "1005",
@@ -67,7 +87,12 @@
     "has_siblings": false,
     "last_contact_date": "2024-09-01",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Filip",
+    "recommendedProgram": "Junior Malta 2026",
+    "recommendedReason": "2x Malta z rzędu — fan destynacji, Early Bird priorytet",
+    "outcome": null
   },
   {
     "customer_id": "1006",
@@ -81,7 +106,12 @@
     "has_siblings": true,
     "last_contact_date": "2024-07-05",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Maja",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "Pierwszy program 2024, rodzeństwo — propozycja Early Bird + rabat",
+    "outcome": null
   },
   {
     "customer_id": "1007",
@@ -95,7 +125,12 @@
     "has_siblings": false,
     "last_contact_date": "2024-08-20",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Adam",
+    "recommendedProgram": "Junior UK 2026",
+    "recommendedReason": "Upgrade PL→UK — rozwój językowy, preferuje UK",
+    "outcome": null
   },
   {
     "customer_id": "1008",
@@ -109,7 +144,12 @@
     "has_siblings": true,
     "last_contact_date": "2024-06-30",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Hania",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "Kids→Junior progresja, rodzeństwo — cross-sell",
+    "outcome": null
   },
   {
     "customer_id": "1009",
@@ -123,7 +163,12 @@
     "has_siblings": false,
     "last_contact_date": "2024-09-10",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Szymon",
+    "recommendedProgram": "Junior Malta 2026",
+    "recommendedReason": "3 programy, VIP — najwyższy priorytet re-engagement",
+    "outcome": null
   },
   {
     "customer_id": "1010",
@@ -137,6 +182,49 @@
     "has_siblings": true,
     "last_contact_date": "2024-05-25",
     "consent_marketing": true,
-    "status": "new"
+    "status": "new",
+    "leadType": "pasti",
+    "childName": "Julia",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "1 program, rok przerwy — re-engagement priorytet",
+    "outcome": null
+  },
+  {
+    "customer_id": "1011",
+    "first_name": "Robert",
+    "last_name": "Mazur",
+    "phone": "+48501111222",
+    "email": "robert.mazur@example.com",
+    "past_programs": [],
+    "last_program_year": null,
+    "preferred_destination": "Polska",
+    "has_siblings": false,
+    "last_contact_date": null,
+    "consent_marketing": true,
+    "status": "new",
+    "leadType": "new",
+    "childName": "Mateusz",
+    "recommendedProgram": "Junior PL 2026",
+    "recommendedReason": "Nowy lead z formularza — pierwszy kontakt",
+    "outcome": null
+  },
+  {
+    "customer_id": "1012",
+    "first_name": "Monika",
+    "last_name": "Pawlak",
+    "phone": "+48501222333",
+    "email": "monika.pawlak@example.com",
+    "past_programs": [],
+    "last_program_year": null,
+    "preferred_destination": "Malta",
+    "has_siblings": true,
+    "last_contact_date": null,
+    "consent_marketing": true,
+    "status": "new",
+    "leadType": "new",
+    "childName": "Alicja",
+    "recommendedProgram": "Junior Malta 2026",
+    "recommendedReason": "Nowy lead — zainteresowanie Malta, rodzeństwo",
+    "outcome": null
   }
 ]

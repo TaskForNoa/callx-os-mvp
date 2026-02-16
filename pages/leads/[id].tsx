@@ -12,9 +12,23 @@ interface Lead {
   past_programs: string[];
   preferred_destination: string;
   has_siblings: boolean;
+  leadType: 'pasti' | 'new';
+  childName?: string;
+  recommendedProgram?: string;
+  recommendedReason?: string;
+  outcome?: string | null;
 }
 
 interface Msg { speaker: 'agent' | 'customer'; text: string; }
+
+const outcomes = [
+  { key: 'aplikacja', icon: '✅', label: 'Aplikacja', desc: 'Agent wypełnił za klienta' },
+  { key: 'link_wyslany', icon: '📧', label: 'Link wysłany', desc: 'Klient dostał link' },
+  { key: 'callback', icon: '📅', label: 'Callback', desc: 'Umówiony ponowny kontakt' },
+  { key: 'odmowa', icon: '❌', label: 'Odmowa', desc: 'Nie zainteresowany' },
+  { key: 'nie_odebrano', icon: '📞', label: 'Nie odebrano', desc: 'Brak kontaktu' },
+  { key: 'eskalacja', icon: '⬆️', label: 'Eskalacja', desc: 'Przekazano do człowieka' },
+];
 
 export default function LeadDetail() {
   const router = useRouter();
@@ -23,6 +37,7 @@ export default function LeadDetail() {
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [voice, setVoice] = useState('Kasia');
+  const [selectedOutcome, setSelectedOutcome] = useState<string | null>(null);
 
   const [callActive, setCallActive] = useState(false);
   const [callStep, setCallStep] = useState(0);
@@ -40,7 +55,11 @@ export default function LeadDetail() {
 
   useEffect(() => {
     if (!id) return;
-    axios.get(`/api/leads/${id}`).then(r => { setLead(r.data.lead); setLoading(false); }).catch(() => setLoading(false));
+    axios.get(`/api/leads/${id}`).then(r => {
+      setLead(r.data.lead);
+      setSelectedOutcome(r.data.lead.outcome || null);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, [id]);
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [transcript]);
@@ -55,7 +74,6 @@ export default function LeadDetail() {
 
   const addMsg = (s: 'agent' | 'customer', t: string) => setTranscript(p => [...p, { speaker: s, text: t }]);
 
-  // ── TTS ──
   const speak = async (text: string) => {
     if (abortRef.current) return;
     setPhase('agent-speaking');
@@ -82,7 +100,6 @@ export default function LeadDetail() {
     } catch {}
   };
 
-  // ── STT with VAD ──
   const listen = (): Promise<string> => new Promise(async (resolve) => {
     if (abortRef.current) { resolve(''); return; }
     setPhase('listening');
@@ -179,17 +196,34 @@ export default function LeadDetail() {
     if (!abortRef.current) { setCallActive(false); setPhase('idle'); }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-av-blue-bg text-gray-500">Loading...</div>;
-  if (!lead) return <div className="min-h-screen flex items-center justify-center bg-av-blue-bg"><Link href="/leads" className="text-av-blue">← Lead not found</Link></div>;
+  const saveOutcome = (key: string) => {
+    setSelectedOutcome(key);
+    // Save to localStorage
+    if (lead) {
+      const stored = JSON.parse(localStorage.getItem('callx-outcomes') || '{}');
+      stored[lead.customer_id] = key;
+      localStorage.setItem('callx-outcomes', JSON.stringify(stored));
+    }
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-av-blue-bg text-gray-500">Ładowanie...</div>;
+  if (!lead) return <div className="min-h-screen flex items-center justify-center bg-av-blue-bg"><Link href="/leads" className="text-av-blue">← Lead nie znaleziony</Link></div>;
 
   return (
     <div className="min-h-screen bg-av-blue-bg">
       <header className="bg-av-navy text-white">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Link href="/leads" className="text-blue-300 hover:text-white text-sm">← Leads</Link>
+          <Link href="/leads" className="text-blue-300 hover:text-white text-sm">← Leady</Link>
           <div className="flex-1">
-            <h1 className="text-lg font-bold">{lead.first_name} {lead.last_name}</h1>
-            <p className="text-blue-300 text-xs">{lead.phone} • {lead.email}</p>
+            <h1 className="text-lg font-bold flex items-center gap-2">
+              {lead.first_name} {lead.last_name}
+              <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
+                lead.leadType === 'pasti' ? 'bg-blue-500/30 text-blue-200' : 'bg-green-500/30 text-green-200'
+              }`}>
+                {lead.leadType === 'pasti' ? '🔄 PAŚCI' : '🆕 NOWY'}
+              </span>
+            </h1>
+            <p className="text-blue-300 text-xs">{lead.phone} • {lead.email}{lead.childName ? ` • Dziecko: ${lead.childName}` : ''}</p>
           </div>
           {callActive && (
             <span className={`px-3 py-1 rounded-full text-xs font-bold ${
@@ -212,55 +246,63 @@ export default function LeadDetail() {
           {/* Left: Info */}
           <div className="space-y-4">
             <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Past Programs</h2>
-              {lead.past_programs.map((p, i) => (
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Wcześniejsze programy</h2>
+              {lead.past_programs.length > 0 ? lead.past_programs.map((p, i) => (
                 <div key={i} className="flex items-center gap-2 py-1">
                   <span className="w-2 h-2 bg-av-blue rounded-full"></span>
                   <span className="text-sm text-gray-700">{p}</span>
                 </div>
-              ))}
+              )) : (
+                <p className="text-sm text-gray-400">Brak — nowy klient</p>
+              )}
             </div>
 
+            {/* AI Recommendation */}
             <div className="bg-gradient-to-br from-av-blue to-av-blue-dark rounded-xl p-5 text-white">
-              <div className="text-xs uppercase tracking-wider opacity-80 mb-1">Recommended</div>
-              <div className="text-lg font-bold">Junior {lead.preferred_destination} 2026</div>
-              <div className="text-sm opacity-80 mt-1">Early Bird: 4 449 zł</div>
+              <div className="text-xs uppercase tracking-wider opacity-80 mb-1">🤖 Rekomendacja AI</div>
+              <div className="text-lg font-bold">{lead.recommendedProgram || 'Brak'}</div>
+              {lead.recommendedReason && (
+                <div className="text-sm opacity-80 mt-2 leading-relaxed">{lead.recommendedReason}</div>
+              )}
+            </div>
+
+            {/* Outcome selector */}
+            <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Wynik rozmowy</h2>
+              <div className="grid grid-cols-2 gap-2">
+                {outcomes.map(o => (
+                  <button key={o.key} onClick={() => saveOutcome(o.key)}
+                    className={`p-2 rounded-lg text-xs text-left border transition-all ${
+                      selectedOutcome === o.key
+                        ? 'border-av-blue bg-av-blue/10 ring-2 ring-av-blue/30'
+                        : 'border-gray-200 hover:border-av-blue/50'
+                    }`}>
+                    <div className="font-medium">{o.icon} {o.label}</div>
+                    <div className="text-gray-400 mt-0.5">{o.desc}</div>
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Controls */}
             <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Call Settings</h2>
+              <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Ustawienia</h2>
               <select value={voice} onChange={e => setVoice(e.target.value)} disabled={callActive}
                 className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mb-3 focus:outline-none focus:border-av-blue">
-                <option value="Kasia">🎭 Kasia (Female)</option>
-                <option value="Marek">🎭 Marek (Male)</option>
+                <option value="Kasia">🎭 Kasia (Kobieta)</option>
+                <option value="Marek">🎭 Marek (Mężczyzna)</option>
               </select>
-              <div className="text-xs text-gray-400 px-1">Scenario: Paści — Early Bird Junior</div>
-            </div>
-
-            {/* How it works */}
-            <div className="bg-av-cream rounded-xl p-5 text-sm text-gray-600">
-              <div className="font-semibold text-av-navy mb-2">💡 How it works</div>
-              <ol className="list-decimal list-inside space-y-1 text-xs">
-                <li>Click <b>Start Call</b></li>
-                <li>Kasia speaks first (AI voice)</li>
-                <li>Your mic turns on automatically</li>
-                <li>Speak your response</li>
-                <li><b>Auto-stops</b> after ~1.2s silence</li>
-                <li>5-7 exchanges total</li>
-              </ol>
+              <div className="text-xs text-gray-400 px-1">Scenariusz: Re-engagement Paści</div>
             </div>
           </div>
 
           {/* Right: Call + Transcript */}
           <div className="lg:col-span-2 space-y-4">
-
-            {/* Call action */}
             <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
               {!callActive ? (
                 <button onClick={startCall}
                   className="w-full py-4 rounded-xl font-bold text-white text-lg bg-gradient-to-r from-av-blue to-av-blue-dark hover:shadow-lg hover:shadow-av-blue/30 transform hover:scale-[1.02]">
-                  🎙️ Start Call
+                  🎙️ Rozpocznij rozmowę
                 </button>
               ) : (
                 <div className="flex gap-3">
@@ -272,7 +314,7 @@ export default function LeadDetail() {
                   )}
                   <button onClick={endCall}
                     className={`${phase === 'listening' ? 'flex-1' : 'w-full'} py-3 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600`}>
-                    📞 End Call
+                    📞 Zakończ
                   </button>
                 </div>
               )}
@@ -281,7 +323,7 @@ export default function LeadDetail() {
                   <span className="text-2xl">✅</span>
                   <div>
                     <div className="font-bold text-green-800">{outcome}</div>
-                    <div className="text-xs text-green-600">{transcript.length} messages</div>
+                    <div className="text-xs text-green-600">{transcript.length} wiadomości</div>
                   </div>
                 </div>
               )}
@@ -290,15 +332,14 @@ export default function LeadDetail() {
               )}
             </div>
 
-            {/* Transcript */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-100 bg-gray-50">
-                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Transcript</h2>
+                <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Transkrypt</h2>
               </div>
               <div className="p-4 space-y-3 max-h-[600px] overflow-y-auto min-h-[200px]">
                 {transcript.length === 0 && (
                   <div className="text-gray-300 text-center py-16 text-sm">
-                    Click "Start Call" to begin conversation
+                    Kliknij "Rozpocznij rozmowę" aby zacząć
                   </div>
                 )}
                 {transcript.map((m, i) => (
@@ -309,7 +350,7 @@ export default function LeadDetail() {
                         : 'bg-av-orange/10 text-gray-900 rounded-br-md'
                     }`}>
                       <div className="text-[10px] font-semibold uppercase tracking-wider opacity-50 mb-0.5">
-                        {m.speaker === 'agent' ? '🤖 Kasia' : '👤 You'}
+                        {m.speaker === 'agent' ? '🤖 Kasia' : '👤 Klient'}
                       </div>
                       <div className="text-sm leading-relaxed">{m.text}</div>
                     </div>
