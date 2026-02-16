@@ -103,74 +103,10 @@ const pastiScenario: ScenarioDefinition = {
   ],
 };
 
-// ── Nowy Lead — Zimny Telefon ──
-const newLeadScenario: ScenarioDefinition = {
-  id: 'cold-call-new',
-  leadType: 'new',
-  name: 'Nowy Lead — Pierwszy Kontakt',
-  description: 'Pierwszy kontakt z nowym leadem — przedstawienie Angloville + badanie potrzeb',
-  targetGroup: 'Rodzice zainteresowani obozami językowymi (formularz, reklama, polecenie)',
-  steps: [
-    {
-      step: 0,
-      icon: '👋',
-      title: 'Powitanie + przedstawienie',
-      goal: 'Przedstawić się i Angloville. Zapytać skąd znają firmę.',
-      exampleScript: 'Dzień dobry, tu [agent] z Angloville. Dzwonię w sprawie zapytania o obozy językowe. Czy ma Pan/Pani chwilę?',
-      possibleOutcomes: ['Ma czas → krok 2', 'Nie ma czasu → callback'],
-    },
-    {
-      step: 1,
-      icon: '📋',
-      title: 'Informacja o nagrywaniu',
-      goal: 'Poinformować o nagrywaniu rozmowy.',
-      exampleScript: 'Informuję, że rozmowa jest nagrywana w celach jakościowych.',
-      possibleOutcomes: ['OK → krok 3'],
-    },
-    {
-      step: 2,
-      icon: '🔍',
-      title: 'Badanie potrzeb',
-      goal: 'Zrozumieć czego szuka rodzic: wiek dziecka, cel, budżet, termin, preferencje.',
-      exampleScript: 'Żeby dobrze dopasować propozycję — w jakim wieku jest dziecko? Czy zależy Państwu bardziej na Polsce czy wyjeździe zagranicznym?',
-      possibleOutcomes: ['Jasne potrzeby → dopasowanie programu', 'Niezdecydowany → pytania pomocnicze'],
-    },
-    {
-      step: 3,
-      icon: '💡',
-      title: 'Prezentacja dopasowanego programu',
-      goal: 'Zaproponować 1-2 programy z bazy wiedzy pasujące do potrzeb. TYLKO fakty z KB.',
-      exampleScript: 'Na podstawie tego co Pan/Pani mówi, polecam [program]. [cena], [ratio NS], [co zawiera]. Jeśli czegoś nie mam w systemie — sprawdzę i wyślę mailem.',
-      possibleOutcomes: ['Zainteresowany → email', 'Pytania → odpowiedzi z KB', 'Nie pasuje → alternatywa'],
-    },
-    {
-      step: 4,
-      icon: '🏷️',
-      title: 'Szczegóły + potwierdzenie maila',
-      goal: 'Podać konkretne fakty z bazy. Zebrać/potwierdzić email.',
-      exampleScript: 'Cena to [cena]. Mogę wysłać szczegóły i link mailem — jaki adres email?',
-      possibleOutcomes: ['Podaje email → wysyłka', 'Woli zadzwonić później → callback'],
-    },
-    {
-      step: 5,
-      icon: '📧',
-      title: 'Wysyłka maila + zamknięcie',
-      goal: 'Wysłać podsumowanie. Zachęcić do kontaktu.',
-      exampleScript: 'Wysyłam na [email]. Gdyby mieli Państwo pytania — proszę śmiało dzwonić lub odpisać. Miłego dnia!',
-      possibleOutcomes: ['Email wysłany → koniec'],
-    },
-  ],
-  objections: [
-    { trigger: 'Nie wiem czym jest Angloville', response: 'Angloville to obozy językowe gdzie dzieci i młodzież uczą się angielskiego z native speakerami. Mamy programy w Polsce i za granicą.', category: 'interest' },
-    { trigger: 'Muszę porozmawiać z mężem/żoną', response: 'Oczywiście! Mogę wysłać szczegóły mailem, żeby mogli Państwo razem się zapoznać.', category: 'timing' },
-    { trigger: 'Za drogo', response: 'Mamy raty 0% do 6 rat. A w cenie mamy zakwaterowanie, wyżywienie i program. Mogę wysłać porównanie?', category: 'price' },
-    { trigger: 'Dziecko jest za małe/za duże', response: 'Mamy programy od 7 lat (Kids) do 18+ (Adult). Jaki wiek?', category: 'child' },
-    { trigger: 'Nieznana obiekcja', response: '2 próby wyjaśnienia, potem eskalacja do konsultanta.', category: 'unknown' },
-  ],
-};
+// Nowe typy scenariuszy dodawaj tutaj — pojawią się automatycznie w UI.
 
 /** All scenarios */
-export const scenarios: ScenarioDefinition[] = [pastiScenario, newLeadScenario];
+export const scenarios: ScenarioDefinition[] = [pastiScenario];
 
 /** Get scenario by lead type */
 export function getScenarioForLead(leadType: string): ScenarioDefinition {
