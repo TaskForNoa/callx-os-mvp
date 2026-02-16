@@ -217,6 +217,25 @@ function extractCustomerContext(allText: string): string {
 // ── LLM call ──
 const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'claude-haiku-3-5-20241022';
 
+// Anthropic requires strictly alternating user/assistant, starting with user
+function sanitizeMessages(msgs: Array<{role: string; content: string}>): Array<{role: string; content: string}> {
+  const out: Array<{role: string; content: string}> = [];
+  for (const m of msgs) {
+    const role = m.role === 'system' ? 'user' : m.role;
+    if (out.length > 0 && out[out.length - 1].role === role) {
+      // Merge consecutive same-role messages
+      out[out.length - 1].content += '\n' + m.content;
+    } else {
+      out.push({ role, content: m.content });
+    }
+  }
+  // Must start with 'user'
+  if (out.length > 0 && out[0].role !== 'user') {
+    out.unshift({ role: 'user', content: '(rozpoczęcie rozmowy)' });
+  }
+  return out;
+}
+
 async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
   const apiKey = process.env.ANTHROPIC_API_KEY || process.env.TASKFORNOA_ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY not set');
@@ -231,7 +250,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
     body: JSON.stringify({
       model: CALLX_MODEL,
       system: systemPrompt,
-      messages: messages.map(m => ({ role: m.role === 'system' ? 'user' : m.role, content: m.content })),
+      messages: sanitizeMessages(messages),
       temperature: 0.7,
       max_tokens: 300,
     }),
