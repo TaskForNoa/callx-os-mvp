@@ -14,6 +14,7 @@ export default function Training() {
   const [authed, setAuthed] = useState(false);
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [serverMode, setServerMode] = useState(true);
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -23,15 +24,37 @@ export default function Training() {
       if (saved === '1') setAuthed(true);
       else window.location.href = '/';
       
-      // Load saved files from localStorage
-      const savedFiles = localStorage.getItem('callx-training-files');
-      if (savedFiles) setFiles(JSON.parse(savedFiles));
+      // Load from server (preferred) or fallback to localStorage
+      fetch('/api/training/list?limit=100')
+        .then(r => r.json())
+        .then(data => {
+          if (data?.transcripts) {
+            const mapped: UploadedFile[] = data.transcripts.map((t: any) => ({
+              id: t.id,
+              name: t.file_name || '(upload)',
+              size: 0,
+              uploadedAt: t.created_at,
+              status: t.transcript_text ? 'done' : 'error',
+              transcript: t.transcript_text || 'Brak transkrypcji',
+            }));
+            setFiles(mapped);
+            setServerMode(true);
+            return;
+          }
+          throw new Error('no server data');
+        })
+        .catch(() => {
+          setServerMode(false);
+          const savedFiles = localStorage.getItem('callx-training-files');
+          if (savedFiles) setFiles(JSON.parse(savedFiles));
+        });
     }
   }, []);
 
   const saveFiles = (newFiles: UploadedFile[]) => {
     setFiles(newFiles);
-    localStorage.setItem('callx-training-files', JSON.stringify(newFiles));
+    // Fallback only when server not available
+    if (!serverMode) localStorage.setItem('callx-training-files', JSON.stringify(newFiles));
   };
 
   const handleFiles = async (fileList: FileList) => {
@@ -76,16 +99,19 @@ export default function Training() {
           reader.readAsDataURL(file);
         });
 
-        const res = await fetch('/api/voice/transcribe', {
+        const res = await fetch('/api/training/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ audio: b64 }),
+          body: JSON.stringify({ audio: b64, fileName: file.name }),
         });
         const data = await res.json();
 
         if (idx !== -1) {
           updated[idx].status = data.transcript ? 'done' : 'error';
           updated[idx].transcript = data.transcript || 'Brak transkrypcji';
+          // Replace local id with server transcript id when available
+          if (data.transcriptId) updated[idx].id = data.transcriptId;
+          if (data.createdAt) updated[idx].uploadedAt = data.createdAt;
           saveFiles([...updated]);
         }
       } catch {
