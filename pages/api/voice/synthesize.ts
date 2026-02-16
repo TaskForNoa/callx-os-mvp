@@ -96,6 +96,20 @@ function prepareForTTS(text: string): string {
     return polishCurrency(n);
   });
 
+  // Replace ratios: "1:1" → "jeden na jeden", "2:1" → "dwa na jeden", "1 NS : 2" → "jeden native speaker na dwóch"
+  text = text.replace(/(\d+)\s*:\s*(\d+)/g, (_, a, b) => {
+    return `${numberToPolish(parseInt(a, 10))} na ${numberToPolish(parseInt(b, 10))}`;
+  });
+  text = text.replace(/(\d+)\s+NS\s*:\s*(\d+)/gi, (_, a, b) => {
+    return `${numberToPolish(parseInt(a, 10))} native speaker na ${numberToPolish(parseInt(b, 10))}`;
+  });
+  text = text.replace(/(\d+)\s+na\s+(\d+)/g, (_, a, b) => {
+    const na = parseInt(a, 10);
+    const nb = parseInt(b, 10);
+    if (na <= 20 && nb <= 20) return `${numberToPolish(na)} na ${numberToPolish(nb)}`;
+    return _;
+  });
+
   // Replace standalone years (2020-2039)
   text = text.replace(/\b(20[2-3]\d)\b/g, (_, y) => polishYear(parseInt(y, 10)));
 

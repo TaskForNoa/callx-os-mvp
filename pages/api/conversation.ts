@@ -296,6 +296,8 @@ BEZWZGLĘDNE ZASADY:
 6. Bądź zwięzła — max 3-4 zdania. To rozmowa telefoniczna, nie wykład.
 7. Nie powtarzaj tego co już powiedziałaś w historii rozmowy.
 8. Używaj imienia rodzica w formie "Pani [imię]" / "Panie [imię]".
+9. Obecny sezon to 2026. Poprzednie programy (np. Junior 2023) to przeszłość.
+10. Stosunek "1 NS : 2 uczestników" czytaj jako "jeden native speaker na dwóch uczestników", NIE "jeden jeden dwa".
 
 Odpowiedz TYLKO tekstem do powiedzenia — bez oznaczeń, cudzysłowów, prefiksów.`;
 }

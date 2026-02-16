@@ -195,8 +195,8 @@ export default function LeadDetail() {
           silentTicksAfterSpeech = 0;
         } else if (spoke) {
           silentTicksAfterSpeech += 1;
-          // Stop after ~0.4–0.6s of silence after user spoke (faster turn-taking)
-          if (silentTicksAfterSpeech >= 3) {
+          // Stop after ~1.2–1.4s of silence after user spoke (let user finish sentences)
+          if (silentTicksAfterSpeech >= 7) {
             clearInterval(vad);
             if (rec.state === 'recording') rec.stop();
             return;
@@ -206,8 +206,8 @@ export default function LeadDetail() {
         ticks += 1;
         setListenSec(Math.floor(ticks / 5));
 
-        // Hard cap: 6s (faster turn-taking). If user said nothing, it ends quickly.
-        if (ticks > 30) {
+        // Hard cap: 10s — give user time to think and speak
+        if (ticks > 50) {
           clearInterval(vad);
           if (rec.state === 'recording') rec.stop();
         }
