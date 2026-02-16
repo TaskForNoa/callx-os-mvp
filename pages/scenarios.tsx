@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import type { ScenarioDefinition } from '../lib/scenarioFlow';
 
+const scenarioIcons: Record<string, string> = {
+  'pasti': '🔄',
+  'new': '📞',
+};
+
+const scenarioColors: Record<string, string> = {
+  'pasti': 'bg-blue-100',
+  'new': 'bg-green-100',
+};
+
 const categoryLabels: Record<string, string> = {
   timing: '⏰ Czas',
   price: '💰 Cena',
@@ -46,13 +56,14 @@ export default function Scenarios() {
             className="w-full p-5 flex items-center justify-between hover:bg-gray-50 text-left"
           >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">🔄</div>
+              <div className={`w-12 h-12 ${scenarioColors[scenario.leadType] || 'bg-gray-100'} rounded-xl flex items-center justify-center text-2xl`}>{scenarioIcons[scenario.leadType] || '📋'}</div>
               <div>
                 <div className="font-bold text-av-navy text-lg">{scenario.name}</div>
                 <div className="text-gray-500 text-sm">{scenario.description} • {scenario.steps.length} kroków</div>
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <span className="px-2 py-1 bg-gray-100 text-gray-500 text-xs rounded-full mr-1">leadType: {scenario.leadType}</span>
               <span className="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">AKTYWNY</span>
               <span className="text-gray-400 text-xl">{expandedId === scenario.id ? '▲' : '▼'}</span>
             </div>
