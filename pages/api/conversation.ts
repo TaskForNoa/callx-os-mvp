@@ -228,7 +228,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
       model: CALLX_MODEL,
       messages: [
         { role: 'system', content: systemPrompt },
-        ...messages,
+        ...messages.filter(m => m.content).map(m => ({ role: m.role, content: m.content || '' })),
       ],
       temperature: 0.7,
       max_tokens: 300,
