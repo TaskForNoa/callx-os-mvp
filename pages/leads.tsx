@@ -25,6 +25,16 @@ const outcomeLabels: Record<string, { icon: string; label: string; color: string
 
 type FilterType = 'all' | 'pasti' | 'new';
 
+type LeadSegment = 'Past Junior' | 'Past Kids' | 'Past Adult' | 'Past' | 'Nowy';
+
+function detectPastSegment(pastPrograms: string[] = []): LeadSegment {
+  const t = pastPrograms.join(' ').toLowerCase();
+  if (t.includes('kids')) return 'Past Kids';
+  if (t.includes('junior') || t.includes('malta') || t.includes('anglia') || t.includes('eurotrip') || t.includes('uk trip')) return 'Past Junior';
+  if (t.includes('adult') || t.includes('wioska') || t.includes('tandem') || t.includes('premium')) return 'Past Adult';
+  return 'Past';
+}
+
 export default function Leads() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loading, setLoading] = useState(true);
@@ -85,13 +95,24 @@ export default function Leads() {
                   <div>
                     <div className="font-semibold text-av-navy flex items-center gap-2">
                       {lead.first_name} {lead.last_name}
-                      <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${
-                        lead.leadType === 'pasti'
-                          ? 'bg-blue-100 text-blue-700'
-                          : 'bg-green-100 text-green-700'
-                      }`}>
-                        {lead.leadType === 'pasti' ? '🔄 PAŚCI' : '🆕 NOWY'}
-                      </span>
+                      {(() => {
+                        const seg = lead.leadType === 'pasti' ? detectPastSegment(lead.past_programs) : 'Nowy';
+                        const style = seg === 'Nowy'
+                          ? 'bg-green-100 text-green-700'
+                          : seg === 'Past Kids'
+                            ? 'bg-amber-100 text-amber-700'
+                            : seg === 'Past Junior'
+                              ? 'bg-blue-100 text-blue-700'
+                              : seg === 'Past Adult'
+                                ? 'bg-purple-100 text-purple-700'
+                                : 'bg-gray-100 text-gray-700';
+                        const label = seg === 'Nowy' ? '🆕 NOWY' : `🔄 ${seg.toUpperCase()}`;
+                        return (
+                          <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${style}`}>
+                            {label}
+                          </span>
+                        );
+                      })()}
                     </div>
                     <div className="text-gray-500 text-sm">{lead.phone}</div>
                   </div>
