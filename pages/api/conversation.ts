@@ -259,7 +259,7 @@ async function callLLM(systemPrompt: string, messages: Array<{role: string; cont
   if (!res.ok) {
     const err = await res.text();
     console.error('LLM error:', res.status, err);
-    throw new Error('LLM call failed');
+    throw new Error(`LLM ${res.status}: ${err.slice(0, 500)}`);
   }
 
   const data = await res.json();
