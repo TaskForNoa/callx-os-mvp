@@ -19,7 +19,7 @@ async function retrieveRAGContext(query: string, limit = 3): Promise<string[]> {
     const supabase = getSupabaseAdmin();
     const { data } = await supabase.rpc('match_training_chunks', {
       query_embedding: JSON.stringify(embedding),
-      match_threshold: 0.65,
+      match_threshold: 0.35,
       match_count: limit,
     });
     return (data || []).map((r: any) => r.chunk_text);
