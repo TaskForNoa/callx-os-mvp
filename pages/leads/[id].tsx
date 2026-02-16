@@ -131,9 +131,15 @@ export default function LeadDetail() {
             const b64 = (reader.result as string).split(',')[1];
             try {
               const r = await axios.post('/api/voice/transcribe', { audio: b64 });
-              const t = r.data.transcript || '';
-              if (t) addMsg('customer', t);
-              resolve(t);
+              const t = (r.data.transcript || '').trim();
+              if (t) {
+                addMsg('customer', t);
+                resolve(t);
+              } else {
+                // Always show something in transcript so user knows we listened
+                addMsg('customer', '(brak transkrypcji — spróbuj mówić bliżej mikrofonu)');
+                resolve('');
+              }
             } catch { resolve(''); }
           };
           reader.readAsDataURL(blob);
@@ -239,9 +245,14 @@ export default function LeadDetail() {
         if (r.data.agentText) await speak(r.data.agentText);
         if (abortRef.current) break;
         if (r.data.isComplete || r.data.nextStep === 99) { setOutcome(r.data.outcome || 'Zakończono'); break; }
-        step = r.data.nextStep;
-        setCallStep(step);
+        const next = r.data.nextStep;
+        setCallStep(next);
+        // Listen (retry once if STT returns empty)
         lastText = await listen();
+        if (!abortRef.current && (!lastText || !lastText.trim())) {
+          lastText = await listen();
+        }
+        step = next;
         if (abortRef.current) break;
       } catch (e: any) { if (!abortRef.current) setError(e.message); break; }
     }

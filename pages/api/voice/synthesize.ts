@@ -40,6 +40,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         body: JSON.stringify({
           text,
           model_id: 'eleven_multilingual_v2',
+          // Reduce latency between user turn end → agent speaks
+          optimize_streaming_latency: 3,
           voice_settings: {
             stability: 0.35,          // Lower = more expressive, natural
             similarity_boost: 0.85,   // Higher = more consistent voice

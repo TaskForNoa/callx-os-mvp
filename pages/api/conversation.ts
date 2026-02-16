@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import leadsData from '../../data/mock-leads.json';
+import productsData from '../../data/products-full.json';
 
 // Conversation state machine
 // 7-step flow: greeting → recording info → past program → interest → listen → offer → outcome
@@ -12,12 +13,50 @@ interface ConversationState {
   voice?: string;
 }
 
+type Product = any;
+
+function pickOfferForDestination(destinationRaw: string): { label: string; regular: number | null; early: number | null; ratio?: string; url?: string } | null {
+  const dest = (destinationRaw || '').toLowerCase();
+  const products = productsData as Product[];
+
+  // Helpers
+  const pick = (filterFn: (p: Product) => boolean) => {
+    const candidates = products.filter(filterFn);
+    // Prefer ones with Early Bird if present
+    candidates.sort((a, b) => {
+      const ae = a.cenaZnizka != null ? 0 : 1;
+      const be = b.cenaZnizka != null ? 0 : 1;
+      return ae - be;
+    });
+    return candidates[0] || null;
+  };
+
+  if (dest.includes('malta')) {
+    const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta') && (p.wariant || '').toLowerCase().includes('tygodniowy'))
+      || pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
+    if (!p) return null;
+    return { label: 'Junior International – Malta', regular: p.cenaRegularna ?? null, early: p.cenaZnizka ?? null, ratio: p.ratio, url: p.url };
+  }
+
+  // Default: Junior PL (Wakacje)
+  const p = pick(p => (p.name || '') === 'Angloville Junior' && (p.wariant || '').toLowerCase().includes('wakacje'))
+    || pick(p => (p.name || '') === 'Angloville Junior');
+
+  if (!p) return null;
+  return { label: 'Angloville Junior (Polska)', regular: p.cenaRegularna ?? null, early: p.cenaZnizka ?? null, ratio: p.ratio, url: p.url };
+}
+
 function getAgentResponse(state: ConversationState): { text: string; nextStep: number; outcome?: string } {
   const lead = state.leadData;
-  const customerSaid = state.customerResponse.toLowerCase();
+  const customerSaid = (state.customerResponse || '').toLowerCase();
   const name = lead.first_name;
   const lastProgram = lead.past_programs[lead.past_programs.length - 1];
   const destination = lead.preferred_destination;
+  const offer = pickOfferForDestination(destination);
+  const offerPrice = offer?.early ?? offer?.regular ?? null;
+  const offerRegular = offer?.regular ?? null;
+  const offerEarly = offer?.early ?? null;
+  const offerSavings = (offerEarly != null && offerRegular != null) ? (offerRegular - offerEarly) : null;
 
   switch (state.step) {
     case 0:
@@ -43,6 +82,12 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
 
     case 2:
       // Step 3: Past program reminder
+      if (!customerSaid.trim()) {
+        return {
+          text: `Widzę, że ostatnio byli Państwo na programie ${lastProgram}. Czy dziecku się podobało?`,
+          nextStep: 3,
+        };
+      }
       return {
         text: `Widzę, że ostatnio byli Państwo na programie ${lastProgram}. Czy dziecku się podobało?`,
         nextStep: 3,
@@ -50,9 +95,15 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
 
     case 3:
       // Step 4: Interest question
+      if (!customerSaid.trim()) {
+        return {
+          text: `Przepraszam — nie usłyszałam odpowiedzi. Czy dziecku się podobało na programie ${lastProgram}?`,
+          nextStep: 3,
+        };
+      }
       if (customerSaid.includes('tak') || customerSaid.includes('super') || customerSaid.includes('podobało') || customerSaid.includes('fajnie')) {
         return {
-          text: `To wspaniale! Mamy teraz świetną ofertę Early Bird na sezon 2026. Czy byliby Państwo zainteresowani programem Junior ${destination}?`,
+          text: `To wspaniale! Czy byliby Państwo zainteresowani programem ${offer?.label || `Junior ${destination}`} na sezon 2026?`,
           nextStep: 4,
         };
       } else if (customerSaid.includes('nie') || customerSaid.includes('średnio')) {
@@ -62,7 +113,7 @@ function getAgentResponse(state: ConversationState): { text: string; nextStep: n
         };
       }
       return {
-        text: `Rozumiem. Mamy teraz ofertę Early Bird na sezon 2026 z rabatem. Program Junior ${destination} - czy chcieliby Państwo usłyszeć więcej szczegółów?`,
+        text: `Mamy teraz ofertę na sezon 2026. Program ${offer?.label || `Junior ${destination}`} — czy chcieliby Państwo usłyszeć więcej szczegółów?`,
         nextStep: 4,
       };
 
