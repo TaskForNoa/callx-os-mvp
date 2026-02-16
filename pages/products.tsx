@@ -225,22 +225,48 @@ export default function ProductsPage() {
   });
 
   function handleEdit(p: Product) {
-    setEditProduct(p);
+    setEditProduct({ ...p } as any);
     setEditJson(JSON.stringify(p, null, 2));
+  }
+
+  function updateEditField(field: string, value: any) {
+    setEditProduct((prev: any) => prev ? { ...prev, [field]: value } : prev);
+  }
+
+  function addTermin() {
+    setEditProduct((prev: any) => {
+      if (!prev) return prev;
+      const list = [...(prev.terminyLista || [])];
+      list.push({ program: prev.name, termin: '', hotel: '', miastoZbiorki: '', dostepnosc: 'Otwarte zapisy', linkZapisu: '' });
+      return { ...prev, terminyLista: list };
+    });
+  }
+
+  function updateTermin(index: number, field: string, value: string) {
+    setEditProduct((prev: any) => {
+      if (!prev) return prev;
+      const list = [...(prev.terminyLista || [])];
+      list[index] = { ...list[index], [field]: value };
+      return { ...prev, terminyLista: list };
+    });
+  }
+
+  function removeTermin(index: number) {
+    setEditProduct((prev: any) => {
+      if (!prev) return prev;
+      const list = [...(prev.terminyLista || [])];
+      list.splice(index, 1);
+      return { ...prev, terminyLista: list };
+    });
   }
 
   function saveEdit() {
     if (!editProduct) return;
-    try {
-      const updated: Product = JSON.parse(editJson);
-      const overrides = JSON.parse(localStorage.getItem('product-overrides') || '{}');
-      overrides[editProduct.id] = updated;
-      localStorage.setItem('product-overrides', JSON.stringify(overrides));
-      setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...p, ...updated } : p));
-      setEditProduct(null);
-    } catch (e) {
-      alert('Nieprawidłowy JSON');
-    }
+    const overrides = JSON.parse(localStorage.getItem('product-overrides') || '{}');
+    overrides[editProduct.id] = editProduct;
+    localStorage.setItem('product-overrides', JSON.stringify(overrides));
+    setProducts(prev => prev.map(p => p.id === editProduct.id ? { ...p, ...editProduct as any } : p));
+    setEditProduct(null);
   }
 
   return (
@@ -340,19 +366,147 @@ export default function ProductsPage() {
       {/* Edit Modal */}
       {editProduct && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+          <div className="bg-white rounded-xl shadow-xl max-w-3xl w-full max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="font-bold text-av-navy">Edycja lokalna: {editProduct.name}</h3>
+              <h3 className="font-bold text-av-navy">✏️ Edycja: {editProduct.name}</h3>
               <button onClick={() => setEditProduct(null)} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
             </div>
-            <div className="p-4 flex-1 overflow-auto">
-              <p className="text-xs text-gray-500 mb-2">Zmiany zapisywane w localStorage (nie wpływają na serwer)</p>
-              <textarea
-                value={editJson}
-                onChange={e => setEditJson(e.target.value)}
-                className="w-full h-96 font-mono text-xs border border-gray-200 rounded-lg p-3 focus:ring-2 focus:ring-av-blue outline-none"
-              />
+            <div className="p-4 flex-1 overflow-auto space-y-4">
+              <p className="text-xs text-gray-500">Zmiany zapisywane lokalnie (localStorage)</p>
+
+              {/* Basic fields */}
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  ['name', 'Nazwa produktu'],
+                  ['wariant', 'Wariant'],
+                  ['segment', 'Segment'],
+                  ['czasTrwania', 'Czas trwania'],
+                  ['terminy', 'Terminy (ogólne)'],
+                  ['ratio', 'Stosunek NS:uczestników'],
+                ].map(([field, label]) => (
+                  <div key={field}>
+                    <label className="text-xs font-medium text-gray-600">{label}</label>
+                    <input
+                      type="text"
+                      value={(editProduct as any)[field] || ''}
+                      onChange={e => updateEditField(field, e.target.value)}
+                      className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm mt-0.5 focus:ring-1 focus:ring-av-blue outline-none"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Prices */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Cena regularna (zł)</label>
+                  <input
+                    type="number"
+                    value={(editProduct as any).cenaRegularna || ''}
+                    onChange={e => updateEditField('cenaRegularna', e.target.value ? Number(e.target.value) : null)}
+                    className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm mt-0.5 focus:ring-1 focus:ring-av-blue outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-gray-600">Cena Early Bird (zł)</label>
+                  <input
+                    type="number"
+                    value={(editProduct as any).cenaZnizka || ''}
+                    onChange={e => updateEditField('cenaZnizka', e.target.value ? Number(e.target.value) : null)}
+                    className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm mt-0.5 focus:ring-1 focus:ring-av-blue outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Text areas */}
+              {[
+                ['cechy', 'Cechy / wyróżniki'],
+                ['program', 'Program / trasa'],
+                ['coZawiera', 'Co zawiera cena'],
+                ['znizki', 'Zniżki'],
+              ].map(([field, label]) => (
+                <div key={field}>
+                  <label className="text-xs font-medium text-gray-600">{label}</label>
+                  <textarea
+                    value={(editProduct as any)[field] || ''}
+                    onChange={e => updateEditField(field, e.target.value)}
+                    rows={2}
+                    className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm mt-0.5 focus:ring-1 focus:ring-av-blue outline-none"
+                  />
+                </div>
+              ))}
+
+              {/* URL */}
+              <div>
+                <label className="text-xs font-medium text-gray-600">URL strony</label>
+                <input
+                  type="text"
+                  value={(editProduct as any).url || ''}
+                  onChange={e => updateEditField('url', e.target.value)}
+                  className="w-full border border-gray-200 rounded px-2 py-1.5 text-sm mt-0.5 focus:ring-1 focus:ring-av-blue outline-none"
+                />
+              </div>
+
+              {/* Terminy table */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-semibold text-av-navy">📅 Terminy i hotele</label>
+                  <button
+                    onClick={addTermin}
+                    className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
+                  >
+                    + Dodaj termin
+                  </button>
+                </div>
+                {((editProduct as any).terminyLista || []).length === 0 ? (
+                  <p className="text-xs text-gray-400 italic">Brak terminów. Kliknij &quot;+ Dodaj termin&quot; aby dodać.</p>
+                ) : (
+                  <div className="space-y-2">
+                    {((editProduct as any).terminyLista || []).map((t: any, i: number) => (
+                      <div key={i} className="flex gap-2 items-start bg-gray-50 rounded p-2 border border-gray-200">
+                        <div className="flex-1 grid grid-cols-2 gap-2">
+                          <input
+                            placeholder="Termin (np. 05-11 lipca)"
+                            value={t.termin || ''}
+                            onChange={e => updateTermin(i, 'termin', e.target.value)}
+                            className="border border-gray-200 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-av-blue outline-none"
+                          />
+                          <input
+                            placeholder="Hotel"
+                            value={t.hotel || ''}
+                            onChange={e => updateTermin(i, 'hotel', e.target.value)}
+                            className="border border-gray-200 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-av-blue outline-none"
+                          />
+                          <input
+                            placeholder="Miasto zbiórki"
+                            value={t.miastoZbiorki || ''}
+                            onChange={e => updateTermin(i, 'miastoZbiorki', e.target.value)}
+                            className="border border-gray-200 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-av-blue outline-none"
+                          />
+                          <select
+                            value={t.dostepnosc || 'Otwarte zapisy'}
+                            onChange={e => updateTermin(i, 'dostepnosc', e.target.value)}
+                            className="border border-gray-200 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-av-blue outline-none"
+                          >
+                            <option>Otwarte zapisy</option>
+                            <option>Ostatnie miejsca</option>
+                            <option>Wyprzedane</option>
+                          </select>
+                        </div>
+                        <button
+                          onClick={() => removeTermin(i)}
+                          className="text-red-400 hover:text-red-600 text-lg px-1"
+                          title="Usuń termin"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+
             <div className="flex gap-2 p-4 border-t">
               <button onClick={saveEdit} className="bg-av-blue text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-av-blue-dark">
                 💾 Zapisz
