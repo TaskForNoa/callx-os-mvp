@@ -291,7 +291,7 @@
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-premium-48-lekcji-online",
@@ -312,7 +312,7 @@
     "ratio": "1 NS : 1 uczestnik (70h w 6 dni)",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-tandem-80-lekcji-online",
@@ -333,7 +333,7 @@
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-tandem-48-lekcji-online",
@@ -354,7 +354,7 @@
     "ratio": "1 NS : 2 uczestników (70h w 6 dni)",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-weekend-80-lekcji-online",
@@ -375,7 +375,7 @@
     "ratio": "Wg programu",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-weekend-48-lekcji-online",
@@ -396,7 +396,7 @@
     "ratio": "Wg programu",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "angloville-adult-standard",
@@ -417,7 +417,7 @@
     "ratio": "1 NS : 1 (lub brak danych)",
     "ubezpieczenie": "",
     "podkategoria": "Pakiety Pro (pobyt + online)",
-    "wiekGrupa": "Młodzież 11-18"
+    "wiekGrupa": "Dorośli 18+"
   },
   {
     "id": "adult-premium-pobyt",
