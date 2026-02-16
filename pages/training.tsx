@@ -102,16 +102,21 @@ export default function Training() {
         const res = await fetch('/api/training/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ audio: b64, fileName: file.name }),
+          body: JSON.stringify({ audio: b64, fileName: file.name, mimeType: file.type || undefined }),
         });
         const data = await res.json();
 
         if (idx !== -1) {
-          updated[idx].status = data.transcript ? 'done' : 'error';
-          updated[idx].transcript = data.transcript || 'Brak transkrypcji';
-          // Replace local id with server transcript id when available
-          if (data.transcriptId) updated[idx].id = data.transcriptId;
-          if (data.createdAt) updated[idx].uploadedAt = data.createdAt;
+          if (!res.ok) {
+            updated[idx].status = 'error';
+            updated[idx].transcript = data?.details || data?.error || 'Błąd transkrypcji';
+          } else {
+            updated[idx].status = data.transcript ? 'done' : 'error';
+            updated[idx].transcript = data.transcript || 'Brak transkrypcji';
+            // Replace local id with server transcript id when available
+            if (data.transcriptId) updated[idx].id = data.transcriptId;
+            if (data.createdAt) updated[idx].uploadedAt = data.createdAt;
+          }
           saveFiles([...updated]);
         }
       } catch {

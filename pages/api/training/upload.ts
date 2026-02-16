@@ -20,17 +20,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (!DEEPGRAM_KEY) return res.status(500).json({ error: 'DEEPGRAM_API_KEY not configured' });
 
   try {
-    const { audio, fileName, leadCustomerId } = req.body as { audio?: string; fileName?: string; leadCustomerId?: string };
+    const { audio, fileName, leadCustomerId, mimeType } = req.body as { audio?: string; fileName?: string; leadCustomerId?: string; mimeType?: string };
     if (!audio) return res.status(400).json({ error: 'audio (base64) required' });
 
     const supabase = getSupabaseAdmin();
 
     const buf = Buffer.from(audio, 'base64');
-    const path = `tmp/${Date.now()}_${safeFileName(fileName || 'upload.webm')}`;
+    const ct = (mimeType && typeof mimeType === 'string' && mimeType.trim()) ? mimeType.trim() : 'application/octet-stream';
+    const path = `tmp/${Date.now()}_${safeFileName(fileName || 'upload')}`;
 
     // 1) Upload audio temporarily (private bucket)
     const up = await supabase.storage.from('callx-audio').upload(path, buf, {
-      contentType: 'audio/webm',
+      contentType: ct,
       upsert: true,
     });
 
@@ -44,27 +45,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       method: 'POST',
       headers: {
         'Authorization': `Token ${DEEPGRAM_KEY}`,
-        'Content-Type': 'audio/webm',
+        'Content-Type': ct,
       },
       body: buf,
     });
 
     let transcript = '';
     let confidence = 0;
+    let deepgramError: string | null = null;
 
     if (dg.ok) {
       const data = await dg.json();
       transcript = data.results?.channels?.[0]?.alternatives?.[0]?.transcript || '';
       confidence = data.results?.channels?.[0]?.alternatives?.[0]?.confidence || 0;
     } else {
-      const t = await dg.text();
-      console.error('Deepgram error:', t);
+      deepgramError = await dg.text();
+      console.error('Deepgram error:', deepgramError);
     }
 
-    // 3) Delete audio immediately (per Michał’s requirement)
+    // 3) Delete audio immediately (per Michał’s requirement) — always attempt if upload succeeded
     if (!up.error) {
       const del = await supabase.storage.from('callx-audio').remove([path]);
       if (del.error) console.warn('Supabase delete error:', del.error.message);
+    }
+
+    if (deepgramError) {
+      // Still store an empty transcript row for traceability, but return an error to the UI.
+      await supabase
+        .from('training_transcripts')
+        .insert({
+          source: 'upload',
+          lead_customer_id: leadCustomerId || null,
+          file_name: fileName || null,
+          transcript_text: '',
+          language: 'pl',
+          meta: { deepgram_error: deepgramError, had_upload_error: !!up.error },
+        });
+
+      return res.status(500).json({ error: 'Deepgram API error', details: deepgramError });
     }
 
     // 4) Store transcript text only (if empty, still store an entry for traceability)
