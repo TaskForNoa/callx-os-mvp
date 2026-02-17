@@ -140,8 +140,10 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
 
   // Destination / branch filter
   const wantsPolska = t.includes('polsk') || t.includes('w kraju');
-  const wantsMalta = t.includes('malta') && !wantsPolska;
-  const wantsAnglia = (t.includes('anglia') || t.includes('londyn') || t.includes('uk trip')) && !wantsPolska;
+  const undecidedDest = t.includes('nie jestem zdecyd') || t.includes('jeszcze nie wiem') || t.includes('nie wiem') || t.includes('nie do końca') || t.includes('nie do konca') || t.includes('niekoniecznie');
+
+  const wantsMalta = t.includes('malta') && !wantsPolska && !undecidedDest;
+  const wantsAnglia = (t.includes('anglia') || t.includes('londyn') || t.includes('uk trip') || t.includes('wielkiej bryt')) && !wantsPolska && !undecidedDest;
   const wantsZagranica = (t.includes('zagrani') || t.includes('za granic') || wantsMalta || wantsAnglia) && !wantsPolska;
 
   // If client chose "mocno językowa" right after International vs Plus question,
@@ -259,12 +261,12 @@ const STEPS: StepDef[] = [
   },
   {
     step: 1, name: 'Rozpoznanie potrzeb',
-    goal: 'Nawiąż do uczestnictwa dziecka [childName] w programach (ostatnio: [lastProgram]). Zapytaj jak się podobało. NIE prezentuj jeszcze żadnego produktu.',
+    goal: 'Nawiąż do uczestnictwa dziecka [childName] w programach (ostatnio: [lastProgram]). NIE prezentuj jeszcze żadnego produktu. Twoim celem jest rozstrzygnąć pierwszą oś wyboru: Polska czy zagranica.',
     rules: [
       'NIE mów "dzień dobry" — już się przywitałaś w poprzednim kroku!',
       'Nie podawaj ceny',
       'Nie proponuj jeszcze konkretnego produktu ani kierunku',
-      'Zapytaj JEDNO pytanie: jak się podobało na ostatnim obozie',
+      'Zapytaj JEDNO pytanie: czy rozważają Państwo raczej Polskę czy zagranicę',
       'Jeśli klient nie ma czasu → zaproponuj callback i zakończ',
       'Jeśli klient sam mówi co go interesuje → zapamiętaj i przejdź dalej',
     ],
@@ -331,11 +333,18 @@ function extractCustomerContext(allText: string): string {
   const t = allText.toLowerCase();
   const facts: string[] = [];
 
-  // Destination
-  if (t.includes('polsk') || t.includes('w kraju')) facts.push('WYBRANO: Polska (NIE wracaj do Malty/Anglii!)');
-  else if (t.includes('malta')) facts.push('WYBRANO: Malta (NIE proponuj Polski!)');
-  else if (t.includes('anglia') || t.includes('londyn') || t.includes('uk')) facts.push('WYBRANO: Anglia/UK (NIE proponuj Polski!)');
-  else if (t.includes('zagrani') || t.includes('za granic')) facts.push('WYBRANO: zagranica (dopytaj: Malta czy Anglia)');
+  // Destination (be careful: mentioning "Malta" in history doesn't always mean the customer chose it)
+  const undecided = t.includes('nie jestem zdecyd') || t.includes('jeszcze nie wiem') || t.includes('nie wiem') || t.includes('nie do końca') || t.includes('nie do konca') || t.includes('niekoniecznie') || t.includes('raczej nie');
+
+  if (t.includes('polsk') || t.includes('w kraju')) {
+    facts.push('WYBRANO: Polska (NIE wracaj do Malty/Anglii!)');
+  } else if (t.includes('malta') && !undecided) {
+    facts.push('WYBRANO: Malta (NIE proponuj Polski!)');
+  } else if ((t.includes('anglia') || t.includes('londyn') || t.includes('uk')) && !undecided) {
+    facts.push('WYBRANO: Anglia/UK (NIE proponuj Polski!)');
+  } else if (t.includes('zagrani') || t.includes('za granic')) {
+    facts.push('WYBRANO: zagranica (dopytaj: Europa (Malta/Anglia) czy poza Europą)');
+  }
 
   // Season
   if (t.includes('wakacj') || t.includes('lato') || t.includes('lipiec') || t.includes('sierp')) facts.push('SEZON: wakacje (lipiec-sierpień)');
@@ -376,6 +385,29 @@ function extractCustomerContext(allText: string): string {
 // ── LLM call ──
 const CALLX_MODEL = process.env.CALLX_CONV_MODEL || 'gpt-5.2';
 
+function customerExplicitlyAskedPrice(text: string): boolean {
+  const t = (text || '').toLowerCase();
+  return (
+    t.includes('ile koszt') ||
+    t.includes('jaka cena') ||
+    t.includes('jaka jest cena') ||
+    t.includes('cena?') ||
+    t.match(/\bile\b.*\b(zł|pln)\b/) != null ||
+    t.includes('kosztuje') ||
+    t.includes('za ile')
+  );
+}
+
+function stripPricesIfNotAllowed(text: string): string {
+  // Remove obvious price mentions. Keep it conservative to avoid mangling normal numbers.
+  return (text || '')
+    // 12 499 zł / 12499 zł / 12.499 zł
+    .replace(/\b\d{1,3}(?:[ .]\d{3})+\s*(zł|pln)\b/gi, '[cena na prośbę]')
+    .replace(/\b\d{4,6}\s*(zł|pln)\b/gi, '[cena na prośbę]')
+    // "od 17999 zł"
+    .replace(/\bod\s*\d{4,6}\s*(zł|pln)\b/gi, 'od [cena na prośbę]');
+}
+
 async function callLLM(systemPrompt: string, messages: Array<{role: string; content: string}>): Promise<string> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error('OPENAI_API_KEY not set');
@@ -409,7 +441,7 @@ function determineNextStep(currentStep: number, customerSaid: string, hasOffer: 
   const t = customerSaid.toLowerCase();
 
   switch (currentStep) {
-    case 0: return { nextStep: 2 };
+    case 0: return { nextStep: 1 };
 
     case 1:
       if (t.includes('nie') && (t.includes('czas') || t.includes('mogę') || t.includes('teraz')))
@@ -578,7 +610,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const voiceName = voice || 'Karolina';
   const hist: Array<{speaker: string; text: string}> = history || [];
 
-  // Build full conversation text for product matching
+  // First turn (no customer response yet) → generate for CURRENT step (greeting)
+  const isFirstTurn = !customerResponse || !customerResponse.trim();
+
+  // Build CUSTOMER-only conversation text for matching & context (do not use agent text, it can bias filters)
   const allCustomerText = hist
     .filter(h => h.speaker === 'customer')
     .map(h => h.text)
@@ -588,26 +623,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Extract what customer already decided
   const customerContext = extractCustomerContext(allCustomerText);
 
-  // Try to match product from conversation
-  const offer = pickOfferFromConversation(allCustomerText) || pickOfferForDestination(lead.preferred_destination || '');
+  // Try to match product from CUSTOMER conversation.
+  // Do NOT force a destination based on lead.preferred_destination once the customer starts exploring alternatives.
+  const offer = pickOfferFromConversation(allCustomerText)
+    || (isFirstTurn ? pickOfferForDestination(lead.preferred_destination || '') : null);
 
-  // Get ALL matching products based on customer choices (for browsing)
-  const allConversationText = hist.map(h => h.text).concat([customerResponse || '']).join(' ');
-  const matchingProducts = filterMatchingProducts(allConversationText, lead);
+  // Get ALL matching products based on CUSTOMER choices (for browsing)
+  const matchingProducts = filterMatchingProducts(allCustomerText, lead);
 
   // Get step definition
   const stepDef = STEPS.find(s => s.step === currentStep) || STEPS[STEPS.length - 1];
-
-  // First turn (no customer response yet) → generate for CURRENT step (greeting)
-  const isFirstTurn = !customerResponse || !customerResponse.trim();
 
   // Determine next step (only if customer has spoken)
   let nextStep: number;
   let outcome: string | undefined;
   if (isFirstTurn) {
     // Generate for current step, but tell frontend the next step to use
-    // Step 0 first turn → generate greeting, advance directly to step 2 (skip step 1)
-    nextStep = currentStep === 0 ? 2 : currentStep;
+    // Step 0 first turn → generate greeting, then go to discovery (step 1). Do NOT skip discovery.
+    nextStep = currentStep === 0 ? 1 : currentStep;
     outcome = undefined;
   } else {
     const result = determineNextStep(currentStep, customerResponse, !!offer);
@@ -662,6 +695,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   let agentText: string;
   try {
     agentText = await callLLM(systemPrompt, llmMessages);
+
+    // Guardrail: if we're not allowed to reveal price and the customer didn't explicitly ask, strip any leaked prices.
+    const askedPrice = customerExplicitlyAskedPrice(customerResponse || '');
+    if (!genStepDef.canRevealPrice && !askedPrice) {
+      agentText = stripPricesIfNotAllowed(agentText);
+    }
   } catch (e: any) {
     // Return error details for debugging
     const errMsg = e?.message || String(e);
