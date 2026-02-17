@@ -255,8 +255,13 @@ interface StepDef {
 const STEPS: StepDef[] = [
   {
     step: 0, name: 'Powitanie',
-    goal: 'Przedstaw się jako [voice] z Angloville. Potwierdź tożsamość (rodzic [childGenitive]). Zapytaj czy ma chwilę na rozmowę.',
-    rules: ['Ciepły, profesjonalny ton', 'Krótko — max 2 zdania + pytanie'],
+    goal: 'Przedstaw się jako [voice] z Angloville. Powiedz krótko, że dzwonisz w sprawie wyboru obozu na 2026 dla [childName] (ostatnio: [lastProgram]). Potwierdź tożsamość (rodzic [childGenitive]). Zapytaj czy ma chwilę na rozmowę.',
+    rules: [
+      'Ciepły, profesjonalny ton',
+      'Krótko — max 2 zdania + pytanie',
+      'NIE zakładaj preferencji kierunku na 2026 (preferred_destination to tylko wskazówka z CRM)',
+      'NIE proponuj jeszcze konkretnego programu ani kierunku',
+    ],
     canRevealPrice: false,
   },
   {
@@ -563,7 +568,7 @@ DANE LEADA:
 - Dziecko: ${childName} (dopełniacz: ${childGen})
 - Ostatni program: ${lastProgram}
 - Email: ${lead.email}
-- Preferowana destynacja: ${lead.preferred_destination || 'nieznana'}
+- Preferowana destynacja (z CRM, nie zakładaj że aktualna): ${lead.preferred_destination || 'nieznana'}
 ${(() => {
   const seg = getLeadSegment(lead);
   if (seg === 'junior') return `\n⚠️ KAMPANIA: PASTI JUNIOR (11-18 lat). Rozmowa dotyczy WYŁĄCZNIE programów dla młodzieży dla ${childName}. NIE proponuj Kids, NIE proponuj programów dla dorosłych!`;
@@ -657,9 +662,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     llmMessages.push({ role: 'user', content: customerResponse });
   }
 
-  // Always generate in the context of CURRENT step.
-  // The agent responds within this step, then we advance to nextStep for the next turn.
-  const generateForStep = currentStep;
+  // Generate in the context of the step we are moving into.
+  // First turn: generate step 0 greeting. After customer replies: generate for nextStep (e.g. step 1 discovery).
+  const generateForStep = isFirstTurn ? currentStep : nextStep;
 
   // For terminal states (99), generate a proper goodbye
   if (generateForStep === 99 || nextStep === 99) {
