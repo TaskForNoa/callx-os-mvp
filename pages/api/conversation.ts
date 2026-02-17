@@ -69,10 +69,6 @@ function pickOfferFromConversation(allText: string): OfferFacts | null {
     const p = pick(p => (p.name || '').includes('Junior International') && ((p.name || '').includes('Anglia') || (p.name || '').includes('UK')));
     if (p) return buildOfferFacts(p, p.name || 'Junior International – Anglia');
   }
-  if (t.includes('narc') || t.includes('ski') || t.includes('stok')) {
-    const p = pick(p => (p.name || '').toLowerCase().includes('ski'));
-    if (p) return buildOfferFacts(p, p.name || 'Junior SKI');
-  }
   if (t.includes('dorośl') || t.includes('dla siebie') || t.includes('adult')) {
     const p = pick(p => (p.name || '').includes('Adult') || (p.name || '').includes('Angielska Wioska'));
     if (p) return buildOfferFacts(p, p.name || 'Program dla dorosłych');
@@ -114,6 +110,9 @@ function filterMatchingProducts(allText: string, lead?: any): { products: OfferF
   const filters: string[] = [];
 
   let filtered = [...products];
+
+  // Seasonal: exclude ski/narty (zimowy sezon się kończy; nie proponujemy tego w tej kampanii)
+  filtered = filtered.filter(p => !String((p && p.name) || '').toLowerCase().includes('ski') && !String((p && p.name) || '').toLowerCase().includes('narty'));
 
   // Segment filter from lead data (pasti campaign)
   if (lead) {
@@ -375,7 +374,6 @@ function extractCustomerContext(allText: string): string {
   if (ageMatch) facts.push(`WIEK DZIECKA: ${ageMatch[1]} lat`);
 
   // Type
-  if (t.includes('narc') || t.includes('ski') || t.includes('stok')) facts.push('TYP: narciarsko-językowy');
   if (t.includes('językow') || t.includes('tradycyj')) facts.push('TYP: językowy tradycyjny');
 
   // Objections/sentiment
@@ -451,8 +449,13 @@ function determineNextStep(currentStep: number, customerSaid: string, hasOffer: 
     case 1:
       if (t.includes('nie') && (t.includes('czas') || t.includes('mogę') || t.includes('teraz')))
         return { nextStep: 99, outcome: 'Callback Requested' };
-      // Customer confirmed availability / answered about past program → move to presentation
-      return { nextStep: 2 };  // needs discovery done, move to program presentation
+
+      // Stay on discovery until we have the first axis: Poland vs abroad
+      const chosePolska = t.includes('polsk') || t.includes('w kraju');
+      const choseZagranica = t.includes('zagrani') || t.includes('za granic') || t.includes('zagranic');
+      if (!chosePolska && !choseZagranica) return { nextStep: 1 };
+
+      return { nextStep: 2 };
 
     case 2:
       // Stay on 2 until product is matched AND customer shows interest
@@ -568,7 +571,6 @@ DANE LEADA:
 - Dziecko: ${childName} (dopełniacz: ${childGen})
 - Ostatni program: ${lastProgram}
 - Email: ${lead.email}
-- Preferowana destynacja (z CRM, nie zakładaj że aktualna): ${lead.preferred_destination || 'nieznana'}
 ${(() => {
   const seg = getLeadSegment(lead);
   if (seg === 'junior') return `\n⚠️ KAMPANIA: PASTI JUNIOR (11-18 lat). Rozmowa dotyczy WYŁĄCZNIE programów dla młodzieży dla ${childName}. NIE proponuj Kids, NIE proponuj programów dla dorosłych!`;
