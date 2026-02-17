@@ -66,8 +66,34 @@ function pickOfferFromConversation(allText: string): OfferFacts | null {
     if (p) return buildOfferFacts(p, 'Junior International – Malta');
   }
   if (t.includes('anglia') || t.includes('uk') || t.includes('londyn')) {
+    // If the customer is talking about London/UK in a more "wyjazdowy/turystyczny" context,
+    // prefer Junior Plus (UK Trip). Otherwise fall back to Junior International (Anglia/UK).
+    const wantsPlus = t.includes('plus') || t.includes('turystycz') || t.includes('wyjazd') || t.includes('objazd') || t.includes('zwiedz');
+    if (wantsPlus) {
+      const pPlus = pick(p => {
+        const n = (p.name || '').toLowerCase();
+        return n.includes('junior plus') && (n.includes('uk trip') || n.includes('londyn') || n.includes('london') || n.includes('anglia'));
+      });
+      if (pPlus) return buildOfferFacts(pPlus, pPlus.name || 'Junior Plus – UK Trip');
+    }
+
     const p = pick(p => (p.name || '').includes('Junior International') && ((p.name || '').includes('Anglia') || (p.name || '').includes('UK')));
     if (p) return buildOfferFacts(p, p.name || 'Junior International – Anglia');
+  }
+
+  // Junior Plus — Eurotrip
+  if (t.includes('eurotrip') || t.includes('euro trip') || (t.includes('objazd') && t.includes('europ'))) {
+    const p = pick(p => {
+      const n = (p.name || '').toLowerCase();
+      return n.includes('junior plus') && n.includes('eurotrip');
+    });
+    if (p) return buildOfferFacts(p, p.name || 'Junior Plus – Eurotrip');
+  }
+
+  // Junior Plus — generic (when customer says "bardziej turystycznie/wyjazdowo")
+  if (t.includes('junior plus') || t.includes('turystycz') || t.includes('wyjazd') || t.includes('objazd') || t.includes('zwiedz')) {
+    const p = pick(p => (p.name || '').toLowerCase().includes('junior plus'));
+    if (p) return buildOfferFacts(p, p.name || 'Junior Plus');
   }
   if (t.includes('dorośl') || t.includes('dla siebie') || t.includes('adult')) {
     const p = pick(p => (p.name || '').includes('Adult') || (p.name || '').includes('Angielska Wioska'));
@@ -77,10 +103,8 @@ function pickOfferFromConversation(allText: string): OfferFacts | null {
     const p = pick(p => (p.name || '').includes('Kids'));
     if (p) return buildOfferFacts(p, p.name || 'Angloville Kids');
   }
-  if (t.includes('zagrani') || t.includes('za granic')) {
-    const p = pick(p => (p.name || '').includes('Junior International') && (p.name || '').includes('Malta'));
-    if (p) return buildOfferFacts(p, 'Junior International – Malta');
-  }
+  // NOTE: Do NOT auto-pick Malta just because customer said "zagranica".
+  // We must first ask: International (Malta/Anglia) vs Plus vs World.
   if (t.includes('polsk') || t.includes('w kraju') || t.includes('tradycyj') || t.includes('językow')) {
     const p = pick(p => (p.name || '') === 'Angloville Junior' && (p.wariant || '').toLowerCase().includes('wakacje'))
       || pick(p => (p.name || '') === 'Angloville Junior');
